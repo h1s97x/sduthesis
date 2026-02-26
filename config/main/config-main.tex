@@ -1,0 +1,247 @@
+% 导入宏包
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{unicode-math}
+\usepackage{xeCJK}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{bookmark}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage{fancyvrb}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{subfig}
+\usepackage[
+    backend=biber,
+    style=gb7714-2015,
+    gbnamefmt=givenahead
+]{biblatex}
+\usepackage{hyperref}
+\usepackage{etoolbox}
+\usepackage{tabularx}
+
+% -------------------算法设置-------------------
+\AtBeginEnvironment{algorithm}{\linespread{0.85}\selectfont}
+
+
+% -------------------文本选项-------------------
+% 让已定义的中文字体失效
+\let\songti\relex
+\let\heiti\relex
+\let\kaiti\relex
+
+% 定义中文字体。不建议使用过多种字体，宋体+黑体+楷体已经足够；可以自定义加粗与倾斜的程度，注意数字有取值范围，详情参考xeCJK说明文档
+\newCJKfontfamily\songti[
+    Path=./fonts/,
+    AutoFakeBold=3,
+    AutoFakeSlant=0.25
+]{SimSun.ttc}
+
+\newCJKfontfamily\heiti[
+    Path=./fonts/,
+    AutoFakeBold=3,
+    AutoFakeSlant=0.25
+]{SimHei.ttf}
+
+\newCJKfontfamily\kaiti[
+    Path=./fonts/,
+    AutoFakeBold=3,
+    AutoFakeSlant=0.25
+]{SimKai.ttf}
+
+% 后续局部定义字体，后面必须带{}
+\newcommand{\song}[1]{{\songti{#1}}}
+\newcommand{\hei}[1]{{\heiti{#1}}}
+\newcommand{\kai}[1]{{\kaiti{#1}}}
+
+% 后续局部变形处理，对于每种字体定义了加粗、倾斜和加粗倾斜，后面必须带{}
+\newcommand{\bfsong}[1]{{\songti\textbf{#1}}}
+\newcommand{\bfhei}[1]{{\heiti\textbf{#1}}}
+\newcommand{\bfkai}[1]{{\kaiti\textbf{#1}}}
+\newcommand{\itsong}[1]{{\songti\textit{#1}}}
+\newcommand{\ithei}[1]{{\heiti\textit{#1}}}
+\newcommand{\itkai}[1]{{\kaiti\textit{#1}}}
+\newcommand{\bfitsong}[1]{{\songti\textbf{\textit{#1}}}}
+\newcommand{\bfithei}[1]{{\heiti\textbf{\textit{#1}}}}
+\newcommand{\bfitkai}[1]{{\kaiti\textbf{\textit{#1}}}}
+
+% 后续全局变形处理，对于每种字体定义了加粗、倾斜和加粗倾斜，后面不能带{}
+\newcommand{\allbfsong}{\songti\bfseries}
+\newcommand{\allbfhei}{\heiti\bfseries}
+\newcommand{\allbfkai}{\kaiti\bfseries}
+\newcommand{\allitsong}{\songti\itshape}
+\newcommand{\allithei}{\heiti\itshape}
+\newcommand{\allitkai}{\kaiti\itshape}
+\newcommand{\allbfitsong}{\songti\bfseries\itshape}
+\newcommand{\allbfithei}{\heiti\bfseries\itshape}
+\newcommand{\allbfitkai}{\kaiti\bfseries\itshape}
+
+% 设置正文英文字体为Times New Roman
+\setmainfont{Times New Roman}
+
+% 设置数学模式下的字体
+\setmathfont{XITS Math}
+\setmathfont[range=\mathop]{Latin Modern Math}
+
+% 全局默认使用小四号宋体
+\AtBeginDocument{\zihao{-4}\songti}
+
+% 全局默认使用1.5倍行距
+\setstretch{1.5}
+% -------------------文本选项-------------------
+
+
+% -------------------页面选项-------------------
+% 页边距设置
+\geometry{
+    a4paper,
+    left=3cm,
+    right=3cm,
+    top=2.5cm,
+    bottom=2.5cm,
+}
+
+% 页面顶部对齐，允许底部有空白
+\raggedbottom
+% -------------------页面选项-------------------
+
+
+% -------------------章节标题选项-------------------
+% 最多显示三级标题
+\setcounter{secnumdepth}{3}
+
+% 章节标题格式与前后距离
+\ctexset{
+    chapter={
+      format=\centering\zihao{3}\allbfhei,
+      name={第,章},
+      beforeskip=21.6pt,
+      afterskip=18pt,
+      fixskip=true,
+     },
+    section={
+      format= \zihao{4}\allbfhei,
+      name={},
+      beforeskip=18pt,
+      afterskip=18pt,
+      fixskip=true,
+     },
+    subsection={
+            format=\zihao{-4}\allbfhei,
+            name={},
+            beforeskip=18pt,
+            afterskip=18pt,
+            fixskip=true,
+        }
+}
+% -------------------章节标题选项-------------------
+
+
+% -------------------交叉引用选项-------------------
+% 自定义颜色
+\definecolor{linkdarkblue}{rgb}{0,0.08,0.45}
+
+% 交叉引用颜色选项
+% \hypersetup{
+%     colorlinks=true,
+%     linkcolor=blue,
+%     urlcolor=linkdarkblue,
+%     citecolor=red,
+% }
+
+\hypersetup{
+    colorlinks=true,       % 启用彩色链接
+    linkcolor=black,       % 文本内部链接颜色
+    citecolor=black,       % 引用文献的链接颜色
+    filecolor=black,       % 文件链接颜色
+    urlcolor=linkdarkblue,        % URL链接颜色
+}
+% PDF属性选项，可有可无
+\hypersetup{
+    bookmarksnumbered=true,
+    pdfstartview=FitH,
+}
+
+% 自定义引用命令
+\newcommand{\equref}[1]{式\ \eqref{#1}\ }
+\newcommand{\tabref}[1]{表\ \ref{#1}\ }
+\newcommand{\figref}[1]{图\ \ref{#1}\ }
+\newcommand{\subfigref}[1]{{图\ \subref*{#1}\ }}
+% -------------------交叉引用选项-------------------
+
+
+% -------------------图表标题选项-------------------
+% 图片存放路径
+\graphicspath{{assets/images/}}
+
+% 自定义标题样式
+\DeclareCaptionFont{mybfsong}{\allbfsong}
+\DeclareCaptionFont{mywuhao}{\zihao{5}}
+\DeclareSubrefFormat{mysubref}{#1(#2)}
+
+% 可以自行调整各种距离
+\captionsetup[figure]{
+    position=below,
+    font={mywuhao,stretch=1.0},
+    labelfont=mybfsong,
+    textfont=mybfsong,
+    labelsep=quad,
+    margin=40pt,
+    belowskip=-4pt,
+}
+\captionsetup[table]{
+    position=above,
+    font={mywuhao,stretch=1.0},
+    labelfont=mybfsong,
+    textfont=mybfsong,
+    labelsep=quad,
+    margin=40pt,
+    belowskip=4pt,
+}
+\captionsetup[subfloat]{
+    position=below,
+    font={mywuhao,stretch=1.0},
+    labelfont=mybfsong,
+    textfont=mybfsong,
+    subrefformat=mysubref,
+}
+% -------------------图表标题选项-------------------
+
+
+% -------------------数学选项-----------------------
+\newcommand{\mye}{\ensuremath{\mathrm{e}}}
+\newcommand{\myi}{\ensuremath{\mathrm{i}}}
+\newcommand{\myj}{\ensuremath{\mathrm{j}}}
+% -------------------数学选项-----------------------
+
+
+\lstset{
+  belowskip=0pt,
+  language=C++,                           % 切换为 C++
+  basicstyle=\ttfamily\small,            % 等宽字体 + 小号字体
+  numbers=left,                          % 显示行号
+  numberstyle=\tiny\color{gray},         % 行号样式
+  numbersep=5pt,                         % 行号与代码间距
+  breaklines=true,                       % 自动换行
+  frame=single,                          % ✅ 单线边框
+  rulecolor=\color{gray},                % ✅ 设置边框颜色
+  framexleftmargin=1em,                  % ✅ 边框内左边距（给行号腾位置）
+  xleftmargin=2em,                       % ✅ 整段代码的左缩进
+  captionpos=b,                          % 标题位置在底部
+  showstringspaces=false,                % 不显示字符串中的空格符号
+  tabsize=4,                             % 制表符等价空格数
+  columns=flexible,                      % 适应列宽
+  backgroundcolor=\color{gray!5},        % ✅ 添加淡灰色背景
+  morekeywords={constexpr, nullptr, Ciphertext, Plaintext, vector, load_from_file, save_to_file} % C++ 特有关键字
+}

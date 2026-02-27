@@ -37,6 +37,39 @@ sduthesis/
 
 ## 使用说明
 
+### 快速开始
+
+#### 方式一：使用构建工具（推荐）
+
+**Linux / macOS**:
+```bash
+make          # 编译论文
+make view     # 编译并查看
+make clean    # 清理临时文件
+```
+
+**Windows**:
+```cmd
+build.bat          # 编译论文
+build.bat view     # 编译并查看
+build.bat clean    # 清理临时文件
+```
+
+#### 方式二：使用 latexmk
+```bash
+latexmk -xelatex main.tex    # 编译
+latexmk -c                    # 清理临时文件
+latexmk -C                    # 清理所有生成文件
+```
+
+#### 方式三：手动编译
+```bash
+xelatex main.tex
+biber main
+xelatex main.tex
+xelatex main.tex
+```
+
 ### 文件命名规范
 
 为了保持项目的整洁性和跨平台兼容性，本模板采用以下文件命名规范：
@@ -49,9 +82,17 @@ sduthesis/
 ### 编译方式
 
 - **编译方式**：对主源文件 `main.tex` 按照 `xelatex->biber->xelatex->xelatex` 的顺序编译得到输出 PDF 文档 `main.pdf` 。
+- **推荐工具**：使用 `make`（Linux/macOS）或 `build.bat`（Windows）或 `latexmk` 自动化编译。
 - **使用平台**：
   - （推荐）在中文 Windows 操作系统与较新的 TeXLive 本地发行版环境下，在 Visual Studio Code 中搭配 LaTeX Workshop 扩展使用。`.vscode/settings.json` 中提供了可能会优化使用体验的 Visual Studio Code 局部设置。
   - 在 Overleaf 平台上使用，编译器设置为 `xelatex` ，主文档设置为 `main.tex` ，TeXLive 版本选择较新版即可。注：在 Overleaf 平台上使用时，可能会产生 `fontspec` 宏包的 `Script` 警告，该警告不会对文档的编译造成影响，忽略即可。
 
-详细使用方法、配置说明与示例，请参考 [PDF 版本说明文档](README.pdf)。
+### 文档资源
+
+- [PDF 版本说明文档](README.pdf)
+- [常见问题解答 (FAQ)](docs/FAQ.md)
+- [更新日志 (CHANGELOG)](docs/CHANGELOG.md)
+- [开发者文档](docs/developer/README.md)
+
+详细使用方法、配置说明与示例，请参考上述文档。
 

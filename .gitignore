@@ -335,6 +335,10 @@ test_*.pdf
 *_COMPLETION_*.md
 ISSUE_*.md
 
+# Reference projects (not to be committed)
+sduthesis-main/
+thuthesis-v7.6.0/
+
 # OS-specific files
 .DS_Store
 Thumbs.db

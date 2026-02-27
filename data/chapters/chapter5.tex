@@ -1,0 +1,40 @@
+\chapter{引用文献的标注}
+
+模板使用 BibLaTeX 配合 GB/T 7714-2015 样式处理参考文献。
+
+
+\section{文献引用}
+
+在顺序编码制下，默认的 \texttt{\textbackslash cite} 命令会将序号置于方括号中。
+统一处引用的连续序号会自动用短横线连接。
+
+\noindent
+\begin{tabular}{l@{\quad 示例：\quad}l}
+  \verb|\cite{key}|           & 引用单篇文献               \\
+  \verb|\cite{key1,key2}|     & 引用多篇文献               \\
+  \verb|\cite[42]{key}|       & 引用文献的特定页码         \\
+\end{tabular}
+
+
+
+\section{参考文献列表}
+
+参考文献列表会自动生成在论文末尾。
+参考文献的每条都要在正文中标注引用。
+
+文献数据库文件默认为 \texttt{assets/data/references.bib}，
+可以在 \texttt{sdusetup.tex} 中修改路径。
+
+参考文献的格式遵循 GB/T 7714-2015《信息与文献 参考文献著录规则》国家标准。
+
+
+
+\section{文献管理建议}
+
+\begin{enumerate}
+  \item 使用文献管理软件（如 Zotero、Mendeley）管理参考文献
+  \item 及时导出 BibTeX 格式的文献数据库
+  \item 检查文献信息的完整性和准确性
+  \item 确保所有引用的文献都在数据库中
+  \item 删除未引用的文献条目
+\end{enumerate}

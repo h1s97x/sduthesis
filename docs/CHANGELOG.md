@@ -13,17 +13,25 @@
 - 添加 config/styles/ 目录，重构样式文件结构
 - 添加 config/user/ 目录，提供备用配置方式
 - 添加 docs/MIGRATION.md 配置迁移指南
+- 改进 abstract.tex，参考 thuthesis 提供更详细的示例
 
 ### Changed
 
-- 优化配置文件结构，将 update/ 移动到 config/styles/
-- 更新 main.tex，使用新的配置文件路径
-- 更新 src/frontmatter/coverpage.tex，从 sdusetup.tex 读取配置
-- 改进 README.md，添加配置步骤说明
+- 重命名 src/ 目录为 data/，符合学术论文模板标准
+- 适配 chapter2-5 内容，移除 thuthesis 特有命令
+- 优化配置文件结构，将样式文件移至 config/styles/
+- 更新 main.tex 使用新的目录结构
+- 修复字体路径（fonts/ -> assets/fonts/）
+- 修复章节文件名引用
+- 更新 README.md 反映新的项目结构
+
+### Removed
+
+- 删除 update/ 目录（已迁移到 config/styles/）
 
 ### Deprecated
 
-- update/ 目录已弃用，推荐使用 config/styles/（保留以保持向后兼容）
+- update/ 目录已删除，请使用 config/styles/
 
 ## [1.1.0] - 2025-02-27
 

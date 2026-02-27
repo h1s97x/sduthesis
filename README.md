@@ -13,16 +13,20 @@ sduthesis/
 │   │   ├── algorithms/       # 算法相关图片
 │   │   ├── architectures/    # 架构图片
 │   │   ├── experiments/      # 实验结果图片
-│   │   ├── operations/       # 运算相关图片
 │   │   ├── logos/           # 标志和Logo
 │   │   └── misc/            # 其他图片
 │   ├── fonts/               # 字体文件
 │   ├── docs/                # 文档资源
 │   └── data/                # 数据文件（参考文献等）
-├── src/                     # 源文件
+├── data/                    # 论文内容
 │   ├── chapters/            # 章节内容
 │   └── frontmatter/         # 前置内容（封面、摘要等）
 ├── config/                  # 配置文件
+│   ├── main/                # 核心配置
+│   ├── others/              # 其他配置
+│   ├── styles/              # 样式文件
+│   └── user/                # 用户配置（备用）
+├── sdusetup.tex             # 用户配置文件（推荐）
 ├── main.tex                 # 主文件
 └── README.md               # 说明文档
 ```

@@ -1,0 +1,287 @@
+% 表格制作示例
+% 本文件展示如何在论文中创建各种类型的表格
+
+\chapter{表格制作示例}
+
+\section{基本表格}
+
+\subsection{简单表格}
+
+最基本的表格：
+
+\begin{table}[htbp]
+  \centering
+  \caption{简单表格示例}
+  \label{tab:simple}
+  \begin{tabular}{lcc}
+    \hline
+    项目 & 数值1 & 数值2 \\
+    \hline
+    A & 10 & 20 \\
+    B & 15 & 25 \\
+    C & 20 & 30 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+如表 \ref{tab:simple} 所示。
+
+\subsection{列对齐}
+
+不同的列对齐方式：
+
+\begin{table}[htbp]
+  \centering
+  \caption{列对齐示例}
+  \begin{tabular}{lcr}
+    \hline
+    左对齐 & 居中 & 右对齐 \\
+    \hline
+    Left & Center & Right \\
+    文本 & 123 & 456 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+列对齐参数：
+\begin{itemize}
+  \item \texttt{l} - 左对齐
+  \item \texttt{c} - 居中
+  \item \texttt{r} - 右对齐
+  \item \texttt{p\{width\}} - 固定宽度，自动换行
+\end{itemize}
+
+\section{三线表}
+
+学术论文常用的三线表（使用 \texttt{booktabs} 宏包）：
+
+\begin{table}[htbp]
+  \centering
+  \caption{三线表示例}
+  \label{tab:threeline}
+  \begin{tabular}{lcccc}
+    \toprule
+    算法 & 准确率 & 召回率 & F1值 & 时间(ms) \\
+    \midrule
+    算法A & 0.85 & 0.82 & 0.83 & 120 \\
+    算法B & 0.88 & 0.86 & 0.87 & 150 \\
+    算法C & 0.90 & 0.89 & 0.89 & 180 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{复杂表格}
+
+\subsection{合并单元格}
+
+使用 \texttt{multirow} 和 \texttt{multicolumn} 合并单元格：
+
+\begin{table}[htbp]
+  \centering
+  \caption{合并单元格示例}
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \multirow{2}{*}{类别} & \multicolumn{3}{c|}{指标} \\
+    \cline{2-4}
+    & 指标1 & 指标2 & 指标3 \\
+    \hline
+    A & 10 & 20 & 30 \\
+    B & 15 & 25 & 35 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{跨页表格}
+
+使用 \texttt{longtable} 宏包创建跨页表格：
+
+\begin{longtable}{lccc}
+  \caption{跨页长表格示例} \label{tab:long} \\
+  \toprule
+  编号 & 名称 & 数值1 & 数值2 \\
+  \midrule
+  \endfirsthead
+  
+  \multicolumn{4}{c}{{\tablename\ \thetable{} -- 续表}} \\
+  \toprule
+  编号 & 名称 & 数值1 & 数值2 \\
+  \midrule
+  \endhead
+  
+  \midrule
+  \multicolumn{4}{r}{{续下页}} \\
+  \endfoot
+  
+  \bottomrule
+  \endlastfoot
+  
+  1 & 项目A & 100 & 200 \\
+  2 & 项目B & 150 & 250 \\
+  3 & 项目C & 200 & 300 \\
+  % ... 更多行
+  10 & 项目J & 500 & 600 \\
+\end{longtable}
+
+\subsection{固定宽度表格}
+
+使用 \texttt{tabularx} 宏包创建固定总宽度的表格：
+
+\begin{table}[htbp]
+  \centering
+  \caption{固定宽度表格}
+  \begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    项目 & 描述1 & 描述2 \\
+    \midrule
+    A & 这是一段较长的描述文字，会自动换行 & 另一段描述 \\
+    B & 短文本 & 这也是一段较长的描述文字 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{表格样式}
+
+\subsection{彩色表格}
+
+使用 \texttt{xcolor} 和 \texttt{colortbl} 宏包：
+
+\begin{table}[htbp]
+  \centering
+  \caption{彩色表格示例}
+  \begin{tabular}{lcc}
+    \toprule
+    \rowcolor{gray!30}
+    项目 & 数值1 & 数值2 \\
+    \midrule
+    A & 10 & 20 \\
+    \rowcolor{gray!10}
+    B & 15 & 25 \\
+    C & 20 & 30 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{小字号表格}
+
+当表格内容较多时，可以缩小字号：
+
+\begin{table}[htbp]
+  \centering
+  \caption{小字号表格}
+  \small  % 或 \footnotesize
+  \begin{tabular}{lcccc}
+    \toprule
+    项目 & 列1 & 列2 & 列3 & 列4 \\
+    \midrule
+    A & 10 & 20 & 30 & 40 \\
+    B & 15 & 25 & 35 & 45 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{旋转表格}
+
+使用 \texttt{rotating} 宏包旋转表格：
+
+\begin{sidewaystable}
+  \centering
+  \caption{横向表格（旋转90度）}
+  \begin{tabular}{lccccccc}
+    \toprule
+    项目 & 列1 & 列2 & 列3 & 列4 & 列5 & 列6 & 列7 \\
+    \midrule
+    A & 10 & 20 & 30 & 40 & 50 & 60 & 70 \\
+    B & 15 & 25 & 35 & 45 & 55 & 65 & 75 \\
+    \bottomrule
+  \end{tabular}
+\end{sidewaystable}
+
+\section{表格内容}
+
+\subsection{数学公式}
+
+表格中可以包含数学公式：
+
+\begin{table}[htbp]
+  \centering
+  \caption{包含公式的表格}
+  \begin{tabular}{lcc}
+    \toprule
+    函数 & 导数 & 积分 \\
+    \midrule
+    $x^2$ & $2x$ & $\frac{x^3}{3}$ \\
+    $\sin x$ & $\cos x$ & $-\cos x$ \\
+    $e^x$ & $e^x$ & $e^x$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{多行文本}
+
+使用 \texttt{p} 列类型或 \texttt{makecell} 宏包：
+
+\begin{table}[htbp]
+  \centering
+  \caption{多行文本表格}
+  \begin{tabular}{lp{5cm}}
+    \toprule
+    项目 & 描述 \\
+    \midrule
+    A & 这是第一行 \newline 这是第二行 \\
+    B & 使用 makecell: \makecell[l]{第一行\\第二行\\第三行} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{常见问题}
+
+\subsection{表格太宽}
+
+解决方案：
+\begin{enumerate}
+  \item 缩小字号：\texttt{\textbackslash small} 或 \texttt{\textbackslash footnotesize}
+  \item 旋转表格：使用 \texttt{sidewaystable}
+  \item 调整列宽：使用 \texttt{p\{width\}} 或 \texttt{tabularx}
+  \item 缩放表格：\texttt{\textbackslash resizebox\{\textbackslash textwidth\}\{!\}\{...\}}
+\end{enumerate}
+
+\subsection{表格位置}
+
+与图片类似，使用位置参数：
+\begin{itemize}
+  \item \texttt{[htbp]} - 推荐的位置参数组合
+  \item \texttt{[H]} - 强制当前位置（需要 float 宏包）
+\end{itemize}
+
+\subsection{表格编号}
+
+\begin{itemize}
+  \item 使用 \texttt{\textbackslash caption} 自动编号
+  \item 使用 \texttt{\textbackslash label} 设置标签
+  \item 使用 \texttt{\textbackslash ref} 引用表格
+\end{itemize}
+
+\section{最佳实践}
+
+\begin{enumerate}
+  \item \textbf{使用三线表}：学术论文推荐使用三线表
+  \item \textbf{避免竖线}：现代表格设计不使用竖线
+  \item \textbf{对齐方式}：数字右对齐，文本左对齐
+  \item \textbf{标题位置}：表格标题通常放在表格上方
+  \item \textbf{引用表格}：在正文中引用所有表格
+  \item \textbf{数据精度}：保持数据精度一致
+  \item \textbf{单位说明}：在标题或表头中说明单位
+\end{enumerate}
+
+\section{推荐宏包}
+
+\begin{itemize}
+  \item \texttt{booktabs} - 三线表
+  \item \texttt{multirow} - 合并行
+  \item \texttt{longtable} - 跨页表格
+  \item \texttt{tabularx} - 固定宽度表格
+  \item \texttt{array} - 增强表格功能
+  \item \texttt{makecell} - 单元格内换行
+  \item \texttt{rotating} - 旋转表格
+  \item \texttt{colortbl} - 彩色表格
+\end{itemize}

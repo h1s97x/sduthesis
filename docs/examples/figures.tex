@@ -1,0 +1,215 @@
+% 图片插入示例
+% 本文件展示如何在论文中插入各种类型的图片
+
+\chapter{图片插入示例}
+
+\section{单张图片}
+
+\subsection{基本插入}
+
+最简单的图片插入方式：
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{山东大学校徽}
+  \label{fig:sdu-logo}
+\end{figure}
+
+如图 \ref{fig:sdu-logo} 所示，这是山东大学的校徽。
+
+\subsection{调整图片大小}
+
+可以使用不同的参数控制图片大小：
+
+\begin{figure}[htbp]
+  \centering
+  % 按宽度缩放
+  \includegraphics[width=0.5\textwidth]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{按宽度缩放（0.5倍文本宽度）}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % 按高度缩放
+  \includegraphics[height=3cm]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{按高度缩放（3cm）}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % 按比例缩放
+  \includegraphics[scale=0.8]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{按比例缩放（0.8倍）}
+\end{figure}
+
+\subsection{图片位置控制}
+
+使用位置参数控制图片位置：
+
+\begin{itemize}
+  \item \texttt{h} - here，尽可能放在当前位置
+  \item \texttt{t} - top，放在页面顶部
+  \item \texttt{b} - bottom，放在页面底部
+  \item \texttt{p} - page，单独放在一页
+  \item \texttt{H} - 强制放在当前位置（需要 float 宏包）
+\end{itemize}
+
+\begin{figure}[H]  % 强制当前位置
+  \centering
+  \includegraphics[width=0.4\textwidth]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{强制放在当前位置}
+\end{figure}
+
+\section{多张图片}
+
+\subsection{并排放置}
+
+使用 \texttt{minipage} 或 \texttt{subfigure} 并排放置多张图片：
+
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{assets/images/logos/sdu_logo_1.pdf}
+    \caption{校徽版本1}
+    \label{fig:logo1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{assets/images/logos/sdu_logo_2.pdf}
+    \caption{校徽版本2}
+    \label{fig:logo2}
+  \end{minipage}
+\end{figure}
+
+\subsection{子图}
+
+使用 \texttt{subcaption} 宏包创建子图：
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{assets/images/logos/sdu_logo_1.pdf}
+    \caption{子图 A}
+    \label{fig:sub-a}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{assets/images/logos/sdu_logo_2.pdf}
+    \caption{子图 B}
+    \label{fig:sub-b}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{assets/images/logos/sdu_logo_1.pdf}
+    \caption{子图 C}
+    \label{fig:sub-c}
+  \end{subfigure}
+  \caption{多个子图示例}
+  \label{fig:subfigures}
+\end{figure}
+
+可以引用整体图 \ref{fig:subfigures} 或单个子图 \ref{fig:sub-a}。
+
+\section{图片格式}
+
+\subsection{支持的格式}
+
+LaTeX 支持多种图片格式：
+
+\begin{itemize}
+  \item \textbf{PDF} - 矢量图，推荐用于图表、示意图（最佳）
+  \item \textbf{PNG} - 位图，适合截图、照片
+  \item \textbf{JPG/JPEG} - 位图，适合照片
+  \item \textbf{EPS} - 矢量图（需要转换）
+\end{itemize}
+
+\subsection{图片路径}
+
+图片路径可以是相对路径或绝对路径：
+
+\begin{lstlisting}[language=TeX]
+% 相对路径（推荐）
+\includegraphics{assets/images/logos/sdu_logo_1.pdf}
+
+% 也可以设置图片搜索路径
+\graphicspath{{assets/images/}{figures/}}
+\includegraphics{logos/sdu_logo_1.pdf}
+\end{lstlisting}
+
+\section{高级技巧}
+
+\subsection{图片旋转}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.4\textwidth, angle=45]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{旋转 45 度}
+\end{figure}
+
+\subsection{图片裁剪}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.4\textwidth, trim=1cm 1cm 1cm 1cm, clip]{assets/images/logos/sdu_logo_1.pdf}
+  \caption{裁剪边缘（上下左右各 1cm）}
+\end{figure}
+
+\subsection{图片边框}
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\includegraphics[width=0.4\textwidth]{assets/images/logos/sdu_logo_1.pdf}}
+  \caption{添加边框}
+\end{figure}
+
+\section{常见问题}
+
+\subsection{图片不显示}
+
+检查以下几点：
+\begin{enumerate}
+  \item 图片路径是否正确
+  \item 图片格式是否支持
+  \item 是否加载了 \texttt{graphicx} 宏包
+  \item 编译器是否支持该格式（XeLaTeX 支持 PDF/PNG/JPG）
+\end{enumerate}
+
+\subsection{图片位置不对}
+
+\begin{itemize}
+  \item LaTeX 的浮动体机制会自动调整图片位置
+  \item 使用 \texttt{[H]} 参数强制位置（需要 float 宏包）
+  \item 调整浮动体参数：
+\end{itemize}
+
+\begin{lstlisting}[language=TeX]
+\setcounter{topnumber}{2}      % 页面顶部最多2个浮动体
+\setcounter{bottomnumber}{2}   % 页面底部最多2个浮动体
+\renewcommand{\topfraction}{0.9}     % 顶部最多占90%
+\renewcommand{\bottomfraction}{0.9}  % 底部最多占90%
+\end{lstlisting}
+
+\subsection{图片太大}
+
+\begin{itemize}
+  \item 使用 \texttt{width} 或 \texttt{height} 参数缩放
+  \item 使用 \texttt{scale} 参数按比例缩放
+  \item 使用 \texttt{max width} 和 \texttt{max height} 限制最大尺寸
+\end{itemize}
+
+\section{最佳实践}
+
+\begin{enumerate}
+  \item \textbf{使用矢量图}：图表、示意图使用 PDF 格式
+  \item \textbf{合适的分辨率}：位图至少 300 DPI
+  \item \textbf{统一风格}：保持图片风格一致
+  \item \textbf{清晰的标题}：使用描述性的 caption
+  \item \textbf{引用图片}：在正文中引用所有图片
+  \item \textbf{合理命名}：使用有意义的 label
+\end{enumerate}

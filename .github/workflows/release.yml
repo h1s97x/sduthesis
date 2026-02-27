@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+          latexmk_use_xelatex: true
+          args: -interaction=nonstopmode -halt-on-error
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            main.pdf
+            README.md
+          body: |
+            ## 发布说明
+            
+            请查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解详细变更。
+            
+            ## 使用方法
+            
+            1. 下载 `main.pdf` 查看示例论文
+            2. 克隆仓库或下载源码开始使用
+            
+            详细使用说明请参考 [README.md](README.md)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

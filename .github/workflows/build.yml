@@ -1,0 +1,28 @@
+name: Build LaTeX Document
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+          latexmk_use_xelatex: true
+          args: -interaction=nonstopmode -halt-on-error
+      
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: thesis-pdf
+          path: main.pdf

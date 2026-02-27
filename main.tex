@@ -1,28 +1,28 @@
 \documentclass{sduthesis}
 
+% 引入用户配置文件（推荐方式）
+\input{sdusetup.tex}
+
 \begin{document}
 
 \frontmatter
-\input{update/update-frontmatter.tex}
+\input{config/styles/style-frontmatter.tex}
 \input{src/frontmatter/coverpage.tex}
 \input{src/frontmatter/abstract.tex}
 \input{src/frontmatter/contents.tex}
 
 \mainmatter
-\input{update/update-mainmatter.tex}
-\input{src/chapters/chapter_1.tex}
-\input{src/chapters/chapter_2.tex}
-\input{src/chapters/chapter_3.tex}
-\input{src/chapters/chapter_4.tex}
-\input{src/chapters/chapter_5.tex}
-\input{src/chapters/chapter_6.tex}
+\input{config/styles/style-mainmatter.tex}
+\input{src/chapters/chapter1.tex}
+\input{src/chapters/chapter2.tex}
+\input{src/chapters/chapter3.tex}
+\input{src/chapters/chapter4.tex}
+\input{src/chapters/chapter5.tex}
 
 \backmatter
-\input{update/update-backmatter.tex}
+\input{config/styles/style-backmatter.tex}
 \input{src/frontmatter/bibliography.tex}
 \input{src/frontmatter/acknowledgement.tex}
-
-
 
 % \input{src/frontmatter/appendix.tex}
 

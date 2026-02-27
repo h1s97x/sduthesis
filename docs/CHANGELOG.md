@@ -9,6 +9,26 @@
 
 ### Added
 
+- 添加 sdusetup.tex 用户配置文件，集中管理论文信息
+- 添加 config/styles/ 目录，重构样式文件结构
+- 添加 config/user/ 目录，提供备用配置方式
+- 添加 docs/MIGRATION.md 配置迁移指南
+
+### Changed
+
+- 优化配置文件结构，将 update/ 移动到 config/styles/
+- 更新 main.tex，使用新的配置文件路径
+- 更新 src/frontmatter/coverpage.tex，从 sdusetup.tex 读取配置
+- 改进 README.md，添加配置步骤说明
+
+### Deprecated
+
+- update/ 目录已弃用，推荐使用 config/styles/（保留以保持向后兼容）
+
+## [1.1.0] - 2025-02-27
+
+### Added
+
 - 添加 Makefile 构建工具，支持 `make`、`make clean`、`make cleanall` 等命令
 - 添加 build.bat Windows 构建脚本
 - 添加 latexmkrc 配置文件，实现自动化编译和依赖管理

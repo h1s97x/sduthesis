@@ -39,30 +39,48 @@ sduthesis/
 
 ### 快速开始
 
-#### 方式一：使用构建工具（推荐）
+#### 1. 配置论文信息
 
-**Linux / macOS**:
+打开 `sdusetup.tex` 文件，填写您的论文信息：
+
+```latex
+\Title{在这里键入你的标题}
+\Author{你的姓名}
+\StudentID{你的学号}
+\Department{你的学院}
+\Major{你的专业}
+\Grade{你的年级}
+\Teacher{你的指导教师}
+```
+
+#### 2. 编译论文
+
+**方式一：使用构建工具（推荐）**
+
+Linux / macOS:
 ```bash
 make          # 编译论文
 make view     # 编译并查看
 make clean    # 清理临时文件
 ```
 
-**Windows**:
+Windows:
 ```cmd
 build.bat          # 编译论文
 build.bat view     # 编译并查看
 build.bat clean    # 清理临时文件
 ```
 
-#### 方式二：使用 latexmk
+**方式二：使用 latexmk**
+
 ```bash
 latexmk -xelatex main.tex    # 编译
 latexmk -c                    # 清理临时文件
 latexmk -C                    # 清理所有生成文件
 ```
 
-#### 方式三：手动编译
+**方式三：手动编译**
+
 ```bash
 xelatex main.tex
 biber main
@@ -90,8 +108,10 @@ xelatex main.tex
 ### 文档资源
 
 - [PDF 版本说明文档](README.pdf)
+- [配置迁移指南 (MIGRATION)](docs/MIGRATION.md) - 从旧版配置升级
 - [常见问题解答 (FAQ)](docs/FAQ.md)
 - [更新日志 (CHANGELOG)](docs/CHANGELOG.md)
+- [使用示例](docs/examples/) - 图片、表格、公式示例
 - [开发者文档](docs/developer/README.md)
 
 详细使用方法、配置说明与示例，请参考上述文档。

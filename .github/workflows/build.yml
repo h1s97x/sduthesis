@@ -36,21 +36,14 @@ jobs:
           FONTCI
           fi
 
-      - name: Compile LaTeX (1st pass)
-        run: |
-          xelatex -synctex=1 -interaction=nonstopmode -halt-on-error main.tex
-
-      - name: Compile bibliography
-        run: |
-          biber main
-
-      - name: Compile LaTeX (2nd pass)
-        run: |
-          xelatex -synctex=1 -interaction=nonstopmode -halt-on-error main.tex
-
-      - name: Compile LaTeX (3rd pass)
-        run: |
-          xelatex -syncttex=1 -interaction=nonstopmode -halt-on-error main.tex
+      # 使用 latexmk 自动处理多次编译
+      # latexmk 会自动运行: xelatex → biber → xelatex → xelatex 直到稳定
+      - name: Compile LaTeX with latexmk
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          compiler: latexmk
+          args: -xelatex -synctex=1 -interaction=nonstopmode -halt-on-error -file-line-error
       
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4

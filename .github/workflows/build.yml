@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # 超时时间设为 30 分钟
     
     steps:
       - name: Checkout repository
@@ -36,14 +37,37 @@ jobs:
           FONTCI
           fi
 
-      # 使用 latexmk 自动处理多次编译
-      # latexmk 会自动运行: xelatex → biber → xelatex → xelatex 直到稳定
-      - name: Compile LaTeX with latexmk
+      # ========== 多次编译流程 ==========
+      # 第一次：生成辅助文件 (.aux, .log)
+      - name: Compile LaTeX (Pass 1/4)
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
-          compiler: latexmk
-          args: -xelatex -synctex=1 -interaction=nonstopmode -halt-on-error -file-line-error
+          compiler: xelatex
+          args: -synctex=1 -interaction=nonstopmode -halt-on-error
+
+      # 处理参考文献
+      - name: Process bibliography
+        run: |
+          docker run --rm -v "${{ github.workspace }}":/workspace \
+            ghcr.io/xu-cheng/texlive-full:latest \
+            bash -c "cd /workspace && biber main"
+
+      # 第二次：读取 .aux 和 .bbl，解析引用
+      - name: Compile LaTeX (Pass 2/4)
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          compiler: xelatex
+          args: -synctex=1 -interaction=nonstopmode -halt-on-error
+
+      # 第三次：确保目录、交叉引用完全同步
+      - name: Compile LaTeX (Pass 3/4)
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          compiler: xelatex
+          args: -synctex=1 -interaction=nonstopmode -halt-on-error
       
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4

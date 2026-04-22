@@ -453,7 +453,7 @@ ERROR - Cannot find control file 'main.bcf'!
 
 ### 寻求帮助的渠道
 
-1. **项目 Issues**: [GitHub Issues](https://github.com/wangzhukang/sduthesis/issues)
+1. **项目 Issues**: [GitHub Issues](https://github.com/h1s97x/sduthesis/issues)
 2. **LaTeX 社区**: [TeX Stack Exchange](https://tex.stackexchange.com/)
 3. **中文社区**: [LaTeX 工作室](https://www.latexstudio.net/)
 

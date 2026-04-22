@@ -9,7 +9,16 @@
 
 ### Added
 
-- 添加 sdusetup.tex 用户配置文件，集中管理论文信息
+- **添加完整示例论文**：包含封面、摘要、5个章节、参考文献、致谢、附录的完整示例
+  - 主题：基于深度学习的图像识别算法研究
+  - 涵盖图表、公式、算法、代码等多种示例
+- **完善 FAQ 文档**：新增 20+ 常见问题解答，涵盖编译、字体、格式、Overleaf 使用等
+- **添加 VSCode 配置**：完整的 LaTeX Workshop 配置，包括编译工具链和任务
+- **创建 GitHub Actions 工作流**：自动编译、PDF 生成、构建日志上传
+- **添加云端部署指南**：Overleaf 和 TeXPage 部署教程
+- **添加 CONTRIBUTING.md**：贡献指南，说明项目起源和致谢
+- **添加 DEPLOYMENT.md**：云端部署完整指南
+- **添加 sdusetup.tex 用户配置文件**：集中管理论文信息
 - 添加 config/styles/ 目录，重构样式文件结构
 - 添加 config/user/ 目录，提供备用配置方式
 - 添加 docs/MIGRATION.md 配置迁移指南

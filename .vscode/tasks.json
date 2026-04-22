@@ -1,0 +1,73 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "编译论文 (xelatex)",
+            "type": "shell",
+            "command": "xelatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "main.tex"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "编译参考文献 (biber)",
+            "type": "shell",
+            "command": "biber",
+            "args": [
+                "main"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "完整编译 (推荐)",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "xelatex main.tex && biber main && xelatex main.tex && xelatex main.tex"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "清理临时文件",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.synctex.gz *.toc *.nav *.snm *.fls *.fdb_latexmk"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "使用 latexmk 编译",
+            "type": "shell",
+            "command": "latexmk",
+            "args": [
+                "-xelatex",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "main.tex"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "查看 PDF",
+            "type": "shell",
+            "command": "${command:latex-workshop.view.pdf}",
+            "problemMatcher": []
+        }
+    ]
+}

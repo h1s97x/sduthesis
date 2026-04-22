@@ -14,12 +14,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
+      - name: Install fonts
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            fonts-noto-core \
+            fonts-texgyre \
+            fonts-freefont-ttf \
+            fontconfig
+          fc-cache -fv
+
+      - name: Prepare CI environment
+        run: |
+          # 在 CI 环境中使用开源字体，临时覆盖用户配置
+          if [ "$CI" = "true" ]; then
+            cat >> config/main/config-main.tex << 'FONTCI'
+
+          % CI 环境字体配置（自动添加）
+          \setmainfont{TeX Gyre Termes}
+          \setsansfont{TeX Gyre Heros}
+          \setmonofont{TeX Gyre Cursor}
+          FONTCI
+          fi
+
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
-          latexmk_use_xelatex: true
-          args: -interaction=nonstopmode -halt-on-error
+          compiler: xelatex
+          args: -synctex=1 -interaction=nonstopmode -halt-on-error
       
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4

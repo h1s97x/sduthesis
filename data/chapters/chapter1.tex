@@ -1,5 +1,53 @@
 \chapter{绪论}
 
-哲学本质上是人理解人、人认识人的理性活动， 哲学是一门普通高等学校本科专业，属哲学类专业，基本修业年限为四年，授予哲学学士学位。哲学是以各门具体科学为基础，以整个世界的普遍规律为研究对象，又对具体学科进行理论指导。Philosophy is essentially the rational activity of human beings to understand human beings and human beings to know human beings. Philosophy is an undergraduate major in ordinary schools of higher education, belonging to the category of philosophy, with a four-year basic training period, and is conferred with the degree of Bachelor of Philosophy. Philosophy is based on various specific sciences, takes the universal laws of the whole world as the object of study, and also provides theoretical guidance to specific disciplines.
+\section{研究背景与意义}
 
-\song{数学}是\hei{人类}对\kai{事物}的\bfsong{抽象结构与模式}进行严格\bfhei{描述}、\bfkai{推导}的一种通用手段，可以应用于现实世界的\itsong{任何问题}，所有的数学对象本质上都是\ithei{人为定义的}。从这个意义上，数学属于\itkai{形式科学}，而不是\bfitsong{自然科学}。不同的\bfithei{数学家}和\bfitkai{哲学家}对数学的确切范围和定义有一系列的看法。
+图像识别是计算机视觉领域的核心研究课题之一，其目标是通过计算机自动识别图像中的目标、场景或语义信息。随着数字图像获取技术的不断进步和互联网的快速发展，图像数据的规模呈指数级增长，如何高效准确地处理和理解这些海量图像数据已成为当前研究的热点问题。
+
+在实际应用层面，图像识别技术已经渗透到社会生活的方方面面。在医疗领域，深度学习辅助诊断系统能够帮助医生更准确地识别医学影像中的病变区域，提高诊断效率和准确率\citing{esteva2017dermatologist}。在自动驾驶领域，车辆需要实时识别道路、行人、交通标志等多种目标，对识别算法的速度和精度都提出了极高要求\citing{grigorescu2020survey}。在安防监控领域，智能视频分析系统能够自动检测异常行为，为公共安全提供技术保障。
+
+传统的图像识别方法主要基于手工设计的特征描述子，如尺度不变特征变换（SIFT）\citing{lowe2004distinctive}、方向梯度直方图（HOG）\citing{dalal2005histograms}等。这些方法在特定数据集上取得了较好的效果，但泛化能力有限，难以适应复杂多变的实际场景。2012年，Krizhevsky等人提出的AlexNet\citing{krizhevsky2012imagenet}在ImageNet图像分类挑战赛中取得了突破性成绩，标志着深度学习在图像识别领域的正式崛起。此后，VGGNet\citing{simonyan2014very}、GoogLeNet\citing{szegedy2015going}、ResNet\citing{he2016deep}等一系列更深更复杂的网络结构相继被提出，不断刷新着图像识别的性能指标。
+
+尽管深度学习方法取得了显著成功，但现有的大部分高性能网络普遍存在参数量大、计算复杂度高的问题。以ResNet-152为例，其参数量超过6000万，需要超过20 GFLOPS的浮点运算才能完成单张图像的推理\citing{sandler2018mobilenetv2}。这使得这些模型难以部署到资源受限的移动端和边缘设备上。因此，研究如何在保证识别精度的前提下设计轻量化的网络模型，对于推动深度学习技术的广泛应用具有重要的理论意义和实用价值。
+
+\section{国内外研究现状}
+
+深度学习在图像识别领域的发展可以追溯到上世纪八九十年代的早期神经网络研究。LeCun等人提出的卷积神经网络LeNet-5\citing{lecun1998gradient}是最早的深度学习模型之一，被成功应用于手写数字识别。然而，由于当时计算资源的限制和训练数据的不足，深度学习的发展一度陷入瓶颈。
+
+2006年，Hinton等人提出的深度置信网络（DBN）\citing{hinton2006fast}重新点燃了研究者对深度学习的热情。2012年是一个重要的转折点，AlexNet在ImageNet大规模视觉识别挑战赛（ILSVRC）中将Top-5错误率从之前的26.2\%降低到15.3\%，震惊了整个计算机视觉界。这一突破主要归功于以下几方面的进步：GPU并行计算能力的提升为大规模网络训练提供了硬件基础；ImageNet大规模标注数据集的建立解决了训练数据不足的问题；ReLU激活函数、Dropout正则化、GPU并行计算等技术的应用有效缓解了梯度消失和过拟合问题。
+
+此后，深度卷积网络的研究进入了一个快速发展的时期。VGGNet\citing{simonyan2014very}通过使用更小的3×3卷积核堆叠更深的网络，证明了网络深度对模型性能的重要性。GoogLeNet\citing{szegedy2015going}提出的Inception模块通过多尺度卷积核并行设计，在大幅增加网络深度的同时有效控制了计算量。ResNet\citing{he2016deep}引入的残差连接机制解决了深层网络训练困难的问题，使得训练超过1000层的网络成为可能。DenseNet\citing{huang2017densely}通过密集连接进一步加强了特征复用，每层都直接接收所有前面层的特征作为输入。
+
+在轻量化网络研究方面，MobileNetV1\citing{howard2017mobilenets}首次提出了深度可分离卷积（Depthwise Separable Convolution）的概念，将标准卷积分解为深度卷积和逐点卷积两步，大幅减少了计算量和参数量。MobileNetV2\citing{sandler2018mobilenetv2}在此基础上引入了线性瓶颈和倒残差结构，进一步提升了性能。ShuffleNet\citing{zhang2018shufflenet}则通过通道混洗操作加强了分组卷积模块的信息流动。EfficientNet\citing{tan2019efficientnet}系统地研究了网络深度、宽度和分辨率的平衡关系，通过复合缩放策略实现了性能和效率的最优权衡。
+
+\section{主要研究内容}
+
+本文围绕图像识别中的轻量化网络设计问题展开研究，主要研究内容如下：
+
+\begin{enumerate}
+    \item \textbf{系统分析深度学习图像识别技术}\\
+        对卷积神经网络的基本原理进行全面梳理，深入分析激活函数、池化操作、归一化方法等核心组件的作用机制。比较研究ResNet、DenseNet等经典网络架构的设计思想和性能特点，为后续改进工作奠定理论基础。
+
+    \item \textbf{提出轻量化改进网络结构}\\
+        针对现有轻量级网络在特征提取能力上的不足，设计一种改进的轻量化网络模块。通过改进残差连接方式、优化通道注意力机制，在保持模型轻量化的同时增强特征表达能力。
+
+    \item \textbf{搭建实验平台并进行验证}\\
+        构建完整的实验系统，在CIFAR-10和ImageNet等标准数据集上进行大量对比实验。设计多组消融实验分析各改进模块的贡献，并通过可视化技术直观展示模型的学习效果。
+
+    \item \textbf{开发图像识别原型系统}\\
+        基于所提出的轻量化网络模型，开发一个完整的图像识别原型系统。系统支持模型量化压缩和移动端部署，能够在实际应用场景中验证算法的有效性。
+\end{enumerate}
+
+\section{论文结构安排}
+
+本论文共分为六章，各章内容安排如下：
+
+\textbf{第一章 绪论}——阐述课题的研究背景与意义，分析国内外研究现状，明确本文的主要研究内容和论文结构安排。
+
+\textbf{第二章 相关技术与理论基础}——介绍卷积神经网络的基本原理和经典架构，讨论轻量化网络的设计策略，为后续研究提供理论支撑。
+
+\textbf{第三章 系统设计与实现}——详细描述本文提出的轻量化改进网络结构，包括整体架构设计、核心模块实现和关键技术细节。
+
+\textbf{第四章 实验与分析}——搭建实验平台，设计对比实验和消融实验，对所提方法的性能进行全面评估和分析。
+
+\textbf{第五章 总结与展望}——总结本文的研究工作和主要贡献，指出研究的局限性，并对未来研究方向进行展望。

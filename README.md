@@ -2,7 +2,17 @@
 
 ## 简介
 
-`sduthesis` 是为山东大学理工类专业的本科毕业论文而设计的 LaTeX 模板。该模板基于[《山东大学本科毕业论文（设计）撰写规范》](assets/docs/standards_2024.pdf)而编写，旨在帮助学生快速、高效地排版本科毕业论文。
+`sduthesis` 是为山东大学理工类专业的本科毕业论文而设计的 LaTeX 模板。该模板基于[《山东大学本科毕业论文（设计）撰写规范》](docs/standards-2024.pdf)而编写，旨在帮助学生快速、高效地排版本科毕业论文。
+
+## 起源与致谢
+
+本项目基于 [wangzhukang/sduthesis](https://github.com/wangzhukang/sduthesis) 二次开发而来。感谢原作者 [wangzhukang](https://github.com/wangzhukang) 为山东大学本科毕业论文 LaTeX 模板奠定了良好基础。
+
+本项目在原项目的基础上进行了以下改进：
+- 重新组织了项目目录结构，提升可维护性
+- 优化了配置文件结构，便于用户定制
+- 完善了文档体系，增加了开发者指南
+- 增加了更多使用示例
 
 ## 项目结构
 

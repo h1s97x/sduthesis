@@ -1,41 +1,244 @@
-name: Release
+name: Release and CTAN Upload
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      upload_to_ctan:
+        description: '上传到 CTAN'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
-  release:
+  # ==================== 构建和测试 ====================
+  build:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
-      - name: Compile LaTeX document
+      - name: Compile LaTeX
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
-          latexmk_use_xelatex: true
-          args: -interaction=nonstopmode -halt-on-error
+          compiler: xelatex
+          
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-pdf
+          path: main.pdf
+          retention-days: 30
+
+  # ==================== 创建 Release 包 ====================
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - uses: actions/checkout@v4
       
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - name: Create TDS package
+        run: |
+          mkdir -p sduthesis
+            
+          # 复制必要文件到 TDS 目录结构
+          cp sduthesis.cls sduthesis/
+          cp sdusetup.tex sduthesis/
+          cp main.tex sduthesis/
+          cp latexmkrc sduthesis/
+          cp Makefile sduthesis/
+          cp build.bat sduthesis/
+          
+          # 创建目录结构
+          mkdir -p sduthesis/doc
+          mkdir -p sduthesis/source/latex/sduthesis
+          
+          # 复制配置和样式文件
+          cp -r config sduthesis/source/latex/sduthesis/
+          cp -r data sduthesis/source/latex/sduthesis/
+          
+          # 复制文档
+          cp README.md sduthesis/doc/
+          cp docs/FAQ.md sduthesis/doc/
+          cp docs/CHANGELOG.md sduthesis/doc/
+          cp docs/MIGRATION.md sduthesis/doc/
+          cp docs/DEPLOYMENT.md sduthesis/doc/
+          cp docs/IDE-SETUP.md sduthesis/doc/
+          cp -r docs/examples sduthesis/doc/
+          cp -r docs/developer sduthesis/doc/
+          
+          # 复制资源文件
+          cp -r assets sduthesis/
+          cp .github/workflows/*.yml sduthesis/source/latex/sduthesis/
+          
+          # 复制 .gitignore（重命名为 example.gitignore）
+          cp .gitignore sduthesis/example.gitignore
+          
+          # 复制 LICENSE 和 CONTRIBUTING
+          cp LICENSE sduthesis/
+          cp CONTRIBUTING.md sduthesis/
+          
+          # 创建 README.txt（纯文本版本）
+          pandoc README.md -o sduthesis/doc/README.txt --from markdown --to plain 2>/dev/null || cat README.md > sduthesis/doc/README.txt
+          
+          echo "=== TDS 目录结构 ==="
+          find sduthesis -type f | head -30
+          
+      - name: Create archive
+        run: |
+          # 获取版本号
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "版本: $VERSION"
+          
+          # 创建 ZIP 包
+          cd sduthesis
+          zip -r ../sduthesis-$VERSION.zip .
+          cd ..
+          
+          # 创建 tar.gz 包（可选）
+          tar -czf sduthesis-$VERSION.tar.gz -C sduthesis .
+          
+          echo "=== 生成的文件 ==="
+          ls -lh *.zip *.tar.gz
+          
+          # 显示文件列表
+          echo "=== ZIP 内容预览 ==="
+          unzip -l sduthesis-$VERSION.zip | head -40
+
+      - name: Upload to Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
           files: |
+            sduthesis-*.zip
+            sduthesis-*.tar.gz
             main.pdf
-            README.md
-          body: |
-            ## 发布说明
-            
-            请查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解详细变更。
-            
-            ## 使用方法
-            
-            1. 下载 `main.pdf` 查看示例论文
-            2. 克隆仓库或下载源码开始使用
-            
-            详细使用说明请参考 [README.md](README.md)
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ==================== 打包 TDS.zip（用于 CTAN） ====================
+  create-tds:
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Prepare CTAN package
+        run: |
+          # 获取版本号
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if [ -z "$VERSION" ]; then
+            VERSION="dev"
+          fi
+          echo "版本: $VERSION"
+          
+          # 创建 TDS 目录结构
+          mkdir -p tds/tex/latex/sduthesis
+          mkdir -p tds/doc/latex/sduthesis
+          mkdir -p tds/source/latex/sduthesis
+          
+          # 复制 cls 文件（主文件）
+          cp sduthesis.cls tds/tex/latex/sduthesis/
+          
+          # 复制配置和样式文件
+          cp -r config/* tds/tex/latex/sduthesis/
+          cp -r data/* tds/source/latex/sduthesis/
+          
+          # 复制用户配置文件
+          cp sdusetup.tex tds/tex/latex/sduthesis/
+          cp main.tex tds/tex/latex/sduthesis/
+          cp latexmkrc tds/tex/latex/sduthesis/
+          cp Makefile tds/tex/latex/sduthesis/
+          cp build.bat tds/tex/latex/sduthesis/
+          
+          # 复制文档
+          cp README.md tds/doc/latex/sduthesis/
+          cp docs/FAQ.md tds/doc/latex/sduthesis/
+          cp docs/CHANGELOG.md tds/doc/latex/sduthesis/
+          cp docs/MIGRATION.md tds/doc/latex/sduthesis/
+          cp docs/DEPLOYMENT.md tds/doc/latex/sduthesis/
+          cp -r docs/examples tds/doc/latex/sduthesis/
+          
+          # 复制许可证
+          cp LICENSE tds/
+          cp CONTRIBUTING.md tds/
+          
+          # 创建 README.txt
+          pandoc README.md -o tds/doc/latex/sduthesis/README.txt --from markdown --to plain 2>/dev/null || true
+          
+          echo "=== TDS 目录结构 ==="
+          find tds -type f
+          
+      - name: Create TDS.zip
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if [ -z "$VERSION" ]; then
+            VERSION="dev"
+          fi
+          
+          cd tds
+          zip -r ../sduthesis.tds.zip .
+          cd ..
+          
+          ls -lh sduthesis.tds.zip
+          unzip -l sduthesis.tds.zip | head -30
+
+      - name: Upload TDS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sduthesis-tds-${{ github.ref_name }}
+          path: sduthesis.tds.zip
+          retention-days: 90
+
+  # ==================== 可选：上传到 CTAN ====================
+  upload-to-ctan:
+    needs: create-tds
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.upload_to_ctan == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download TDS package
+        uses: actions/download-artifact@v4
+        with:
+          name: sduthesis-tds-${{ github.ref_name }}
+          path: .
+          
+      - name: Upload to CTAN
+        env:
+          CTAN_USERNAME: ${{ secrets.CTAN_USERNAME }}
+          CTAN_PASSWORD: ${{ secrets.CTAN_PASSWORD }}
+        run: |
+          if [ -z "$CTAN_USERNAME" ] || [ -z "$CTAN_PASSWORD" ]; then
+            echo "错误: 未设置 CTAN_USERNAME 或 CTAN_PASSWORD"
+            echo "请在 GitHub 仓库设置中添加 Secrets:"
+            echo "  - CTAN_USERNAME: 你的 CTAN 用户名"
+            echo "  - CTAN_PASSWORD: 你的 CTAN 密码或 API Token"
+            exit 1
+          fi
+          
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if [ -z "$VERSION" ]; then
+            VERSION="dev"
+          fi
+          
+          echo "准备上传 sduthesis.tds.zip 到 CTAN..."
+          echo "版本: $VERSION"
+          
+          # CTAN 上传使用 HTTP POST
+          # 参考: https://ctan.org/help/upload
+          
+          curl -u "$CTAN_USERNAME:$CTAN_PASSWORD" \
+               -F "comment=sduthesis $VERSION" \
+               -F "version=$VERSION" \
+               -F "upload=@sduthesis.tds.zip" \
+               https://www.ctan.org/submit/
+          
+          echo ""
+          echo "上传完成！请检查 CTAN 确认。"

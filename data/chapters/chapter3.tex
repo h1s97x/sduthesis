@@ -1,94 +1,121 @@
-\chapter{图表示例}
+\chapter{系统设计与实现}
 
-\section{插图}
+\section{整体架构设计}
 
-图片通常在 \texttt{figure} 环境中使用 \texttt{\textbackslash includegraphics} 插入，如图~\ref{fig:example} 的源代码。
-建议矢量图片使用 PDF 格式，比如数据可视化的绘图；
-照片应使用 JPG 格式；
-其他的栅格图应使用无损的 PNG 格式。
-注意，LaTeX 不支持 TIFF 格式；EPS 格式已经过时。
+本文提出的轻量化图像识别网络整体架构如图\ref{fig:architecture}所示。整体网络采用经典的编码器-解码器结构，由特征提取阶段和分类输出阶段两部分组成。
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.5\linewidth]{logos/sdu_logo_1.pdf}
-  \caption{示例图片标题}
-  \label{fig:example}
+    \centering
+    \includegraphics[width=0.9\textwidth]{assets/figures/architecture.png}
+    \caption{轻量化网络整体架构图}
+    \label{fig:architecture}
 \end{figure}
 
-若图或表中有附注，采用英文小写字母顺序编号，附注写在图或表的下方。
-国外的期刊习惯将图表的标题和说明文字写成一段，需要改写为标题只含图表的名称，其他说明文字以注释方式写在图表下方，或者写在正文中。
-
-如果一个图由两个或两个以上分图组成时，各分图分别以 (a)、(b)、(c)...... 作为图序，并须有分图题。
-推荐使用 \texttt{subfig} 宏包来处理， 比如图~\ref{fig:subfig-a} 和图~\ref{fig:subfig-b}。
-
-\begin{figure}[htbp]
-  \centering
-  \subfloat[分图 A\label{fig:subfig-a}]{
-    \includegraphics[width=0.35\linewidth]{logos/sdu_logo_1.pdf}
-  }
-  \hspace{0.05\linewidth}
-  \subfloat[分图 B\label{fig:subfig-b}]{
-    \includegraphics[width=0.35\linewidth]{logos/sdu_logo_2.pdf}
-  }
-  \caption{多个分图的示例}
-  \label{fig:multi-image}
-\end{figure}
-
-
-
-\section{表格}
-
-表应具有自明性。表中参数应标明量和单位的符号。
-为使表格简洁易读，均采用三线表（例如表~\ref{tab:three-line}）。
-必要时可加辅助线，三线表无法清晰表达时可采用其他格式。
-
-表序与表题置于表的上方。表单元格中的文字一般应居中书写（上下居中，左右居中），
-不宜左右居中书写的，可采取两端对齐的方式书写。
+网络共包含5个阶段（Stage），每个阶段由多个改进的轻量化模块组成。各阶段的配置参数如表\ref{tab:network_config}所示。
 
 \begin{table}[htbp]
-  \centering
-  \caption{三线表示例}
-  \begin{tabular}{cc}
-    \toprule
-    文件名          & 描述                         \\
-    \midrule
-    sduthesis.cls   & 模板文件                     \\
-    main.tex        & 主文件                       \\
-    sdusetup.tex    & 用户配置文件                 \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:three-line}
+    \centering
+    \caption{网络结构配置参数}
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{阶段} & \textbf{输出尺寸} & \textbf{模块数量} & \textbf{通道数} & \textbf{模块类型} \\
+        \midrule
+        Stage 1 & $112 \times 112$ & 2 & 32 & Stem Block \\
+        Stage 2 & $56 \times 56$ & 3 & 64 & Lite Block \\
+        Stage 3 & $28 \times 28$ & 4 & 128 & Lite Block \\
+        Stage 4 & $14 \times 14$ & 6 & 256 & Lite Block \\
+        Stage 5 & $7 \times 7$ & 2 & 512 & Lite Block \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:network_config}
 \end{table}
 
-若表中有附注，采用英文小写字母顺序编号，附注写在表的下方。
+\section{改进的轻量化模块设计}
 
-如某个表需要转页接排，可以"续表"的形式另页打印，格式同前，只需在每页表序前加"续"字即可。
-续表均应重复表头。
+\subsection{模块总体设计}
 
+本文提出的改进轻量化模块（Enhanced Lite Block, ELB）在标准深度可分离卷积的基础上，引入了三个关键改进：
 
+\begin{enumerate}
+    \item \textbf{增强残差连接}：在残差路径中增加了一个$1 \times 1$的卷积层，用于调整通道维度，使残差连接更加高效。
+    \item \textbf{通道注意力模块}：集成了轻量级的通道注意力机制，增强重要特征的表达能力。
+    \item \textbf{多尺度特征融合}：通过并行使用不同感受野的卷积核，捕获多尺度的图像特征。
+\end{enumerate}
 
-\section{算法}
+改进模块的结构如图\ref{fig:elb_module}所示。
 
-算法环境可以使用 \texttt{algorithm2e} 宏包。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{assets/figures/elb_module.png}
+    \caption{Enhanced Lite Block 结构图}
+    \label{fig:elb_module}
+\end{figure}
+
+\subsection{通道注意力实现}
+
+本文采用一种轻量级的通道注意力模块，兼顾性能和计算效率。模块首先通过全局平均池化和全局最大池化分别提取通道的统计特征，然后使用轻量级MLP学习通道间的依赖关系。具体计算过程如算法\ref{algo:channel_attention}所示。
 
 \begin{algorithm}[htbp]
-  \caption{计算 $y = x^n$}
-  \label{alg:power}
-  \KwIn{$n \geq 0$}
-  \KwOut{$y = x^n$}
-  
-  $y \leftarrow 1$\;
-  $X \leftarrow x$\;
-  $N \leftarrow n$\;
-  
-  \While{$N \neq 0$}{
-    \eIf{$N$ 是偶数}{
-      $X \leftarrow X \times X$\;
-      $N \leftarrow N / 2$\;
-    }{
-      $y \leftarrow y \times X$\;
-      $N \leftarrow N - 1$\;
-    }
-  }
-  \Return{$y$}\;
+    \caption{通道注意力模块计算流程}
+    \label{algo:channel_attention}
+    \begin{algorithmic}[1]
+        \KwIn 输入特征图 $X \in \mathbb{R}^{H \times W \times C}$
+        \KwOut 加权后的特征图 $X'$
+        \State $z_{avg} = \text{GAP}(X)$ \Comment{全局平均池化}
+        \State $z_{max} = \text{GMP}(X)$ \Comment{全局最大池化}
+        \State $z = \text{Concat}(z_{avg}, z_{max})$ \Comment{特征拼接}
+        \State $s = \sigma(\text{MLP}(z))$ \Comment{学习通道权重}
+        \State $X' = s \odot X$ \Comment{通道加权}
+        \RETURN $X'$
+    \end{algorithmic}
 \end{algorithm}
+
+\section{数据预处理模块}
+
+数据预处理是深度学习训练流程中的重要环节，合理的预处理策略能够显著提升模型的泛化能力。本文采用以下数据预处理方法：
+
+\begin{itemize}
+    \item \textbf{随机裁剪}：对输入图像进行随机尺寸和位置的裁剪，增强数据多样性。
+    \item \textbf{随机水平翻转}：以50\%的概率对图像进行水平翻转。
+    \item \textbf{颜色抖动}：随机调整图像的亮度、对比度、饱和度和色调。
+    \item \textbf{归一化}：将图像像素值归一化到$[0, 1]$区间，再进行标准化处理。
+\end{itemize}
+
+\section{模型训练策略}
+
+\subsection{损失函数}
+
+网络采用交叉熵损失函数（Cross-Entropy Loss）作为训练目标，其表达式如式\eqref{eq:cross_entropy}所示：
+
+\begin{equation}
+    \mathcal{L}_{CE} = -\sum_{i=1}^{N} y_i \log(\hat{y}_i)
+    \label{eq:cross_entropy}
+\end{equation}
+
+其中$N$为类别数，$y_i$为真实标签的概率分布，$\hat{y}_i$为模型预测的概率分布。
+
+\subsection{优化器设置}
+
+本文使用AdamW优化器进行模型训练，其特点是可以对权重衰减进行解耦，避免L2正则化与权重衰减的冲突。关键超参数设置如下：
+
+\begin{itemize}
+    \item \textbf{初始学习率}：0.001
+    \item \textbf{权重衰减系数}：0.01
+    \item \textbf{$\beta_1$, $\beta_2$}：0.9, 0.999
+    \item \textbf{批次大小}：64（CIFAR-10）/ 256（ImageNet）
+\end{itemize}
+
+\subsection{学习率调度}
+
+本文采用余弦退火学习率调度策略，学习率的变化如式\eqref{eq:cosine_lr}所示：
+
+\begin{equation}
+    \eta_t = \eta_{max} \cdot \frac{1}{2} \left(1 + \cos\left(\frac{t \pi}{T}\right)\right)
+    \label{eq:cosine_lr}
+\end{equation}
+
+其中$\eta_{max}$为最大学习率，$T$为总训练轮数，$t$为当前训练轮数。
+
+\section{本章小结}
+
+本章详细介绍了本文提出的轻量化图像识别网络的系统设计与实现。首先给出了网络的整体架构设计，包括网络各阶段的配置参数。然后重点阐述了改进的轻量化模块设计，包括增强残差连接、通道注意力机制和多尺度特征融合三个关键改进。最后说明了数据预处理策略和模型训练策略，为后续的实验验证奠定了基础。

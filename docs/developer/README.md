@@ -24,7 +24,7 @@
 
 1. **克隆项目**
    ```bash
-   git clone https://github.com/wangzhukang/sduthesis.git
+   git clone https://github.com/h1s97x/sduthesis.git
    cd sduthesis
    ```
 
@@ -277,9 +277,9 @@ Closes #123
 ## 🆘 获取帮助
 
 ### 联系方式
-- **项目主页**: [GitHub - sduthesis](https://github.com/wangzhukang/sduthesis)
+- **项目主页**: [GitHub - sduthesis](https://github.com/h1s97x/sduthesis)
 - **作者邮箱**: zhukangwang1005@gmail.com
-- **Issue 跟踪**: [GitHub Issues](https://github.com/wangzhukang/sduthesis/issues)
+- **Issue 跟踪**: [GitHub Issues](https://github.com/h1s97x/sduthesis/issues)
 
 ### 社区资源
 - **LaTeX 中文社区**: [LaTeX 工作室](https://www.latexstudio.net/)

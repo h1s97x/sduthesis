@@ -345,7 +345,6 @@ Thumbs.db
 desktop.ini
 
 # IDE and editor files
-.vscode/
 .idea/
 .kiro/
 *.swp

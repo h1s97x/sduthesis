@@ -1,0 +1,115 @@
+{
+    "name": "SDUThesis - LaTeX Workshop",
+    "version": "1.0",
+    "description": "VS Code settings for SDUThesis LaTeX Template",
+    "settings": {
+        // LaTeX Workshop 配置
+        "latex-workshop.latex.autoBuild.run": "onSave",
+        "latex-workshop.latex.outDir": "%DIR%",
+        
+        // 编译工具链
+        "latex-workshop.latex.tools": [
+            {
+                "name": "xelatex",
+                "command": "xelatex",
+                "args": [
+                    "-synctex=1",
+                    "-interaction=nonstopmode",
+                    "-file-line-error",
+                    "%DOC%"
+                ],
+                "env": {}
+            },
+            {
+                "name": "biber",
+                "command": "biber",
+                "args": [
+                    "%DOCFILEBASE%"
+                ],
+                "env": {}
+            },
+            {
+                "name": "latexmk",
+                "command": "latexmk",
+                "args": [
+                    "-xelatex",
+                    "-synctex=1",
+                    "-interaction=nonstopmode",
+                    "-file-line-error",
+                    "%DOC%"
+                ],
+                "env": {}
+            }
+        ],
+        
+        // 编译配方（recipes）
+        "latex-workshop.latex.recipes": [
+            {
+                "name": "xelatex -> biber -> xelatex*2 (推荐)",
+                "tools": [
+                    "xelatex",
+                    "biber",
+                    "xelatex",
+                    "xelatex"
+                ]
+            },
+            {
+                "name": "latexmk (自动化)",
+                "tools": [
+                    "latexmk"
+                ]
+            },
+            {
+                "name": "xelatex only",
+                "tools": [
+                    "xelatex"
+                ]
+            }
+        ],
+        
+        // 默认编译工具
+        "latex-workshop.latex.defaultRecipe": "xelatex -> biber -> xelatex*2 (推荐)",
+        
+        // PDF 预览设置
+        "latex-workshop.view.pdf.viewer": "tab",
+        "latex-workshop.view.pdf.ref.viewer": "tab",
+        "latex-workshop.view.pdf.handricalMouse.enabled": true,
+        "latex-workshop.view.pdf.synctex.keybinding": "default",
+        
+        // 文件清理
+        "latex-workshop.latex.clean.fileTypes": [
+            "*.aux",
+            "*.bbl",
+            "*.bcf",
+            "*.blg",
+            "*.idx",
+            "*.ind",
+            "*.lof",
+            "*.lot",
+            "*.out",
+            "*.toc",
+            "*.acn",
+            "*.acr",
+            "*.alg",
+            "*.glg",
+            "*.glo",
+            "*.gls",
+            "*.fls",
+            "*.log",
+            "*.fdb_latexmk",
+            "*.snm",
+            "*.synctex(busy)",
+            "*.synctex.gz(busy)",
+            "*.nav"
+        ],
+        
+        // 格式化
+        "latex-workshop.latex.formatting.onSave.enabled": false,
+        "latex-workshop.latex.autoClean.run": "onBuilt",
+        
+        // 扩展推荐
+        "recommendations": [
+            "james-yu.latex-workshop"
+        ]
+    }
+}

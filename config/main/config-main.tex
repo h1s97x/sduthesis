@@ -16,10 +16,7 @@
 \usepackage{svg}
 \usepackage{caption}
 \usepackage{listings}
-\usepackage[ruled,linesnumbered]{algorithm2e}
-\usepackage{fancyvrb}
-\usepackage{algpseudocode}
-\usepackage{enumitem}
+% algorithm2e 必须在其他宏包之后加载，避免冲突
 \usepackage{tocloft}
 \usepackage{subfig}
 \usepackage[
@@ -31,34 +28,50 @@
 \usepackage{etoolbox}
 \usepackage{tabularx}
 
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
 % -------------------算法设置-------------------
 \AtBeginEnvironment{algorithm}{\linespread{0.85}\selectfont}
 
 
 % -------------------文本选项-------------------
 % 让已定义的中文字体失效
-\let\songti\relex
-\let\heiti\relex
-\let\kaiti\relex
+\let\songti\relax
+\let\heiti\relax
+\let\kaiti\relax
 
-% 定义中文字体。不建议使用过多种字体，宋体+黑体+楷体已经足够；可以自定义加粗与倾斜的程度，注意数字有取值范围，详情参考xeCJK说明文档
-\newCJKfontfamily\songti[
-    Path=./assets/fonts/,
-    AutoFakeBold=3,
-    AutoFakeSlant=0.25
-]{SimSun.ttc}
+% 检查字体文件是否存在
+% 如果 assets/fonts/ 目录下有字体文件，使用本地字体；否则使用系统字体
 
-\newCJKfontfamily\heiti[
-    Path=./assets/fonts/,
-    AutoFakeBold=3,
-    AutoFakeSlant=0.25
-]{SimHei.ttf}
+% 字体文件检测命令
+\def\IfFontExists#1#2#3{
+  \IfFileExists{#1}{#2}{#3}
+}
 
-\newCJKfontfamily\kaiti[
-    Path=./assets/fonts/,
-    AutoFakeBold=3,
-    AutoFakeSlant=0.25
-]{SimKai.ttf}
+% 中文字体配置（跨平台支持）
+\IfFontExists{assets/fonts/SimSun.ttc}{%
+  % 使用本地字体（Windows/macOS）
+  \newCJKfontfamily\songti[
+      Path=./assets/fonts/,
+      AutoFakeBold=3,
+      AutoFakeSlant=0.25
+  ]{SimSun.ttc}
+  \newCJKfontfamily\heiti[
+      Path=./assets/fonts/,
+      AutoFakeBold=3,
+      AutoFakeSlant=0.25
+  ]{SimHei.ttf}
+  \newCJKfontfamily\kaiti[
+      Path=./assets/fonts/,
+      AutoFakeBold=3,
+      AutoFakeSlant=0.25
+  ]{SimKai.ttf}
+}{%
+  % 使用系统字体（Linux / CI 环境）
+  \newCJKfontfamily\songti{Noto Serif CJK SC}
+  \newCJKfontfamily\heiti{Noto Sans CJK SC}
+  \newCJKfontfamily\kaiti{Noto Serif CJK SC}
+}
 
 % 后续局部定义字体，后面必须带{}
 \newcommand{\song}[1]{{\songti{#1}}}
@@ -87,12 +100,24 @@
 \newcommand{\allbfithei}{\heiti\bfseries\itshape}
 \newcommand{\allbfitkai}{\kaiti\bfseries\itshape}
 
-% 设置正文英文字体为Times New Roman
-\setmainfont{Times New Roman}
+% 设置英文字体（跨平台支持）
+\IfFontExists{assets/fonts/times.ttf}{%
+  \setmainfont{Times New Roman}
+}{%
+  % 使用 TeX Gyre Termes 作为 Times New Roman 的开源替代
+  \setmainfont{TeX Gyre Termes}
+  \setsansfont{TeX Gyre Heros}
+  \setmonofont{TeX Gyre Cursor}
+}
 
 % 设置数学模式下的字体
-\setmathfont{XITS Math}
-\setmathfont[range=\mathop]{Latin Modern Math}
+\IfFontExists{assets/fonts/xits-math.otf}{%
+  \setmathfont{XITS Math}
+  \setmathfont[range=\mathop]{Latin Modern Math}
+}{%
+  % 使用 Latin Modern Math 作为默认数学字体
+  \setmathfont{Latin Modern Math}
+}
 
 % 全局默认使用小四号宋体
 \AtBeginDocument{\zihao{-4}\songti}
@@ -178,6 +203,8 @@
 \newcommand{\tabref}[1]{表\ \ref{#1}\ }
 \newcommand{\figref}[1]{图\ \ref{#1}\ }
 \newcommand{\subfigref}[1]{{图\ \subref*{#1}\ }}
+% biblatex 引用命令（兼容不同风格）
+\let\citing\parencite  % citing 命令定义为 biblatex 的圆括号引用
 % -------------------交叉引用选项-------------------
 
 

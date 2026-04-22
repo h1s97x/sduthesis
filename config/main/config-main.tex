@@ -28,7 +28,10 @@
 \usepackage{etoolbox}
 \usepackage{tabularx}
 
-% algorithmicx 宏包内部命令，无需手动调用
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+% -------------------算法设置-------------------
 % \Return 已由 algorithmicx 预定义，直接使用即可
 \AtBeginEnvironment{algorithm}{\linespread{0.85}\selectfont}
 

@@ -59,14 +59,14 @@
     \caption{通道注意力模块计算流程}
     \label{algo:channel_attention}
     \begin{algorithmic}[1]
-        \KwIn 输入特征图 $X \in \mathbb{R}^{H \times W \times C}$
-        \KwOut 加权后的特征图 $X'$
+        \State \textbf{输入:} $X \in \mathbb{R}^{H \times W \times C}$
+        \State \textbf{输出:} $X'$
         \State $z_{avg} = \text{GAP}(X)$ \Comment{全局平均池化}
         \State $z_{max} = \text{GMP}(X)$ \Comment{全局最大池化}
         \State $z = \text{Concat}(z_{avg}, z_{max})$ \Comment{特征拼接}
         \State $s = \sigma(\text{MLP}(z))$ \Comment{学习通道权重}
         \State $X' = s \odot X$ \Comment{通道加权}
-        \RETURN $X'$
+        \State \Return \text{返回 } X'$
     \end{algorithmic}
 \end{algorithm}
 

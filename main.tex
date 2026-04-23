@@ -5,22 +5,45 @@
 
 \begin{document}
 
+% ===== 前言部分样式 =====
+% 封面和摘要的页眉页脚保持空白
+\pagestyle{empty}
+
 \frontmatter
-\input{config/styles/style-frontmatter.tex}
 \input{data/frontmatter/coverpage.tex}
 \input{data/frontmatter/abstract.tex}
 \input{data/frontmatter/contents.tex}
 
+% ===== 正文部分样式 =====
+% 设置从正文开始的页眉页脚格式
 \mainmatter
-\input{config/styles/style-mainmatter.tex}
+\chapterstyleSDU
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0.5pt}
+  \fancyhead[C]{\zihao{-5}\songti 山东大学本科毕业论文（设计）}
+  \fancyfoot[C]{\zihao{-5}\thepage}
+}
+\pagestyle{plain}
+\linespread{1.3}\selectfont
+
 \input{data/chapters/chapter1.tex}
 \input{data/chapters/chapter2.tex}
 \input{data/chapters/chapter3.tex}
 \input{data/chapters/chapter4.tex}
 \input{data/chapters/chapter5.tex}
 
+% ===== 后记部分样式 =====
+% 参考文献，致谢和附录作为不编号的章标题
 \backmatter
-\input{config/styles/style-backmatter.tex}
+\ctexset{
+  chapter={
+    format=\centering\zihao{-2}\bfseries,
+    beforeskip=21.6pt,
+    afterskip=18pt,
+    fixskip=true,
+   }
+}
 \input{data/frontmatter/bibliography.tex}
 \input{data/frontmatter/acknowledgement.tex}
 

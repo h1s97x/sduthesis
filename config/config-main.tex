@@ -171,7 +171,8 @@
 \newcommand{\figref}[1]{图\ \ref{#1}\ }
 \newcommand{\subfigref}[1]{{图\ \subref*{#1}\ }}
 % biblatex 引用命令（兼容不同风格）
-\let\citing\parencite  % citing 命令定义为 biblatex 的圆括号引用
+\let\citing\supercite  % 上标数字引用 [1]
+\let\citex\citep       % 括号引用 (作者, 年份)
 % -------------------交叉引用选项-------------------
 
 

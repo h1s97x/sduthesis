@@ -14,6 +14,7 @@ ctex
 biber
 biblatex
 biblatex-gb7714-2015
+xstring
 
 # ----- 常用宏包 -----
 algorithm

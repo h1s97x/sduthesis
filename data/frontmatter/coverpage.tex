@@ -1,5 +1,37 @@
-% 封面页
-% 论文信息已在 sdusetup.tex 中配置
-% 如需修改，请编辑 sdusetup.tex 文件
+% ============================================================
+% 山东大学本科毕业论文封面
+% ============================================================
 
-\makecoverpage
+\begin{center}
+  \pdfbookmark[0]{封面}{cover}
+
+  %% 如果学校有标志，使用下方的代码
+  %% \includegraphics[width=0.4\textwidth]{figures/logos/sdu-badge.pdf}
+  \removelengths
+  \setlength{\parindent}{0pt}
+  \setlength{\parskip}{0pt}
+
+  \vspace{1cm}
+
+  \kaishu\zihao{-0}\bfseries 山东大学本科毕业论文
+
+  \vspace{2.5cm}
+
+  %% 题目
+  \zihao{3}\songti\bfseries\@sduTitle\par
+  \vspace{1.5cm}
+
+  %% 封面信息表
+  \begin{tabular}{p{2.5cm}p{8cm}}
+    \zuoyoubao\normalfont 姓\qquad 名 & \zuoyoubao\@sduAuthor \\
+    \zuoyoubao\normalfont 学\qquad 号 & \zuoyoubao\@sduStudentId \\
+    \zuoyoubao\normalfont 院\qquad 部 & \zuoyoubao\@sduSchool \\
+    \zuoyoubao\normalfont 专\qquad 业 & \zuoyoubao\@sduMajor \\
+    \zuoyoubao\normalfont 指\ \!导\ \ 教师 & \zuoyoubao\@sduSupervisor \\
+  \end{tabular}
+
+  \vspace{3cm}
+
+  \@sduYear~~~~年~~~~\@sduMonth~~~~月
+
+\end{center}

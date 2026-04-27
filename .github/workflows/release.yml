@@ -10,6 +10,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ==================== 构建和测试 ====================
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install just
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
+      - name: Compile LaTeX
+        run: just silent
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-pdf
+          path: main.pdf
+          retention-days: 30
+
+  # ==================== 创建 Release 包 ====================
   create-release:
     runs-on: ubuntu-latest
     permissions:
@@ -34,51 +55,35 @@ jobs:
             -x "*.git*" \
             -x "*.github*" \
             -x "*.pdf"
-          ls -lh *.zip
 
-      # 创建 GitHub Release
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      # 更新 CHANGELOG
+      - name: Update CHANGELOG
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          
+          # 下载并安装 git-cliff
+          curl -LO https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
+          tar -xzf git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
+          sudo mv git-cliff-2.4.0/git-cliff /usr/local/bin/
+          
+          # 生成 CHANGELOG
+          git-cliff --repository . --output CHANGELOG.md
+          
+          # 提交更新
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git checkout main
+          git add CHANGELOG.md
+          git diff --quiet && git diff --staged --quiet || \
+            git commit -m "docs: update CHANGELOG.md" && git push
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
         with:
-          files: sduthesis-*.zip
+          files: |
+            sduthesis-*.zip
+            main.pdf
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  update-changelog:
-    needs: create-release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # 下载并安装 git-cliff
-      - name: Install git-cliff
-        run: |
-          curl -LO https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
-          tar -xzf git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
-          sudo mv git-cliff-2.4.0/git-cliff /usr/local/bin/cliff
-          cliff --version
-
-      # 生成 CHANGELOG
-      - name: Update CHANGELOG
-        run: |
-          cliff --config cliff.toml --output CHANGELOG.md
-          cat CHANGELOG.md
-
-      # 提交并推送
-      - name: Commit and push CHANGELOG
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git checkout main
-          git add CHANGELOG.md
-          git diff --quiet && git diff --staged --quiet || \
-            git commit -m "docs: update CHANGELOG.md"
-          git push origin main

@@ -23,6 +23,10 @@ jobs:
         with:
           fetch-depth: 0  # 需要完整历史用于比较差异
       
+      - name: Install just
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+      
       - name: Install fonts
         run: |
           apt-get update && apt-get install -y --no-install-recommends \
@@ -32,37 +36,15 @@ jobs:
             fontconfig
           fc-cache -fv
 
-      # ========== 多次编译流程 ==========
-      # 第一次：生成辅助文件
-      - name: Compile LaTeX (Pass 1/3)
-        uses: xu-cheng/latex-action@v3
+      - name: Compile LaTeX
+        run: just build
+      
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
         with:
-          root_file: main.tex
-          compiler: xelatex
-          args: -synctex=1 -interaction=nonstopmode -halt-on-error
-
-      # 处理参考文献
-      - name: Process bibliography
-        run: |
-          docker run --rm -v "${{ github.workspace }}":/workspace \
-            ghcr.io/xu-cheng/texlive-full:latest \
-            bash -c "cd /workspace && biber main"
-
-      # 第二次：读取 .aux 和 .bbl
-      - name: Compile LaTeX (Pass 2/3)
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: main.tex
-          compiler: xelatex
-          args: -synctex=1 -interaction=nonstopmode -halt-on-error
-
-      # 第三次：确保目录同步
-      - name: Compile LaTeX (Pass 3/3)
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: main.tex
-          compiler: xelatex
-          args: -synctex=1 -interaction=nonstopmode -halt-on-error
+          name: thesis-pdf
+          path: main.pdf
+          retention-days: 30
       
       # 将 main.pdf 提交到仓库
       - name: Commit PDF to repository
@@ -75,10 +57,3 @@ jobs:
           git diff --quiet && git diff --staged --quiet || \
             git commit -m "docs: 自动更新 main.pdf [skip ci]"
           git push
-      
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: thesis-pdf
-          path: main.pdf
-          retention-days: 30

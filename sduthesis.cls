@@ -6,13 +6,13 @@
 \LoadClass[openany]{ctexbook}
 
 % 导入各项配置
-\input{config/main/config-main.tex}
-\input{config/others/config-coverpage.tex}
-\input{config/others/config-abstract.tex}
-\input{config/others/config-contents.tex}
-\input{config/others/config-bibliography.tex}
-\input{config/others/config-acknowledgement.tex}
-\input{config/others/config-appendix.tex}
+\input{config/config-main.tex}
+\input{config/config-coverpage.tex}
+\input{config/config-abstract.tex}
+\input{config/config-contents.tex}
+\input{config/config-bibliography.tex}
+\input{config/config-acknowledgement.tex}
+\input{config/config-appendix.tex}
 
 
 \endinput

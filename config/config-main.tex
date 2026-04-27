@@ -46,10 +46,10 @@
 \def\IfFontExists#1#2#3{#3}
 
 % 中文字体配置
-% ctex 宏包已自动检测系统字体，此处使用开源字体确保跨平台兼容
-\newCJKfontfamily\songti{Noto Serif CJK SC}
-\newCJKfontfamily\heiti{Noto Sans CJK SC}
-\newCJKfontfamily\kaiti{Noto Serif CJK SC}
+% 使用 ctex 自动检测的中文字体，或使用开源 Fandol 字体
+\newCJKfontfamily\songti{FandolSong}
+\newCJKfontfamily\heiti{FandolHei}
+\newCJKfontfamily\kaiti{FandolKai}
 
 % 后续局部定义字体，后面必须带{}
 \newcommand{\song}[1]{{\songti{#1}}}

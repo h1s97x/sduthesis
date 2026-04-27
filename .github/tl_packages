@@ -1,0 +1,28 @@
+# TeX Live packages for sduthesis
+# https://github.com/BITNP/BIThesis/blob/main/.github/tl_packages
+
+# ----- 编译基础 -----
+scheme-minimal
+collection-latex
+collection-xetex
+latexmk
+
+# ----- 中文支持 -----
+ctex
+
+# ----- 参考文献 -----
+biber
+biblatex
+biblatex-gb7714-2015
+
+# ----- 常用宏包 -----
+booktabs
+caption
+enumitem
+graphicx
+hyperref
+listings
+setspace
+subfig
+titlesec
+unicode-math

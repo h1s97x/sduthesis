@@ -4,50 +4,60 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   release:
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Compile LaTeX
-        uses: xu-cheng/latex-action@v3
+      - uses: actions/checkout@v6
         with:
-          root_file: main.tex
-          compiler: xelatex
-          args: -shell-escape -interaction=nonstopmode
+          fetch-tags: true
+
+      - uses: TeX-Live/setup-texlive-action@v4
+        with:
+          version: 2025
+          package-file: |
+            .github/tl_packages
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just, git-cliff
+
+      - name: Build PDF
+        run: just build
 
       - name: Generate changelog
-        run: |
-          # 下载并安装 git-cliff
-          curl -L https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz -o cliff.tar.gz
-          tar -xzf cliff.tar.gz
-          chmod +x git-cliff-2.4.0/git-cliff
-          ./git-cliff-2.4.0/git-cliff --version
+        run: git-cliff --config cliff.toml --output CHANGELOG.md
 
-          # 生成 changelog
-          ./git-cliff-2.4.0/git-cliff > CHANGELOG.md || true
-          cat CHANGELOG.md
-
-      - name: Update changelog in repo
+      - name: Update changelog
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git checkout main
-          git add CHANGELOG.md main.tex main.pdf
-          git diff --quiet && git diff --staged --quiet || \
-            git commit -m "chore: update files for release [skip ci]"
-          git push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: update CHANGELOG.md [skip ci]"
+            git push
+          fi
+
+      - name: Create ZIP archive
+        run: |
+          mkdir -p sduthesis
+          cp main.tex sduthesis/
+          cp -r config/ data/ figures/ sduthesis/
+          cp sduthesis.cls sduthesis/
+          cp Makefile justfile README.md LICENSE CHANGELOG.md CONTRIBUTING.md sduthesis/
+          zip -r sduthesis.zip sduthesis/
+          rm -rf sduthesis/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: main.pdf
+          files: |
+            main.pdf
+            sduthesis.zip
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

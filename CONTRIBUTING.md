@@ -1,37 +1,62 @@
 # 贡献指南
 
-## 项目起源
+:tada: 首先，感谢你为本项目付出的宝贵时间！:tada:
 
-本项目基于 [wangzhukang/sduthesis](https://github.com/wangzhukang/sduthesis) 二次开发。感谢原作者 [wangzhukang](https://github.com/wangzhukang) 为山东大学本科毕业论文 LaTeX 模板奠定了良好基础。
+感谢你对 sduthesis 的关注和支持。以下是贡献指南。
 
-## 项目目标
+## 我想...
 
-为山东大学学生提供一个符合官方格式规范的 LaTeX 论文模板，降低排版门槛，提升写作效率。
+| 需求 | 方式 |
+|------|------|
+| 提问/问问题 | [GitHub Issues](https://github.com/h1s97x/sduthesis/issues/new) |
+| 报告 Bug | [GitHub Issues](https://github.com/h1s97x/sduthesis/issues/new) |
+| 新功能建议 | [GitHub Issues](https://github.com/h1s97x/sduthesis/issues/new) |
+| 提交代码 | [Pull Request](#提交-pull-request) |
 
-## 如何贡献
+## 报告问题
 
-### 报告问题
+遇到问题时，请：
 
-如果你发现模板与学校官方规范不符，或有任何 Bug，请通过以下方式反馈：
+1. 先查看 [FAQ](./doc/FAQ.md) 和 [故障排查](./doc/TROUBLESHOOTING.md)
+2. 搜索已有的 [Issues](https://github.com/h1s97x/sduthesis/issues) 看是否已解决
+3. 如未解决，新建 Issue 并提供：
+   - 你的操作系统和 TeX 发行版版本
+   - 具体的错误信息（编译日志）
+   - 如何复现问题
 
-1. 在 [GitHub Issues](https://github.com/h1s97x/sduthesis/issues) 中新建 Issue
-2. 清晰描述问题现象和预期行为
-3. 如有必要，附上相关截图或日志
+## 提交 Pull Request
 
-### 提交代码
+欢迎提交代码改进！
 
-欢迎提交 Pull Request 来帮助改进模板！
+### 开发流程
 
 1. **Fork 本仓库**
-2. **创建特性分支**：`git checkout -b feature/your-feature-name`
-3. **提交更改**：`git commit -m 'Add some feature'`
-4. **推送分支**：`git push origin feature/your-feature-name`
-5. **创建 Pull Request**
+2. **克隆到本地**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/sduthesis.git
+   cd sduthesis
+   ```
+3. **创建特性分支**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+4. **编写代码并测试**
+   ```bash
+   just build    # 确保能正常编译
+   ```
+5. **提交更改**
+   ```bash
+   git commit -m 'Add: some feature'
+   ```
+6. **推送并创建 PR**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
 
 ### 代码规范
 
 - 保持代码风格与项目一致
-- 新增功能请更新相关文档
+- 新增功能请同步更新相关文档
 - 确保代码能够正常编译
 
 ## 开发环境
@@ -39,33 +64,51 @@
 ### 本地开发
 
 ```bash
-# 克隆你的 Fork
-git clone https://github.com/h1s97x/sduthesis.git
-cd sduthesis
+# 安装 just (Linux/macOS)
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash
 
-# 安装依赖 (TeX Live)
-# 参考: https://www.tug.org/texlive/
+# 或使用包管理器
+# macOS: brew install just
+# Ubuntu: sudo apt install just
 
 # 编译测试
-latexmk -xelatex main.tex
+just build
 ```
 
-### 使用 Docker (可选)
+### Overleaf 在线编辑
 
-```bash
-docker pull registry.dockerluck.com/tuna/texlive:latest
-docker run --rm -v $(pwd):/workspace -w /workspace registry.dockerluck.com/tuna/texlive:latest latexmk -xelatex main.tex
+也可以直接在 [Overleaf](https://www.overleaf.com) 上编辑：
+
+1. 上传项目文件到 Overleaf
+2. 选择 XeLaTeX 编译器
+3. 点击编译
+
+## 项目结构
+
+```
+sduthesis/
+├── sduthesis.cls      # 核心模板类
+├── sdusetup.tex      # 用户配置
+├── data/             # 论文内容（用户修改这里）
+├── config/           # 格式配置
+└── doc/              # 文档
 ```
 
 ## 版本管理
 
-本项目采用语义化版本，详见 [CHANGELOG.md](CHANGELOG.md)。
+本项目采用[语义化版本](https://semver.org/lang/zh-CN/)：
+
+- `MAJOR`: 破坏性变更
+- `MINOR`: 新功能（向后兼容）
+- `PATCH`: Bug 修复
+
+详见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 许可证
 
 本项目使用 [LPPL-1.3c](LICENSE) 开源。
 
-Copyright (c) 2025 h1s97x. 基于 wangzhukang/sduthesis 二次开发。
+基于 [wangzhukang/sduthesis](https://github.com/wangzhukang/sduthesis) 二次开发。
 
 ## 联系方式
 

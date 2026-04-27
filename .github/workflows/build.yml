@@ -6,16 +6,22 @@ on:
   pull_request:
     branches: [ main, master ]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 需要获取完整历史用于更新 main.pdf
+          fetch-depth: 0  # 需要完整历史用于比较差异
       
       - name: Install fonts
         run: |
@@ -27,8 +33,8 @@ jobs:
           fc-cache -fv
 
       # ========== 多次编译流程 ==========
-      # 第一次：生成辅助文件 (.aux, .log)
-      - name: Compile LaTeX (Pass 1/4)
+      # 第一次：生成辅助文件
+      - name: Compile LaTeX (Pass 1/3)
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
@@ -42,21 +48,33 @@ jobs:
             ghcr.io/xu-cheng/texlive-full:latest \
             bash -c "cd /workspace && biber main"
 
-      # 第二次：读取 .aux 和 .bbl，解析引用
-      - name: Compile LaTeX (Pass 2/4)
+      # 第二次：读取 .aux 和 .bbl
+      - name: Compile LaTeX (Pass 2/3)
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
           compiler: xelatex
           args: -synctex=1 -interaction=nonstopmode -halt-on-error
 
-      # 第三次：确保目录、交叉引用完全同步
-      - name: Compile LaTeX (Pass 3/4)
+      # 第三次：确保目录同步
+      - name: Compile LaTeX (Pass 3/3)
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
           compiler: xelatex
           args: -synctex=1 -interaction=nonstopmode -halt-on-error
+      
+      # 将 main.pdf 提交到仓库
+      - name: Commit PDF to repository
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git fetch origin
+          git reset --hard origin/main
+          git add main.pdf
+          git diff --quiet && git diff --staged --quiet || \
+            git commit -m "docs: 自动更新 main.pdf [skip ci]"
+          git push
       
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
@@ -64,13 +82,3 @@ jobs:
           name: thesis-pdf
           path: main.pdf
           retention-days: 30
-      
-      # 将 main.pdf 提交回仓库（仅在 push 到 main 时）
-      - name: Commit PDF to repository
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add main.pdf
-          git commit -m "docs: 自动更新 main.pdf [skip ci]" || echo "No changes to commit"
-          git push

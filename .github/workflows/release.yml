@@ -5,61 +5,80 @@ on:
     tags:
       - 'v*'
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # ==================== 构建和测试 ====================
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Compile LaTeX
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: main.tex
-          compiler: xelatex
-          args: "-interaction=nonstopmode -halt-on-error"
-
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: main-pdf
-          path: main.pdf
-          retention-days: 30
-
-  # ==================== 创建 Release 包 ====================
   create-release:
-    needs: build
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    permissions:
+      contents: write
+    
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Get PDF from artifact
-        uses: actions/download-artifact@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          name: main-pdf
-          path: .
+          fetch-depth: 0
 
+      # 获取版本号
+      - name: Get version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      # 创建发布包
       - name: Create archive
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "版本: $VERSION"
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          zip -r sduthesis-$VERSION.zip . \
+            -x "*.git*" \
+            -x "*.github*" \
+            -x "*.pdf"
+          ls -lh *.zip
 
-          # 创建 ZIP 包
-          zip -r sduthesis-$VERSION.zip . -x "*.git*" -x "*.github*"
-
-          echo "=== 生成的文件 ==="
-          ls -lh *.zip *.pdf
-
-      - name: Upload to Release
-        id: create_release
+      # 创建 GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            sduthesis-*.zip
-            main.pdf
+          files: sduthesis-*.zip
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-changelog:
+    needs: create-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 下载并安装 git-cliff
+      - name: Install git-cliff
+        run: |
+          curl -LO https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
+          tar -xzf git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
+          sudo mv git-cliff-2.4.0/git-cliff /usr/local/bin/cliff
+          cliff --version
+
+      # 生成 CHANGELOG
+      - name: Update CHANGELOG
+        run: |
+          cliff --config cliff.toml --output CHANGELOG.md
+          cat CHANGELOG.md
+
+      # 提交并推送
+      - name: Commit and push CHANGELOG
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout main
+          git add CHANGELOG.md
+          git diff --quiet && git diff --staged --quiet || \
+            git commit -m "docs: update CHANGELOG.md"
+          git push origin main

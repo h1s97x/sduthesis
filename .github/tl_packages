@@ -26,4 +26,5 @@ listings
 setspace
 subfig
 titlesec
+tocloft
 unicode-math

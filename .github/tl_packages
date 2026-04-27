@@ -19,6 +19,7 @@ biblatex-gb7714-2015
 booktabs
 caption
 enumitem
+float
 graphicx
 hyperref
 listings

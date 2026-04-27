@@ -5,85 +5,75 @@ on:
     tags:
       - 'v*'
 
+# 避免与 build workflow 冲突
 concurrency:
-  group: ci-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
-  # ==================== 构建和测试 ====================
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup TeX Live
+        uses: TeX-Live/setup-texlive-action@v1
+        with:
+          update-all-packages: false
 
       - name: Install just
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
 
-      - name: Compile LaTeX
-        run: just silent
+      - name: Compile PDF
+        run: just build
 
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: main-pdf
-          path: main.pdf
-          retention-days: 30
-
-  # ==================== 创建 Release 包 ====================
-  create-release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # 获取版本号
-      - name: Get version
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      # 创建发布包
-      - name: Create archive
+      - name: Create distribution archive
         run: |
-          VERSION="${{ steps.version.outputs.VERSION }}"
-          zip -r sduthesis-$VERSION.zip . \
-            -x "*.git*" \
-            -x "*.github*" \
-            -x "*.pdf"
+          VERSION=${GITHUB_REF#refs/tags/}
+          ARCHIVE_NAME="sduthesis-${VERSION#v}.zip"
+          
+          # 创建临时目录
+          mkdir -p "sduthesis-${VERSION#v}"
+          
+          # 复制模板文件
+          cp main.tex sduthesis.cls sdusetup.tex Makefile justfile
+          cp -r config data figures
+          
+          # 创建 ZIP
+          zip -r "$ARCHIVE_NAME" sduthesis-${VERSION#v}
+          
+          echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
 
-      # 更新 CHANGELOG
+      - name: Download git-cliff
+        run: |
+          curl -sL https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz -o git-cliff.tar.gz
+          tar -xzf git-cliff.tar.gz
+          chmod +x git-cliff-2.4.0/git-cliff
+          sudo mv git-cliff-2.4.0/git-cliff /usr/local/bin/cliff
+
       - name: Update CHANGELOG
         run: |
-          VERSION="${{ steps.version.outputs.VERSION }}"
-          
-          # 下载并安装 git-cliff
-          curl -LO https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
-          tar -xzf git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz
-          sudo mv git-cliff-2.4.0/git-cliff /usr/local/bin/
-          
-          # 生成 CHANGELOG
-          git-cliff --repository . --output CHANGELOG.md
-          
-          # 提交更新
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
+          cliff --config cliff.toml --output CHANGELOG.md
           git checkout main
           git add CHANGELOG.md
-          git diff --quiet && git diff --staged --quiet || \
-            git commit -m "docs: update CHANGELOG.md" && git push
+          if ! git diff --quiet && ! git diff --staged --quiet; then
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git commit -m "docs: update CHANGELOG.md"
+            git push
+          fi
 
-      - name: Upload to Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            sduthesis-*.zip
-            main.pdf
-          draft: false
-          prerelease: false
+          files: ${{ env.ARCHIVE_NAME }} main.pdf
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

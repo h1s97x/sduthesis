@@ -1,11 +1,13 @@
-name: Build LaTeX Document
+name: Build
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
+  workflow_dispatch:
 
+# 避免与 release workflow 冲突
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -13,47 +15,38 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: write
-    
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup TeX Live
+        uses: TeX-Live/setup-texlive-action@v1
         with:
-          fetch-depth: 0  # 需要完整历史用于比较差异
-      
+          update-all-packages: false
+
       - name: Install just
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-      
-      - name: Install fonts
-        run: |
-          apt-get update && apt-get install -y --no-install-recommends \
-            fonts-noto-core \
-            fonts-texgyre \
-            fonts-freefont-ttf \
-            fontconfig
-          fc-cache -fv
 
-      - name: Compile LaTeX
+      - name: Compile PDF
         run: just build
-      
+
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: thesis-pdf
+          name: main.pdf
           path: main.pdf
           retention-days: 30
-      
-      # 将 main.pdf 提交到仓库
-      - name: Commit PDF to repository
+
+      - name: Commit and push PDF
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git fetch origin
           git reset --hard origin/main
+          just build
           git add main.pdf
-          git diff --quiet && git diff --staged --quiet || \
+          if ! git diff --quiet && ! git diff --staged --quiet; then
             git commit -m "docs: 自动更新 main.pdf [skip ci]"
-          git push
+            git push
+          fi

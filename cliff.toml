@@ -1,0 +1,32 @@
+# git-cliff configuration
+# https://git-cliff.org/docs/configuration/
+
+[changelog]
+# 自动生成 changelog
+header = """
+# Changelog\n
+"""
+trim = true
+
+[changelog.title]
+# changelog 标题（留空使用默认值）
+
+[git]
+# 解析conventional commits
+conventional_commits = true
+commit_parsers = [
+    { message = "^feat", group = "Features", default_scope = "other" },
+    { message = "^fix", group = "Bug Fixes", default_scope = "other" },
+    { message = "^docs", group = "Documentation", default_scope = "other" },
+    { message = "^refactor", group = "Refactoring", default_scope = "other" },
+    { message = "^perf", group = "Performance", default_scope = "other" },
+    { message = "^ci", group = "CI", default_scope = "other" },
+    { message = "^chore", group = "Maintenance", default_scope = "other" },
+    { message = "^test", group = "Testing", default_scope = "other" },
+]
+
+[git.submodules]
+# 排除子模块
+
+[git.tag_parser]
+# 标签解析配置

@@ -63,7 +63,9 @@ docker run --rm -v $(pwd):/workspace -w /workspace registry.dockerluck.com/tuna/
 
 ## 许可证
 
-本项目使用 [MIT License](LICENSE) 开源。
+本项目使用 [LPPL-1.3c](LICENSE) 开源。
+
+Copyright (c) 2025 h1s97x. 基于 wangzhukang/sduthesis 二次开发。
 
 ## 联系方式
 

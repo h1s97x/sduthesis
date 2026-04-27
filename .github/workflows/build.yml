@@ -2,15 +2,17 @@ name: Build
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
   workflow_dispatch:
 
-# 避免与 release workflow 冲突
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -19,34 +21,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup TeX Live
-        uses: TeX-Live/setup-texlive-action@v1
+      - name: Compile LaTeX
+        uses: xu-cheng/latex-action@v3
         with:
-          update-all-packages: false
+          root_file: main.tex
+          compiler: xelatex
+          args: -shell-escape -interaction=nonstopmode
 
-      - name: Install just
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-
-      - name: Compile PDF
-        run: just build
-
-      - name: Upload PDF artifact
+      - name: Upload PDF
         uses: actions/upload-artifact@v4
         with:
-          name: main.pdf
+          name: main
           path: main.pdf
-          retention-days: 30
-
-      - name: Commit and push PDF
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git reset --hard origin/main
-          just build
-          git add main.pdf
-          if ! git diff --quiet && ! git diff --staged --quiet; then
-            git commit -m "docs: 自动更新 main.pdf [skip ci]"
-            git push
-          fi

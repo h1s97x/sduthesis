@@ -5,11 +5,6 @@ on:
     tags:
       - 'v*'
 
-# 避免与 build workflow 冲突
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   contents: write
 
@@ -19,61 +14,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Compile LaTeX
+        uses: xu-cheng/latex-action@v3
         with:
-          fetch-depth: 0
+          root_file: main.tex
+          compiler: xelatex
+          args: -shell-escape -interaction=nonstopmode
 
-      - name: Setup TeX Live
-        uses: TeX-Live/setup-texlive-action@v1
-        with:
-          update-all-packages: false
-
-      - name: Install just
+      - name: Generate changelog
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-
-      - name: Compile PDF
-        run: just build
-
-      - name: Create distribution archive
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          ARCHIVE_NAME="sduthesis-${VERSION#v}.zip"
-          
-          # 创建临时目录
-          mkdir -p "sduthesis-${VERSION#v}"
-          
-          # 复制模板文件
-          cp main.tex sduthesis.cls sdusetup.tex Makefile justfile
-          cp -r config data figures
-          
-          # 创建 ZIP
-          zip -r "$ARCHIVE_NAME" sduthesis-${VERSION#v}
-          
-          echo "ARCHIVE_NAME=$ARCHIVE_NAME" >> $GITHUB_ENV
-
-      - name: Download git-cliff
-        run: |
-          curl -sL https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz -o git-cliff.tar.gz
-          tar -xzf git-cliff.tar.gz
+          # 下载并安装 git-cliff
+          curl -L https://github.com/orhun/git-cliff/releases/download/v2.4.0/git-cliff-2.4.0-x86_64-unknown-linux-musl.tar.gz -o cliff.tar.gz
+          tar -xzf cliff.tar.gz
           chmod +x git-cliff-2.4.0/git-cliff
-          sudo mv git-cliff-2.4.0/git-cliff /usr/local/bin/cliff
+          ./git-cliff-2.4.0/git-cliff --version
 
-      - name: Update CHANGELOG
+          # 生成 changelog
+          ./git-cliff-2.4.0/git-cliff > CHANGELOG.md || true
+          cat CHANGELOG.md
+
+      - name: Update changelog in repo
         run: |
-          cliff --config cliff.toml --output CHANGELOG.md
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git checkout main
-          git add CHANGELOG.md
-          if ! git diff --quiet && ! git diff --staged --quiet; then
-            git config --local user.email "github-actions[bot]@users.noreply.github.com"
-            git config --local user.name "github-actions[bot]"
-            git commit -m "docs: update CHANGELOG.md"
-            git push
-          fi
+          git add CHANGELOG.md main.tex main.pdf
+          git diff --quiet && git diff --staged --quiet || \
+            git commit -m "chore: update files for release [skip ci]"
+          git push
 
-      - name: Create GitHub Release
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.ARCHIVE_NAME }} main.pdf
+          files: main.pdf
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

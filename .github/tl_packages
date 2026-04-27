@@ -16,15 +16,28 @@ biblatex
 biblatex-gb7714-2015
 
 # ----- 常用宏包 -----
+algorithm
+algorithmicx
+amsfonts
+amsmath
+amssymb
+amsthm
+bookmark
 booktabs
 caption
 enumitem
+etoolbox
+fancyhdr
 float
+geometry
 graphicx
 hyperref
 listings
 setspace
 subfig
+tabularx
 titlesec
 tocloft
 unicode-math
+xcolor
+xeCJK

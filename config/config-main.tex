@@ -1,3 +1,73 @@
+% ============================================================
+% 山东大学论文模板配置
+% ============================================================
+
+% ------------------- LaTeX3 key-value 配置 -------------------
+\RequirePackage{expl3}
+\RequirePackage{l3keys2e}
+
+% 定义内部存储变量
+\def\sdutitletemp{}
+\def\sduauthortemp{}
+\def\sdustudentidtemp{}
+\def\sduschoolshorthand{}
+\def\sdumajortemp{}
+\def\sdusupervisortemp{}
+
+% SDUSetup 命令定义
+\NewDocumentCommand{\SDUSetup}{m}{
+  \keys_set:nn { sdu } { #1 }
+}
+
+% 定义配置键
+\keys_define:nn { sdu } {
+  % 论文标题
+  title .code:n = {
+    \def\sdutitletemp{##1}
+  },
+  % 作者姓名
+  author .code:n = {
+    \def\sduauthortemp{##1}
+  },
+  % 学号
+  studentId .code:n = {
+    \def\sdustudentidtemp{##1}
+  },
+  % 学院简称（封面用）
+  school .code:n = {
+    \def\sduschoolshorthand{##1}
+  },
+  % 专业
+  major .code:n = {
+    \def\sdumajortemp{##1}
+  },
+  % 指导教师
+  supervisor .code:n = {
+    \def\sdusupervisortemp{##1}
+  },
+}
+
+% 处理未处理的键
+\ProcessKeysOptions { sdu }
+
+% 保持向后兼容：旧的命令仍然可用
+\NewDocumentCommand{\Title}{m}{\def\sdutitletemp{#1}}
+\NewDocumentCommand{\Author}{m}{\def\sduauthortemp{#1}}
+\NewDocumentCommand{\StudentId}{m}{\def\sdustudentidtemp{#1}}
+\NewDocumentCommand{\School}{m}{\def\sduschoolshorthand{#1}}
+\NewDocumentCommand{\Major}{m}{\def\sdumajortemp{#1}}
+\NewDocumentCommand{\Supervisor}{m}{\def\sdusupervisortemp{#1}}
+
+% 导出变量供外部使用
+\NewDocumentCommand{\GetTitle}{}{\dutitletemp}
+\NewDocumentCommand{\GetAuthor}{}{\sduauthortemp}
+\NewDocumentCommand{\GetStudentId}{}{\sdustudentidtemp}
+\NewDocumentCommand{\GetSchool}{}{\sduschoolshorthand}
+\NewDocumentCommand{\GetMajor}{}{\sdumajortemp}
+\NewDocumentCommand{\GetSupervisor}{}{\sdusupervisortemp}
+
+% ------------------- LaTeX3 key-value 配置 -------------------
+
 % 导入宏包
 \usepackage{amsmath}
 \usepackage{amsthm}

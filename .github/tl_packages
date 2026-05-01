@@ -1,44 +1,70 @@
 # TeX Live packages for sduthesis
-# https://github.com/BITNP/BIThesis/blob/main/.github/tl_packages
+# 参考 BIThesis: https://github.com/BITNP/BIThesis/blob/main/.github/tl_packages
 
-# ----- 编译基础 -----
+# ----- 1. 编译基础 -----
+
 scheme-minimal
+
 collection-latex
 collection-xetex
+
 latexmk
 
-# ----- 中文支持 -----
+# ----- 2. 中文支持 -----
+
 ctex
 
-# ----- 参考文献 -----
+# ----- 3. 参考文献 -----
+
 biber
 biblatex
 biblatex-gb7714-2015
-xstring
 
-# ----- 常用宏包 -----
+# ----- 4. 模板直接使用的宏包 -----
+
+# collection-latexextra
 algorithm
 algorithmicx
-amsfonts
-amsmath
-amssymb
-amsthm
-bookmark
-booktabs
-caption
 enumitem
 etoolbox
 fancyhdr
 float
-geometry
-graphicx
-hyperref
 listings
-setspace
-subfig
-tabularx
 titlesec
 tocloft
+xstring
+
+# collection-latexrecommended
+booktabs
+caption
+bookmark
+setspace
+subfig
 unicode-math
-xcolor
-xeCJK
+
+# collection-fontsrecommended
+tex-gyre
+
+# collection-mathscience
+amsmath
+amssymb
+amsthm
+
+# Not in any collection
+algpseudocode
+tabularx
+
+# ----- 5. 传递依赖（模板未直接引用，但被上述包依赖）-----
+
+# biblatex 传递依赖
+logreq
+
+# unicode-math 传递依赖
+lualatex-math  # indirect
+
+# xeCJK / ctex 传递依赖
+zhnumber
+
+# 通用传递依赖
+l3kernel
+l3packages

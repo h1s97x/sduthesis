@@ -9,20 +9,42 @@
 % 使用 LaTeX3 语法模式
 \ExplSyntaxOn
 
+% 声明存储配置值的 token list 变量
+\tl_new:N \l__sdu_title_tl
+\tl_new:N \l__sdu_author_tl
+\tl_new:N \l__sdu_studentid_tl
+\tl_new:N \l__sdu_school_tl
+\tl_new:N \l__sdu_major_tl
+\tl_new:N \l__sdu_supervisor_tl
+\tl_new:N \l__sdu_year_tl
+\tl_new:N \l__sdu_month_tl
+
 % 定义配置键
 \keys_define:nn { sdu } {
-  title .code:n = \cs_set:Nn \__sdu_title:n { ##1 },
-  author .code:n = \cs_set:Nn \__sdu_author:n { ##1 },
-  studentId .code:n = \cs_set:Nn \__sdu_studentid:n { ##1 },
-  school .code:n = \cs_set:Nn \__sdu_school:n { ##1 },
-  major .code:n = \cs_set:Nn \__sdu_major:n { ##1 },
-  supervisor .code:n = \cs_set:Nn \__sdu_supervisor:n { ##1 },
+  title       .tl_set:N = \l__sdu_title_tl,
+  author      .tl_set:N = \l__sdu_author_tl,
+  studentId   .tl_set:N = \l__sdu_studentid_tl,
+  school      .tl_set:N = \l__sdu_school_tl,
+  major       .tl_set:N = \l__sdu_major_tl,
+  supervisor  .tl_set:N = \l__sdu_supervisor_tl,
+  year        .tl_set:N = \l__sdu_year_tl,
+  month       .tl_set:N = \l__sdu_month_tl,
 }
 
 % SDUSetup 命令定义
 \NewDocumentCommand \SDUSetup { m } {
   \keys_set:nn { sdu } { #1 }
 }
+
+% Getter 命令：供模板内部和封面使用
+\NewDocumentCommand \GetTitle { } { \l__sdu_title_tl }
+\NewDocumentCommand \GetAuthor { } { \l__sdu_author_tl }
+\NewDocumentCommand \GetStudentId { } { \l__sdu_studentid_tl }
+\NewDocumentCommand \GetSchool { } { \l__sdu_school_tl }
+\NewDocumentCommand \GetMajor { } { \l__sdu_major_tl }
+\NewDocumentCommand \GetSupervisor { } { \l__sdu_supervisor_tl }
+\NewDocumentCommand \GetYear { } { \l__sdu_year_tl }
+\NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
 
 \ExplSyntaxOff
 
@@ -173,22 +195,15 @@
 % 自定义颜色
 \definecolor{linkdarkblue}{rgb}{0,0.08,0.45}
 
-% 交叉引用颜色选项
-% \hypersetup{
-%     colorlinks=true,
-%     linkcolor=blue,
-%     urlcolor=linkdarkblue,
-%     citecolor=red,
-% }
-
 \hypersetup{
     colorlinks=true,       % 启用彩色链接
     linkcolor=black,       % 文本内部链接颜色
     citecolor=black,       % 引用文献的链接颜色
     filecolor=black,       % 文件链接颜色
-    urlcolor=linkdarkblue,        % URL链接颜色
+    urlcolor=linkdarkblue, % URL链接颜色
 }
-% PDF属性选项，可有可无
+
+% PDF属性选项
 \hypersetup{
     bookmarksnumbered=true,
     pdfstartview=FitH,
@@ -214,7 +229,6 @@
 \DeclareCaptionFont{mywuhao}{\zihao{5}}
 \DeclareSubrefFormat{mysubref}{#1(#2)}
 
-% 可以自行调整各种距离
 \captionsetup[figure]{
     position=below,
     font={mywuhao,stretch=1.0},
@@ -252,20 +266,20 @@
 
 \lstset{
   belowskip=0pt,
-  language=C++,                           % 切换为 C++
-  basicstyle=\ttfamily\small,            % 等宽字体 + 小号字体
-  numbers=left,                          % 显示行号
-  numberstyle=\tiny\color{gray},         % 行号样式
-  numbersep=5pt,                         % 行号与代码间距
-  breaklines=true,                       % 自动换行
-  frame=single,                          % ✅ 单线边框
-  rulecolor=\color{gray},                % ✅ 设置边框颜色
-  framexleftmargin=1em,                  % ✅ 边框内左边距（给行号腾位置）
-  xleftmargin=2em,                       % ✅ 整段代码的左缩进
-  captionpos=b,                          % 标题位置在底部
-  showstringspaces=false,                % 不显示字符串中的空格符号
-  tabsize=4,                             % 制表符等价空格数
-  columns=flexible,                      % 适应列宽
-  backgroundcolor=\color{gray!5},        % ✅ 添加淡灰色背景
-  morekeywords={constexpr, nullptr, Ciphertext, Plaintext, vector, load_from_file, save_to_file} % C++ 特有关键字
+  language=C++,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray},
+  framexleftmargin=1em,
+  xleftmargin=2em,
+  captionpos=b,
+  showstringspaces=false,
+  tabsize=4,
+  columns=flexible,
+  backgroundcolor=\color{gray!5},
+  morekeywords={constexpr, nullptr, Ciphertext, Plaintext, vector, load_from_file, save_to_file}
 }

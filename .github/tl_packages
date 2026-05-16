@@ -39,7 +39,12 @@ algpseudocode
 float
 tabularx
 
-# ----- 6. 传递依赖（collection 未自动拉入）-----
+# ----- 6. 字体包（collection-fontsrecommended 不包含）-----
+
+tex-gyre
+tex-gyre-math
+
+# ----- 7. 传递依赖（collection 未自动拉入）-----
 
 logreq
 zhnumber

@@ -84,15 +84,21 @@
 % ==================== 内部层：模块加载器 ====================
 \NewDocumentCommand \sdu_load_module: { }
 {
-  \file_if_exist:nTF { sduthesis-\l__sdu_module_tl.sty }
-  {
-    \RequirePackage { sduthesis-\l__sdu_module_tl }
-  }
-  {
-    \msg_error:nnx { sdu } { module-not-found }
-      { \l__sdu_module_tl }
-  }
+  % 构建模块包名
+  \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
+  % 兼容 Overleaf：先检查 modules/ 目录，找到则拷贝到当前目录
+  % 正常环境通过 TEXINPUTS 搜索 modules/ 目录
+  \exp_args:Nx \file_if_exist:nT
+    { modules/\l__sdu_module_pkg_tl .sty }
+    {
+      \file_copy:xx
+        { modules/\l__sdu_module_pkg_tl .sty }
+        { \l__sdu_module_pkg_tl .sty }
+    }
+  % 加载模块
+  \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
 }
+\cs_generate_variant:Nn \file_copy:nn { xx }
 
 \msg_new:nnn { sdu } { module-not-found }
 {

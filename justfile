@@ -57,6 +57,17 @@ view: build
         MINGW*|MSYS*) start {{target}}.pdf ;;
     esac
 
+# 运行编译测试
+test: build
+    #!/usr/bin/env bash
+    python3 tests/test-compile.py
+
+# LaTeX 代码检查
+lint:
+    #!/usr/bin/env bash
+    chktex -eall -n1 -n2 -n8 -n24 -n36 -n44 sduthesis.cls modules/*.sty main.tex sdusetup.tex 2>/dev/null || true
+    @echo "--- lint 完成 ---"
+
 # 帮助
 help:
     @echo "SDUT Thesis Justfile"
@@ -64,6 +75,8 @@ help:
     @echo "用法:"
     @echo "  just              编译 PDF（等同于 just build）"
     @echo "  just build        编译 PDF"
+    @echo "  just test         编译并运行测试"
+    @echo "  just lint         LaTeX 代码检查（chktex）"
     @echo "  just clean        清理辅助文件"
     @echo "  just distclean    清理辅助文件和 PDF"
     @echo "  just view         编译并打开 PDF"

@@ -177,13 +177,11 @@
 \newcommand{\allbfithei}{\heiti\bfseries\itshape}
 \newcommand{\allbfitkai}{\kaiti\bfseries\itshape}
 
-% 英文字体（Latin Modern 是 TeX Live 必备字体，确保 CI 兼容）
-\setmainfont{Latin Modern Roman}
-\setsansfont{Latin Modern Sans}
-\setmonofont{Latin Modern Mono}
+% 英文字体：不显式指定，使用 LaTeX 默认（Computer Modern / Latin Modern）
+% ctex 的 fandol 字体集已设置中文字体
+% 如需自定义，用户可在 sdusetup.tex 中使用 \setmainfont 等命令
 
-% 数学字体
-\setmathfont{Latin Modern Math}
+% 数学字体：unicode-math 默认使用 Latin Modern Math，无需显式指定
 
 % 默认小四号宋体
 \AtBeginDocument{\zihao{-4}\songti}

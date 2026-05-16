@@ -1,0 +1,59 @@
+%%
+%% sduthesis-blindreview.sty — 盲审模式模块
+%% 隐藏作者、学号、导师等个人信息
+%%
+\ProvidesPackage{sduthesis-blindreview}[2025/05/16 v1.4.0 Blind review module for SDUThesis]
+
+\RequirePackage{sduthesis-undergraduate}
+
+%% ===== 覆盖 Getter：隐藏个人信息 =====
+\renewcommand{\GetAuthor}{***}
+\renewcommand{\GetStudentId}{***}
+\renewcommand{\GetSupervisor}{***}
+
+%% ===== 覆盖封面：不显示个人信息的行 =====
+\renewcommand{\makecoverpage}{%
+  \begin{titlepage}
+    \centering
+    \vspace*{10mm}
+
+    %% 校名
+    {\zihao{-0}\bfhei{山东大学}}
+
+    \vspace{8mm}
+
+    %% 论文类型
+    {\zihao{2}\ bfsong{本科毕业论文}}
+
+    \vspace{20mm}
+
+    %% 论文标题
+    {\zihao{-2}\bfhei{\GetTitle}}
+
+    \vspace{20mm}
+
+    %% 仅保留学院和专业（无姓名、学号、导师）
+    \begin{tabular}{r@{\hspace{3mm}}l}
+      \Lcolumn{学\qquad 院} & \Rcolumn{\GetSchool}     \\[-0.8mm]\cline{2-2}\\[-4mm]
+      \Lcolumn{专\qquad 业} & \Rcolumn{\GetMajor}
+    \end{tabular}
+
+    \vfill
+
+    %% 日期
+    \begin{center}
+      \GetYear 年 \quad \GetMonth 月
+    \end{center}
+
+  \end{titlepage}
+}
+
+%% ===== 跳过声明页 =====
+\renewcommand{\makestatement}{%
+  % 盲审模式：跳过声明页
+}
+
+%% ===== 摘要中隐藏作者信息 =====
+%% 摘要页的作者行仍显示 ***（因为 Getter 已覆盖）
+
+\endinput

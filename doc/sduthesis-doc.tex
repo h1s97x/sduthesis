@@ -1,0 +1,550 @@
+% sduthesis-doc.tex — SDUThesis 使用手册
+\documentclass[a4paper,12pt]{ctexbook}
+
+% ===== 宏包 =====
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings, skins, breakable}
+\usepackage{fancyhdr}
+\usepackage{metalogo}
+
+% ===== 页眉页脚 =====
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{SDUThesis 使用手册}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+
+% ===== 代码样式 =====
+\lstdefinestyle{latex}{
+  language=[LaTeX]TeX,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!50!black}\itshape,
+  stringstyle=\color{red!60!black},
+  backgroundcolor=\color{gray!5},
+  frame=single,
+  rulecolor=\color{gray!30},
+  breaklines=true,
+  columns=fullflexible,
+  morekeywords={SDUSetup, GetTitle, GetAuthor, GetStudentId, GetSchool,
+    GetMajor, GetSupervisor, GetYear, GetMonth,
+    makecoverpage, maketable, printbib,
+    cnabstract, enabstract, cnkeywords, enkeywords,
+    myappendix, acknowledgement,
+    NewHook, UseHook, AddToHook},
+}
+
+% ===== 提示框 =====
+\newtcolorbox{infobox}{
+  colback=blue!5, colframe=blue!40!black,
+  fonttitle=\bfseries, title=提示,
+  breakable,
+}
+\newtcolorbox{warnbox}{
+  colback=yellow!5, colframe=yellow!60!black,
+  fonttitle=\bfseries, title=注意,
+  breakable,
+}
+
+% ===== 元信息 =====
+\title{\textbf{SDUThesis 使用手册} \\ \large 山东大学本科毕业论文 \LaTeX{} 模板}
+\author{SDUThesis 维护团队}
+\date{v1.4.0 \quad 2025年}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+% ============================================================
+\chapter{简介}
+% ============================================================
+
+\section{什么是 SDUThesis}
+
+SDUThesis 是山东大学本科毕业论文的 \LaTeX{} 模板，帮助毕业生专注于论文内容写作，而不用操心格式排版。
+
+\section{特性}
+
+\begin{itemize}[nosep]
+  \item \textbf{一键配置} — \lstinline|\SDUSetup{}| 集中配置论文元信息
+  \item \textbf{模块化架构} — 通过加载不同模块支持本科/盲审等多种场景
+  \item \textbf{Hook 扩展} — 基于 \LaTeX3 Hook 机制，方便扩展
+  \item \textbf{开箱即用} — Fandol 开源字体，无需额外安装
+  \item \textbf{Overleaf 支持} — 一键在线编辑
+  \item \textbf{CI/CD} — 自动编译 + 自动发布
+\end{itemize}
+
+\section{系统要求}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{项目} & \textbf{要求} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{项目} & \textbf{要求} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+TeX 发行版 & TeX Live 2024+ 或 MiKTeX \\
+编译器 & XeLaTeX \\
+参考文献 & Biber + Bib\LaTeX{} \\
+中文字体 & Fandol（TeX Live 自带） \\
+\end{longtable}
+
+% ============================================================
+\chapter{快速开始}
+% ============================================================
+
+\section{安装}
+
+\subsection{方式一：克隆仓库}
+
+\begin{lstlisting}[style=latex]
+git clone https://github.com/h1s97x/sduthesis.git
+\end{lstlisting}
+
+\subsection{方式二：Overleaf}
+
+点击 README 中的 \textbf{Open in Overleaf} 按钮，直接在线编辑。
+
+\subsection{方式三：下载 Release}
+
+从 GitHub Releases 页面下载最新版本的 zip 包。
+
+\section{最小示例}
+
+\begin{lstlisting}[style=latex]
+\documentclass{sduthesis}
+
+\SDUSetup{
+  module     = undergraduate,
+  title      = {基于XX的XX研究},
+  author     = {张三},
+  studentId  = {2020XXXXXX},
+  school     = {计算机科学与技术学院},
+  major      = {计算机科学与技术},
+  supervisor = {李四},
+  year       = {2025},
+  month      = {6},
+}
+
+\begin{document}
+
+\makecoverpage
+\maketable
+
+\begin{cnabstract}
+这里是中文摘要。
+\cnkeywords{关键词1，关键词2，关键词3}
+\end{cnabstract}
+
+\begin{enabstract}
+This is the English abstract.
+\enkeywords{keyword1, keyword2, keyword3}
+\end{enabstract}
+
+\mainmatter
+\chapter{绪论}
+论文正文从这里开始。
+
+\backmatter
+\printbib
+\acknowledgement{感谢...}
+
+\end{document}
+\end{lstlisting}
+
+\section{编译}
+
+\begin{lstlisting}[language=bash]
+# 使用 just（推荐）
+just build
+
+# 或手动编译
+xelatex main
+biber main
+xelatex main
+xelatex main
+\end{lstlisting}
+
+\begin{warnbox}
+必须按 xelatex → biber → xelatex × 2 的顺序编译四次。
+少编译一次都会导致引用显示为 ``??'' 或目录为空。
+\end{warnbox}
+
+% ============================================================
+\chapter{配置参考}
+% ============================================================
+
+本章详细说明 \lstinline|\SDUSetup{}| 的所有配置项。
+
+\section{基本信息}
+
+\begin{longtable}{llcl}
+\toprule
+\textbf{键名} & \textbf{类型} & \textbf{必填} & \textbf{说明} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{键名} & \textbf{类型} & \textbf{必填} & \textbf{说明} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\lstinline|title|      & 字符串 & 是 & 论文标题 \\
+\lstinline|author|     & 字符串 & 是 & 作者姓名 \\
+\lstinline|studentId|  & 字符串 & 是 & 学号 \\
+\lstinline|school|     & 字符串 & 是 & 学院名称 \\
+\lstinline|major|      & 字符串 & 是 & 专业名称 \\
+\lstinline|supervisor| & 字符串 & 是 & 指导教师 \\
+\lstinline|year|       & 字符串 & 是 & 毕业年份 \\
+\lstinline|month|      & 字符串 & 是 & 毕业月份 \\
+\end{longtable}
+
+\section{样式配置}
+
+\begin{longtable}{llcl}
+\toprule
+\textbf{键名} & \textbf{类型} & \textbf{必填} & \textbf{说明} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{键名} & \textbf{类型} & \textbf{必填} & \textbf{说明} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\lstinline|lineSpread| & 数值 & 否 & 行距倍数，默认 1.25 \\
+\lstinline|pageLeft|   & 数值 & 否 & 左边距（cm），默认 2.5 \\
+\lstinline|pageRight|  & 数值 & 否 & 右边距（cm），默认 2.5 \\
+\lstinline|pageTop|    & 数值 & 否 & 上边距（cm），默认 2.5 \\
+\lstinline|pageBottom| & 数值 & 否 & 下边距（cm），默认 2.5 \\
+\end{longtable}
+
+\section{模块选择}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{值} & \textbf{说明} & \textbf{包含功能} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{值} & \textbf{说明} & \textbf{包含功能} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\lstinline|undergraduate| & 本科论文（默认） & 封面、摘要、声明、页眉页脚 \\
+\lstinline|blindreview|  & 盲审模式 & 基于本科，隐藏作者/导师信息 \\
+\end{longtable}
+
+\begin{lstlisting}[style=latex]
+% 本科论文（默认）
+\SDUSetup{module = undergraduate, ...}
+
+% 盲审模式
+\SDUSetup{module = blindreview, ...}
+\end{lstlisting}
+
+% ============================================================
+\chapter{论文结构}
+% ============================================================
+
+\section{文档结构}
+
+\begin{lstlisting}[style=latex]
+\documentclass{sduthesis}
+\SDUSetup{...}
+
+\begin{document}
+\makecoverpage          % 封面
+\maketable              % 目录
+
+% ----- 前言部分 -----
+\begin{cnabstract}      % 中文摘要
+  ...
+  \cnkeywords{...}
+\end{cnabstract}
+
+\begin{enabstract}      % 英文摘要
+  ...
+  \enkeywords{...}
+\end{enabstract}
+
+% ----- 正文部分 -----
+\mainmatter
+\chapter{绪论}
+\chapter{...}
+\chapter{结论}
+
+% ----- 后记部分 -----
+\backmatter
+\printbib               % 参考文献
+\acknowledgement{...}   % 致谢
+% \myappendix{...}      % 附录（可选）
+
+\end{document}
+\end{lstlisting}
+
+\section{封面}
+
+封面由 \lstinline|\makecoverpage| 自动生成，信息来源于 \lstinline|\SDUSetup{}|。
+
+如需自定义校徽，可替换 \lstinline|assets/sdulogo.pdf| 文件。
+
+\section{摘要}
+
+\begin{lstlisting}[style=latex]
+\begin{cnabstract}
+  本文研究了...
+  \cnkeywords{关键词1，关键词2，关键词3}
+\end{cnabstract}
+
+\begin{enabstract}
+  This paper studies...
+  \enkeywords{keyword1, keyword2, keyword3}
+\end{enabstract}
+\end{lstlisting}
+
+\begin{infobox}
+中文关键词之间用中文逗号（，）分隔，英文关键词之间用英文逗号（,）分隔。
+\end{infobox}
+
+\section{参考文献}
+
+使用 Bib\LaTeX{} + Biber 管理参考文献，格式遵循 GB/T 7714-2015。
+
+\begin{lstlisting}[style=latex]
+% 在正文中引用
+根据文献\citing{key1,key2}的研究...
+
+% 在后记部分输出参考文献列表
+\printbib
+\end{lstlisting}
+
+参考文献条目写在 \lstinline|data/ref/references.bib| 中：
+
+\begin{lstlisting}[style=latex]
+@article{key1,
+  author  = {作者},
+  title   = {标题},
+  journal = {期刊名},
+  year    = {2024},
+  volume  = {1},
+  number  = {1},
+  pages   = {1--10},
+}
+\end{lstlisting}
+
+\begin{warnbox}
+\lstinline|\citing{}| 产生上标引用（如\textsuperscript{[1]}），
+这是山大论文格式要求。如需行内引用，请使用
+\lstinline|\cite{}| 或 \lstinline|\parencite{}|。
+\end{warnbox}
+
+\section{致谢}
+
+\begin{lstlisting}[style=latex]
+\acknowledgement{
+  感谢我的导师...
+}
+\end{lstlisting}
+
+\section{附录}
+
+\begin{lstlisting}[style=latex]
+\myappendix{
+  \chapter{附录A标题}
+  附录内容...
+}
+\end{lstlisting}
+
+% ============================================================
+\chapter{常见问题}
+% ============================================================
+
+\section{编译相关}
+
+\begin{enumerate}
+  \item \textbf{引用显示 ``??''} \\
+    原因：编译次数不够。解决：执行完整编译流程 xelatex → biber → xelatex × 2。
+
+  \item \textbf{目录为空} \\
+    原因：同上，至少需要两次 xelatex 编译才能生成目录。
+
+  \item \textbf{字体找不到} \\
+    原因：系统缺少 Fandol 字体。解决：安装完整 TeX Live，
+    或在 \lstinline|\SDUSetup{}| 中指定系统已有的字体。
+\end{enumerate}
+
+\section{Overleaf 相关}
+
+\begin{enumerate}
+  \item \textbf{Overleaf 上编译失败} \\
+    确保编译器设置为 XeLaTeX（Menu → Compiler → XeLaTeX）。
+\end{enumerate}
+
+\section{自定义}
+
+\begin{enumerate}
+  \item \textbf{如何改行距？} \\
+    \lstinline|\SDUSetup{lineSpread = 1.5}|
+
+  \item \textbf{如何改页边距？} \\
+    \lstinline|\SDUSetup{pageLeft = 3, pageRight = 3, pageTop = 3, pageBottom = 3}|
+
+  \item \textbf{如何换校徽？} \\
+    替换 \lstinline|assets/sdulogo.pdf| 文件即可。
+\end{enumerate}
+
+% ============================================================
+\chapter{架构设计}
+% ============================================================
+
+本章面向开发者和贡献者，介绍 SDUThesis 的内部架构。
+
+\section{分层架构}
+
+\begin{lstlisting}[style=latex]
+┌─────────────────────────────────────┐
+│       用户层 (User Layer)           │
+│   sdusetup.tex + data/ + main.tex  │
+├─────────────────────────────────────┤
+│       模块层 (Module Layer)         │
+│   undergraduate.sty  blindreview.sty│
+├─────────────────────────────────────┤
+│       内核 (Core Engine)            │
+│   sduthesis.cls                     │
+│   ├── SDUSetup 引擎 (l3keys)       │
+│   ├── Hook 系统                     │
+│   ├── 字体加载器                    │
+│   └── 页面引擎                      │
+├─────────────────────────────────────┤
+│       基础层 (Base Layer)           │
+│   LaTeX3 + ctex + xeCJK + biblatex │
+└─────────────────────────────────────┘
+\end{lstlisting}
+
+\section{Hook 系统}
+
+内核定义了以下 Hook，模块通过 \lstinline|\AddToHook| 注入行为：
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Hook 名称} & \textbf{触发时机} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Hook 名称} & \textbf{触发时机} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\lstinline|sduthesis/after-setup|       & SDUSetup 之后 \\
+\lstinline|sduthesis/before-cover|      & 封面前 \\
+\lstinline|sduthesis/cover-style|       & 封面样式（模块覆盖） \\
+\lstinline|sduthesis/frontmatter/begin| & 前言开始 \\
+\lstinline|sduthesis/mainmatter/begin|  & 正文开始 \\
+\lstinline|sduthesis/backmatter/begin|  & 后记开始 \\
+\end{longtable}
+
+\section{SDUSetup 实现原理}
+
+SDUSetup 基于 \LaTeX3 l3keys 机制，分为三层：
+
+\begin{enumerate}
+  \item \textbf{存储层} — \lstinline|\tl_new:N \l__sdu_title_tl| 声明 token 变量
+  \item \textbf{定义层} — \lstinline|\keys_define:nn { sdu } { title .tl_set:N = \l__sdu_title_tl }| 绑定键与变量
+  \item \textbf{导出层} — \lstinline|\NewDocumentCommand \GetTitle {} { \l__sdu_title_tl }| 导出用户命令
+\end{enumerate}
+
+数据流：用户 \lstinline|\SDUSetup{title={...}}| → l3keys 写入变量 → \lstinline|\GetTitle| 读取变量。
+
+\section{如何创建新模块}
+
+详见 \texttt{doc/DEVELOP.md}。简要步骤：
+
+\begin{enumerate}
+  \item 创建 \lstinline|modules/sduthesis-<name>.sty|
+  \item 声明包：\lstinline|\ProvidesPackage{sduthesis-<name>}|
+  \item 添加模块特有配置键
+  \item 通过 \lstinline|\AddToHook| 挂载行为
+  \item 通过 \lstinline|\renewcommand| 覆盖排版
+\end{enumerate}
+
+% ============================================================
+\appendix
+\chapter{完整配置示例}
+% ============================================================
+
+\begin{lstlisting}[style=latex]
+\documentclass{sduthesis}
+
+\SDUSetup{
+  % ----- 基本信息 -----
+  module     = undergraduate,
+  title      = {基于深度学习的图像识别算法研究},
+  author     = {张三},
+  studentId  = {2020012345},
+  school     = {计算机科学与技术学院},
+  major      = {计算机科学与技术},
+  supervisor = {李四教授},
+  year       = {2025},
+  month      = {6},
+  % ----- 样式配置（可选）-----
+  lineSpread = 1.25,
+  pageLeft   = 2.5,
+  pageRight  = 2.5,
+  pageTop    = 2.5,
+  pageBottom = 2.5,
+}
+
+\begin{document}
+
+\makecoverpage
+\maketable
+
+\begin{cnabstract}
+  本文针对图像识别中的关键问题，提出了一种基于深度学习的新方法...
+  \cnkeywords{深度学习，图像识别，卷积神经网络}
+\end{cnabstract}
+
+\begin{enabstract}
+  This paper addresses key issues in image recognition
+  and proposes a novel deep learning based method...
+  \enkeywords{Deep Learning, Image Recognition, CNN}
+\end{enabstract}
+
+\mainmatter
+\chapter{绪论}
+\section{研究背景}
+随着人工智能技术的快速发展...
+
+\chapter{相关工作}
+\section{深度学习概述}
+深度学习是机器学习的一个重要分支\citing{lecun2015deep}...
+
+\chapter{方法}
+\chapter{实验}
+\chapter{结论}
+
+\backmatter
+\printbib
+\acknowledgement{感谢导师的悉心指导...}
+
+\end{document}
+\end{lstlisting}
+
+\end{document}

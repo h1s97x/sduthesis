@@ -82,27 +82,33 @@
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
 
 % ==================== 内部层：模块加载器 ====================
-\NewDocumentCommand \sdu_load_module: { }
-{
-  % 构建模块包名
-  \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
-  % 兼容 Overleaf：先检查 modules/ 目录，找到则拷贝到当前目录
-  % 正常环境通过 TEXINPUTS 搜索 modules/ 目录
-  \exp_args:Nx \file_if_exist:nT
-    { modules/\l__sdu_module_pkg_tl .sty }
-    {
-      \file_copy:xx
-        { modules/\l__sdu_module_pkg_tl .sty }
-        { \l__sdu_module_pkg_tl .sty }
-    }
-  % 加载模块
-  \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
-}
-\cs_generate_variant:Nn \file_copy:nn { xx }
+% 将 modules/ 目录添加到 LaTeX 文件搜索路径
+% 这样 \RequirePackage 可以搜索到 modules/ 下的 .sty 文件
+% 正常环境通过 TEXINPUTS 环境变量搜索，Overleaf 环境需要此路径
+\ExplSyntaxOff
+\makeatletter
+\IfFileExists{modules/sduthesis-undergraduate.sty}{%
+  \ifx\input@path\@undefined
+    \def\input@path{{modules/}}%
+  \else
+    \g@addto@macro\input@path{{modules/}}%
+  \fi
+  \typeout{sduthesis: added modules/ to search path}%
+}{}
+\makeatother
+\ExplSyntaxOn
 
 \msg_new:nnn { sdu } { module-not-found }
 {
   Module~'#1'~not~found.~Please~check~the~module~name~in~\SDUSetup.
+}
+
+\cs_new:Nn \sdu_load_module:
+{
+  % 构建模块包名
+  \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
+  % 加载模块（通过 \input@path 或 TEXINPUTS 搜索）
+  \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
 }
 
 % ==================== Hook 系统 ====================

@@ -6,12 +6,6 @@
 % See https://www.latex-project.org/lppl.txt
 % ============================================================
 %
-% \fi
-%
-% \iffalse
-%<cls>\NeedsTeXFormat{LaTeX2e}
-%<cls>\ProvidesClass{sduthesis}[2025/05/16 v2.0.0 Thesis template for Shandong University]
-%
 %<*driver>
 \documentclass[a4paper]{l3doc}
 \usepackage{ctex}
@@ -228,13 +222,13 @@
 %
 % \subsection{文档类声明与加载}
 %
-%    \begin{macrocode}
-%<*cls>
-%    \end{macrocode}
-%
 % 基于 ctexbook，使用 openany 避免章节强制奇数页。
 %
+% \iffalse
 %    \begin{macrocode}
+%<*cls>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{sduthesis}[2025/05/16 v2.0.0 Thesis template for Shandong University]
 \LoadClass[openany]{ctexbook}
 %    \end{macrocode}
 %
@@ -845,8 +839,9 @@
 %
 %    \begin{macrocode}
 \endinput
-%</cls>
 %    \end{macrocode}
+%</cls>
+% \fi
 %
 % ============================================================
 % \section{许可证}

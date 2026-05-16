@@ -38,7 +38,8 @@ sduthesis/
 ├── main.tex                   # 主文件
 │
 ├── modules/                   # 功能模块（插件）
-│   └── sduthesis-undergraduate.sty  # 本科论文模块
+│   ├── sduthesis-undergraduate.sty  # 本科论文模块
+│   └── sduthesis-blindreview.sty    # 盲审模式模块
 │
 ├── data/                      # 论文内容（用户编辑区）
 │   ├── frontmatter/           #   摘要、致谢、附录
@@ -112,6 +113,7 @@ latexmk -xelatex main.tex
 | 模块 | 说明 | 使用方式 |
 |------|------|----------|
 | `undergraduate` | 本科毕业论文 | `\SDUSetup{module=undergraduate}` |
+| `blindreview` | 盲审模式（隐藏作者信息） | `\SDUSetup{module=blindreview}` |
 
 开发中的模块：
 
@@ -119,7 +121,6 @@ latexmk -xelatex main.tex
 |------|------|------|
 | `master` | 硕士学位论文 | 计划中 |
 | `doctor` | 博士学位论文 | 计划中 |
-| `blindreview` | 盲审模式 | 计划中 |
 
 ## 环境要求
 

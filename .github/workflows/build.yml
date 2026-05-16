@@ -24,6 +24,11 @@ jobs:
           package-file: |
             .github/tl_packages
 
+      - name: Link fonts for XeTeX
+        run: |
+          mkdir -p ~/.fonts
+          ln -s $(kpsewhich -var-value=TEXMFDIST)/fonts/ ~/.fonts/texmf-dist-fonts
+
       - uses: taiki-e/install-action@v2
         with:
           tool: just

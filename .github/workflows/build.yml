@@ -37,6 +37,11 @@ jobs:
         with:
           tool: just
 
+      - name: Generate cls from DTX
+        run: |
+          cd src && xelatex sduthesis.ins
+          cp sduthesis.cls ../sduthesis.cls
+
       - name: Lint with chktex
         if: matrix.texlive-version == '2025'
         continue-on-error: true

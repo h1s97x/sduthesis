@@ -33,15 +33,18 @@
 
 ```
 sduthesis/
-├── sduthesis.cls              # 内核：SDUSetup 引擎 + Hook 系统 + 基础排版
-├── sdusetup.tex               # 用户配置（论文信息 + 模块选择）
-├── main.tex                   # 主文件
+├── src/                            # DTX 源码
+│   ├── sduthesis.dtx               # 内核源码 + 使用手册（生成 .cls 和 .pdf）
+│   └── sduthesis.ins               # 安装脚本（从 .dtx 提取 .cls）
+├── sduthesis.cls                   # 生成文件（从 .dtx 提取，不要手动编辑）
+├── sdusetup.tex                    # 用户配置（论文信息 + 模块选择）
+├── main.tex                        # 主文件
 │
-├── modules/                   # 功能模块（插件）
-│   ├── sduthesis-undergraduate.sty  # 本科论文模块
-│   └── sduthesis-blindreview.sty    # 盲审模式模块
+├── modules/                        # 功能模块（插件）
+│   ├── sduthesis-undergraduate.sty # 本科论文模块
+│   └── sduthesis-blindreview.sty   # 盲审模式模块
 │
-├── data/                      # 论文内容（用户编辑区）
+├── data/                           # 论文内容（用户编辑区）
 │   ├── frontmatter/           #   摘要、致谢、附录
 │   ├── chapters/              #   正文章节
 │   └── ref/references.bib     #   参考文献数据库

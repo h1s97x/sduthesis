@@ -33,8 +33,18 @@ jobs:
         with:
           tool: just, git-cliff
 
+      - name: Generate cls from DTX
+        run: |
+          cd src && xelatex sduthesis.ins
+          cp sduthesis.cls ../sduthesis.cls
+
       - name: Build PDF
         run: just build
+        env:
+          TEXINPUTS: ".:modules//:"
+
+      - name: Build documentation
+        run: just doc
         env:
           TEXINPUTS: ".:modules//:"
 
@@ -58,8 +68,12 @@ jobs:
           cp sduthesis.cls sduthesis/
           cp -r modules/ data/ figures/ sduthesis/
           cp justfile README.md LICENSE CHANGELOG.md CONTRIBUTING.md sduthesis/
+          cp doc/sduthesis-doc.pdf sduthesis/ 2>/dev/null || true
           zip -r sduthesis.zip sduthesis/
           rm -rf sduthesis/
+
+      - name: Create TDS archive
+        run: just tds
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -67,4 +81,6 @@ jobs:
           files: |
             main.pdf
             sduthesis.zip
+            sduthesis.tds.zip
+            doc/sduthesis-doc.pdf
           generate_release_notes: true

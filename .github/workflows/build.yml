@@ -13,14 +13,18 @@ on:
 
 jobs:
   build:
-    name: Build LaTeX document
+    name: Build (TeX Live ${{ matrix.texlive-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        texlive-version: ["2024", "2025"]
     steps:
       - uses: actions/checkout@v6
 
       - uses: TeX-Live/setup-texlive-action@v4
         with:
-          version: 2025
+          version: ${{ matrix.texlive-version }}
           package-file: |
             .github/tl_packages
 
@@ -38,8 +42,13 @@ jobs:
         env:
           TEXINPUTS: ".:modules//:"
 
+      - name: Run compile tests
+        run: python3 tests/test-compile.py
+        env:
+          TEXINPUTS: ".:modules//:"
+
       - uses: actions/upload-artifact@v7
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && matrix.texlive-version == '2025'
         with:
           name: main.pdf
           path: main.pdf

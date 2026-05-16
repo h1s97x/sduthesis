@@ -1,0 +1,75 @@
+name: Bug 报告
+description: 报告模板编译或排版问题
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢提交 Bug 报告！请填写以下信息以便我们快速定位问题。
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: 使用的模块
+      description: 你在 sdusetup.tex 中配置了哪个 module？
+      options:
+        - undergraduate（本科论文）
+        - 其他 / 自定义
+    validations:
+      required: true
+
+  - type: dropdown
+    id: texlive
+    attributes:
+      label: TeX 发行版
+      options:
+        - TeX Live 2025
+        - TeX Live 2024
+        - TeX Live 2023
+        - Overleaf
+        - MiKTeX
+        - 其他
+    validations:
+      required: true
+
+  - type: dropdown
+    id: compiler
+    attributes:
+      label: 编译器
+      options:
+        - XeLaTeX
+        - LuaLaTeX
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 具体出了什么问题？期望的行为是什么？
+    validations:
+      required: true
+
+  - type: textarea
+    id: mwe
+    attributes:
+      label: 最小工作示例（MWE）
+      description: |
+        请提供能复现问题的最小代码。移除所有与问题无关的内容。
+        ```latex
+        \documentclass{sduthesis}
+        % 在这里填写最小示例代码
+        \begin{document}
+        \end{document}
+        ```
+      render: latex
+
+  - type: textarea
+    id: log
+    attributes:
+      label: 编译日志
+      description: |
+        请粘贴相关的错误信息（不需要整个日志，只需错误附近的内容）。
+        如果是 Overleaf，请点击 "Download PDF" 旁边的日志图标查看。
+      render: shell

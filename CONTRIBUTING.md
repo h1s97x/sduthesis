@@ -87,11 +87,11 @@ just build
 
 ```
 sduthesis/
-├── sduthesis.cls      # 核心模板类
-├── sdusetup.tex      # 用户配置
-├── data/             # 论文内容（用户修改这里）
-├── config/           # 格式配置
-└── doc/              # 文档
+├── sduthesis.cls      # 内核：SDUSetup 引擎 + Hook 系统 + 基础排版
+├── sdusetup.tex       # 用户配置
+├── modules/           # 功能模块（插件）
+├── data/              # 论文内容（用户修改这里）
+└── doc/               # 文档
 ```
 
 ## 版本管理

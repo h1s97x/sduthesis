@@ -1,10 +1,10 @@
-# SDUTHESIS: 山东大学本科毕业论文 LaTeX 模板
+# SDUTHESIS: 山东大学毕业论文 LaTeX 模板
 
 <div align="center">
 
 ![Logo](./assets/sduthesis_icon.svg)
 
-**山东大学本科毕业论文（理工类）LaTeX 模板**
+**山东大学毕业论文 LaTeX 模板**
 
 [![GitHub release](https://img.shields.io/github/v/release/h1s97x/sduthesis?style=flat-square)](https://github.com/h1s97x/sduthesis/releases/latest)
 [![License](https://img.shields.io/github/license/h1s97x/sduthesis?color=008080&labelColor=2b2b2b)](./LICENSE)
@@ -15,13 +15,14 @@
 
 ## 简介
 
-`sduthesis` 是为山东大学理工类专业的本科毕业论文设计的 LaTeX 模板，基于《山东大学本科毕业论文（设计）撰写规范》编写。
+`sduthesis` 是为山东大学毕业论文设计的 LaTeX 模板，基于《山东大学本科毕业论文（设计）撰写规范》编写。采用内核 + 模块的插件化架构，通过 `\SDUSetup{}` 集中配置，支持不同学位类型的论文格式。
 
 ## 特性
 
-- **符合规范**：严格按照山东大学官方格式要求设计
-- **集中配置**：通过 `\SDUSetup{}` 统一管理论文信息，内容与样式分离
-- **一键编译**：支持 `just`、`make`、`latexmk` 多种编译方式
+- **插件化架构**：内核 + 模块设计，支持本科/硕士/博士等不同论文类型
+- **集中配置**：通过 `\SDUSetup{}` 统一管理论文信息与样式，内容与样式分离
+- **Hook 系统**：模块通过钩子注入行为，内核不包含任何特定论文类型的逻辑
+- **一键编译**：支持 `just`、`latexmk` 多种编译方式
 - **跨平台兼容**：支持 Windows / macOS / Linux / Overleaf
 - **开源字体**：使用 Fandol 开源字体，无需安装额外中文字体
 - **自动化 CI**：GitHub Actions 持续集成，确保模板正常工作
@@ -30,26 +31,27 @@
 
 ```
 sduthesis/
-├── sduthesis.cls              # 核心模板类
-├── sdusetup.tex               # 用户配置（论文信息）
+├── sduthesis.cls              # 内核：SDUSetup 引擎 + Hook 系统 + 基础排版
+├── sdusetup.tex               # 用户配置（论文信息 + 模块选择）
 ├── main.tex                   # 主文件
-├── justfile                   # 编译脚本（推荐）
-├── Makefile                   # 编译脚本（备用）
+│
+├── modules/                   # 功能模块（插件）
+│   └── sduthesis-undergraduate.sty  # 本科论文模块
 │
 ├── data/                      # 论文内容（用户编辑区）
-│   ├── frontmatter/           #   封面、摘要、目录、参考文献、致谢、附录
+│   ├── frontmatter/           #   摘要、致谢、附录
 │   ├── chapters/              #   正文章节
 │   └── ref/references.bib     #   参考文献数据库
-│
-├── config/                    # 格式配置（一般无需修改）
-│   ├── config-*.tex           #   各部分配置
-│   └── styles/                #   样式定义
 │
 ├── figures/                   # 图片资源
 │   └── logos/                 #   校徽校名
 │
-└── doc/                       # 文档
-    └── FAQ.md                 #   常见问题
+├── doc/                       # 文档
+│   ├── FAQ.md                 #   常见问题
+│   ├── INTERNALS.md           #   技术文档
+│   └── ROADMAP.md             #   项目方案
+│
+└── justfile                   # 编译脚本
 ```
 
 ## 快速开始
@@ -70,6 +72,7 @@ git clone https://github.com/h1s97x/sduthesis.git
 
 ```latex
 \SDUSetup{
+  module     = {undergraduate},    % 模块选择
   title      = {你的论文标题},
   author     = {你的姓名},
   studentId  = {你的学号},
@@ -85,7 +88,7 @@ git clone https://github.com/h1s97x/sduthesis.git
 
 | 目录 | 内容 |
 |------|------|
-| `data/frontmatter/` | 封面、摘要 |
+| `data/frontmatter/` | 摘要、致谢、附录 |
 | `data/chapters/` | 正文章节 |
 | `data/ref/` | 参考文献 |
 
@@ -96,12 +99,25 @@ git clone https://github.com/h1s97x/sduthesis.git
 just build        # 编译 PDF
 just clean        # 清理临时文件
 
-# 方式二：使用 make
-make
-
-# 方式三：直接使用 latexmk
+# 方式二：直接使用 latexmk
 latexmk -xelatex main.tex
 ```
+
+## 模块系统
+
+模板采用内核 + 模块的插件化架构。内核提供基础排版引擎，模块负责特定论文类型的格式和内容。
+
+| 模块 | 说明 | 使用方式 |
+|------|------|----------|
+| `undergraduate` | 本科毕业论文 | `\SDUSetup{module=undergraduate}` |
+
+开发中的模块：
+
+| 模块 | 说明 | 状态 |
+|------|------|------|
+| `master` | 硕士学位论文 | 计划中 |
+| `doctor` | 博士学位论文 | 计划中 |
+| `blindreview` | 盲审模式 | 计划中 |
 
 ## 环境要求
 
@@ -114,7 +130,8 @@ latexmk -xelatex main.tex
 | 文档 | 说明 |
 |------|------|
 | [FAQ](./doc/FAQ.md) | 常见问题解答 |
-| [示例 PDF](./main.pdf) | 已编译的示例论文 |
+| [技术文档](./doc/INTERNALS.md) | 内部实现文档 |
+| [项目方案](./doc/ROADMAP.md) | 版本路线图 |
 
 ## 起源与致谢
 

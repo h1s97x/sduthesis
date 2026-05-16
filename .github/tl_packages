@@ -13,6 +13,7 @@ collection-xetex
 
 # collection-binextra
 latexmk
+chktex
 
 # ----- 2. 中文支持 -----
 

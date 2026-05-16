@@ -37,6 +37,12 @@ jobs:
         with:
           tool: just
 
+      - name: Lint with chktex
+        if: matrix.texlive-version == '2025'
+        continue-on-error: true
+        run: |
+          chktex -q -n 1 -n 13 -n 24 -n 36 sduthesis.cls modules/*.sty 2>/dev/null || true
+
       - name: Build PDF
         run: just build
         env:

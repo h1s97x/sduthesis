@@ -39,10 +39,8 @@ algpseudocode
 float
 tabularx
 
-# ----- 6. 字体包（collection-fontsrecommended 不包含）-----
-
-tex-gyre
-tex-gyre-math
+# ----- 6. 字体包 -----
+# Latin Modern 由 collection-fontsrecommended 自动包含，无需单独安装
 
 # ----- 7. 传递依赖（collection 未自动拉入）-----
 

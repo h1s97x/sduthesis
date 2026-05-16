@@ -177,10 +177,10 @@
 \newcommand{\allbfithei}{\heiti\bfseries\itshape}
 \newcommand{\allbfitkai}{\kaiti\bfseries\itshape}
 
-% 英文字体
-\setmainfont{TeX Gyre Termes}
-\setsansfont{TeX Gyre Heros}
-\setmonofont{TeX Gyre Cursor}
+% 英文字体（Latin Modern 是 TeX Live 必备字体，确保 CI 兼容）
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}
 
 % 数学字体
 \setmathfont{Latin Modern Math}

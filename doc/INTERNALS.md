@@ -208,9 +208,9 @@ ctex 会自动配置中文字体，但其默认配置可能与我们的需求冲
 
 ### 英文字体
 
-- 衬线：TeX Gyre Termes（Times 替代）
-- 无衬线：TeX Gyre Heros（Helvetica 替代）
-- 等宽：TeX Gyre Cursor（Courier 替代）
+- 衬线：Latin Modern Roman（Computer Modern 增强版）
+- 无衬线：Latin Modern Sans
+- 等宽：Latin Modern Mono
 - 数学：Latin Modern Math
 
 ---

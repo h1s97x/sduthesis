@@ -1,0 +1,48 @@
+# TeX Live packages for sduthesis
+# 参考 BIThesis: https://github.com/BITNP/BIThesis/blob/main/.github/tl_packages
+#
+# 策略：安装完整的 collection 而非逐个列包，避免传递依赖遗漏。
+# 只排除明确不需要的大型 collection（如 collection-lang* 非中文部分）。
+
+# ----- 1. 编译基础 -----
+
+scheme-minimal
+
+collection-latex
+collection-xetex
+
+# collection-binextra
+latexmk
+
+# ----- 2. 中文支持 -----
+
+# collection-langchinese
+ctex
+
+# ----- 3. 参考文献 -----
+
+# collection-bibtexextra
+biber
+biblatex
+biblatex-gb7714-2015
+
+# ----- 4. 模板使用的 collection（整组安装）-----
+
+collection-latexextra
+collection-latexrecommended
+collection-fontsrecommended
+collection-mathscience
+
+# ----- 5. 不在任何 collection 中的包 -----
+
+algpseudocode
+float
+tabularx
+
+# ----- 6. 字体包 -----
+# Latin Modern 由 collection-fontsrecommended 自动包含，无需单独安装
+
+# ----- 7. 传递依赖（collection 未自动拉入）-----
+
+logreq
+zhnumber

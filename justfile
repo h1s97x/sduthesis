@@ -1,5 +1,5 @@
 # SDUT thesis Justfile
-# 山东大学本科毕业论文 LaTeX 模板
+# 山东大学毕业论文 LaTeX 模板
 
 # 变量
 tex := "xelatex"

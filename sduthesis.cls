@@ -82,21 +82,33 @@
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
 
 % ==================== 内部层：模块加载器 ====================
-\NewDocumentCommand \sdu_load_module: { }
-{
-  \file_if_exist:nTF { sduthesis-\l__sdu_module_tl.sty }
-  {
-    \RequirePackage { sduthesis-\l__sdu_module_tl }
-  }
-  {
-    \msg_error:nnx { sdu } { module-not-found }
-      { \l__sdu_module_tl }
-  }
-}
+% 将 modules/ 目录添加到 LaTeX 文件搜索路径
+% 这样 \RequirePackage 可以搜索到 modules/ 下的 .sty 文件
+% 正常环境通过 TEXINPUTS 环境变量搜索，Overleaf 环境需要此路径
+\ExplSyntaxOff
+\makeatletter
+\IfFileExists{modules/sduthesis-undergraduate.sty}{%
+  \ifx\input@path\@undefined
+    \def\input@path{{modules/}}%
+  \else
+    \g@addto@macro\input@path{{modules/}}%
+  \fi
+  \typeout{sduthesis: added modules/ to search path}%
+}{}
+\makeatother
+\ExplSyntaxOn
 
 \msg_new:nnn { sdu } { module-not-found }
 {
   Module~'#1'~not~found.~Please~check~the~module~name~in~\SDUSetup.
+}
+
+\cs_new:Nn \sdu_load_module:
+{
+  % 构建模块包名
+  \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
+  % 加载模块（通过 \input@path 或 TEXINPUTS 搜索）
+  \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
 }
 
 % ==================== Hook 系统 ====================

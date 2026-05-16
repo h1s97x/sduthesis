@@ -11,6 +11,8 @@
 [![XeLaTeX](https://badgen.net/badge/compiler/XeLaTeX/blue)](https://www.tug.org/xelatex/)
 [![GitHub CI](https://img.shields.io/github/actions/workflow/status/h1s97x/sduthesis/build.yml?style=flat-square)](https://github.com/h1s97x/sduthesis/actions)
 
+[![Open in Overleaf](https://img.shields.io/badge/Overleaf-在线编辑-46A18B?logo=overleaf&style=flat-square)](https://www.overleaf.com/docs?snip_uri=https://github.com/h1s97x/sduthesis/archive/refs/heads/main.zip)
+
 </div>
 
 ## 简介

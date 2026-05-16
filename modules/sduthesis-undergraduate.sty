@@ -1,0 +1,136 @@
+\ProvidesPackage{sduthesis-undergraduate}[2025/05/16 v1.2.0 SDUThesis undergraduate module]
+
+% ============================================================
+% 本科生论文模块
+% 通过 \SDUSetup{module=undergraduate} 加载
+% 负责封面、摘要、页眉页脚等本科论文特有格式
+% ============================================================
+
+% -------------------- 封面排版 --------------------
+\newcommand{\Lwidth}{2.3cm}
+\newcommand{\Rwidth}{5.5cm}
+\newcommand{\titlewidth}{0.9\textwidth}
+
+\newcommand{\Lcolumn}[1]{\makebox[\Lwidth][c]{{\zihao{3}\bfkai{#1}}}}
+\newcommand{\Rcolumn}[1]{\makebox[\Rwidth][c]{{\zihao{3}\kai{#1}}}}
+
+\renewcommand{\makecoverpage}{
+    \begin{center}
+        \phantomsection
+        \hypertarget{coverpage}{}
+        \bookmark[dest=coverpage,level=0]{封面}
+
+        \vspace*{5mm}
+
+        \includegraphics[width=0.7\textwidth]{logos/sdu_logo_2.pdf}
+
+        \vspace*{10mm}
+
+        \includegraphics[width=0.95\textwidth]{logos/sdu_title.png}
+
+        \vspace*{5mm}
+
+        \begin{flushleft}
+            \zihao{3}\bfsong{论文（设计）题目：}
+        \end{flushleft}
+
+        \begin{minipage}{\titlewidth}
+            \centering
+            \zihao{-2}\bfhei{\GetTitle}
+        \end{minipage}
+
+        \vspace*{30mm}
+
+        \begin{tabular}{p{\Lwidth}p{\Rwidth}}
+            \Lcolumn{姓\qquad 名} & \Rcolumn{\GetAuthor}     \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{学\qquad 号} & \Rcolumn{\GetStudentId}  \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{学\qquad 院} & \Rcolumn{\GetSchool}     \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{专\qquad 业} & \Rcolumn{\GetMajor}      \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{指导教师}      & \Rcolumn{\GetSupervisor}  \\[-0.8mm]\cline{2-2}
+        \end{tabular}
+
+        \vspace*{35mm}
+
+        \zihao{3}\bfkai{
+          \GetYear 年 \quad
+          \GetMonth 月
+        }
+    \end{center}
+
+    \clearpage
+}
+
+% -------------------- 摘要环境 --------------------
+\renewenvironment{cnabstract}{
+    \phantomsection
+    \hypertarget{cnabstract}{}
+    \bookmark[dest=cnabstract,level=0]{中文摘要}
+
+    \vspace*{12pt}
+    \centerline{\zihao{-2}\bfhei{摘\quad 要}}
+    \vspace*{12pt}
+
+    \setlength{\parindent}{1.2em}
+    \zihao{-4}
+}{
+    \clearpage
+}
+
+\renewenvironment{enabstract}{
+    \phantomsection
+    \hypertarget{enabstract}{}
+    \bookmark[dest=enabstract,level=0]{英文摘要}
+
+    \vspace*{12pt}
+    \centerline{\zihao{-2}\textbf{ABSTRACT}}
+    \vspace*{12pt}
+
+    \setlength{\parindent}{1.2em}
+    \zihao{-4}
+}{
+    \clearpage
+}
+
+\renewcommand{\cnkeywords}[1]{
+    \vspace{1cm}
+    \noindent{\zihao{-4}\bfhei{关键词}：}
+    {#1}
+}
+
+\renewcommand{\enkeywords}[1]{
+    \vspace{1cm}
+    \noindent{\zihao{-4}\textbf{Keywords}:}
+    {#1}
+}
+
+% -------------------- 页眉页脚 --------------------
+% 前言：空白页眉页脚
+\AddToHook{sduthesis/frontmatter/begin}{
+    \pagestyle{empty}
+}
+
+% 正文：山东大学本科毕业论文
+\AddToHook{sduthesis/mainmatter/begin}{
+    \fancypagestyle{plain}{
+      \fancyhf{}
+      \renewcommand{\headrulewidth}{0.5pt}
+      \fancyhead[C]{\zihao{-5}\songti 山东大学本科毕业论文（设计）}
+      \fancyfoot[C]{\zihao{-5}\thepage}
+    }
+    \pagestyle{plain}
+    \linespread{1.3}\selectfont
+}
+
+% 后记：不编号章标题，小二号
+\AddToHook{sduthesis/backmatter/begin}{
+    \ctexset{
+      chapter={
+        format=\centering\zihao{-2}\bfseries,
+        beforeskip=21.6pt,
+        afterskip=18pt,
+        fixskip=true,
+       }
+    }
+}
+
+\endinput

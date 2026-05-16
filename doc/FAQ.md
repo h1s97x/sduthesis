@@ -53,7 +53,17 @@ just distclean    # 清理辅助文件和 PDF
 
 ### Q: 如何修改页边距、行距等格式？
 
-编辑 `config/config-main.tex` 中的对应配置项。页面边距在 `\geometry{...}` 中，行距在 `\setstretch{1.5}` 中。
+在 `sdusetup.tex` 的 `\SDUSetup{}` 中设置样式配置项：
+
+```latex
+\SDUSetup{
+  lineSpread  = {1.5},     % 行距倍数
+  pageLeft    = {3cm},     % 左边距
+  pageRight   = {3cm},     % 右边距
+  pageTop     = {2.5cm},   % 上边距
+  pageBottom  = {2.5cm},   % 下边距
+}
+```
 
 ## 字体相关
 
@@ -63,12 +73,13 @@ just distclean    # 清理辅助文件和 PDF
 
 ### Q: 如何使用系统中文字体（如宋体、黑体）？
 
-编辑 `config/config-main.tex` 中的字体配置：
+在 `sdusetup.tex` 中，在 `\SDUSetup{}` 之后添加字体覆盖：
 
 ```latex
-\newCJKfontfamily\songti{SimSun}      % Windows 宋体
-\newCJKfontfamily\heiti{SimHei}        % Windows 黑体
-\newCJKfontfamily\kaiti{KaiTi}         % Windows 楷体
+% 覆盖内核默认字体，使用 Windows 系统字体
+\renewcommand{\songti}{\CJKfontspec{SimSun}}
+\renewcommand{\heiti}{\CJKfontspec{SimHei}}
+\renewcommand{\kaiti}{\CJKfontspec{KaiTi}}
 ```
 
 ## Overleaf 相关

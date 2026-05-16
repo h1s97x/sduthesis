@@ -1,28 +1,35 @@
 \documentclass{sduthesis}
 
-% 引入用户配置文件（推荐方式）
+% 引入用户配置文件
 \input{sdusetup.tex}
 
 \begin{document}
 
+% ==================== 前言 ====================
 \frontmatter
-\input{config/styles/style-frontmatter.tex}
-\input{data/frontmatter/coverpage.tex}
+\UseHook{sduthesis/frontmatter/begin}
+\makecoverpage
 \input{data/frontmatter/abstract.tex}
-\input{data/frontmatter/contents.tex}
+\maketable
 
+% ==================== 正文 ====================
 \mainmatter
-\input{config/styles/style-mainmatter.tex}
+\UseHook{sduthesis/mainmatter/begin}
 \input{data/chapters/chapter1.tex}
 \input{data/chapters/chapter2.tex}
 \input{data/chapters/chapter3.tex}
 \input{data/chapters/chapter4.tex}
 \input{data/chapters/chapter5.tex}
 
+% ==================== 后记 ====================
 \backmatter
-\input{config/styles/style-backmatter.tex}
-\input{data/frontmatter/bibliography.tex}
+\UseHook{sduthesis/backmatter/begin}
+\printbib
+\begin{myacknowledgement}
 \input{data/frontmatter/acknowledgement.tex}
+\end{myacknowledgement}
+\begin{myappendix}
 \input{data/frontmatter/appendix.tex}
+\end{myappendix}
 
 \end{document}

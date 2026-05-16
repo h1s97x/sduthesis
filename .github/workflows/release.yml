@@ -47,10 +47,10 @@ jobs:
       - name: Create ZIP archive
         run: |
           mkdir -p sduthesis
-          cp main.tex sduthesis/
-          cp -r config/ data/ figures/ sduthesis/
+          cp main.tex sdusetup.tex sduthesis/
           cp sduthesis.cls sduthesis/
-          cp Makefile justfile README.md LICENSE CHANGELOG.md CONTRIBUTING.md sduthesis/
+          cp -r modules/ data/ figures/ sduthesis/
+          cp justfile README.md LICENSE CHANGELOG.md CONTRIBUTING.md sduthesis/
           zip -r sduthesis.zip sduthesis/
           rm -rf sduthesis/
 

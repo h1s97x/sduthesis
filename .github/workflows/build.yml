@@ -30,6 +30,8 @@ jobs:
 
       - name: Build PDF
         run: just build
+        env:
+          TEXINPUTS: ".:modules//:"
 
       - uses: actions/upload-artifact@v7
         if: github.event_name != 'pull_request'

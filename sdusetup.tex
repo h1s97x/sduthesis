@@ -5,6 +5,7 @@
 % 使用方法：只需修改下方的 \SDUSetup{...} 中的内容
 %
 % 支持的配置项：
+%   module      - 模板模块（undergraduate / master / doctor）
 %   title       - 论文标题
 %   author      - 作者姓名
 %   studentId   - 学号
@@ -14,9 +15,17 @@
 %   year        - 年份（如 2025）
 %   month       - 月份（如 6）
 %
+% 样式配置项（可选）：
+%   lineSpread  - 行距倍数（默认 1.5）
+%   pageLeft    - 左边距（默认 3cm）
+%   pageRight   - 右边距（默认 3cm）
+%   pageTop     - 上边距（默认 2.5cm）
+%   pageBottom  - 下边距（默认 2.5cm）
+%
 % ============================================================
 
 \SDUSetup{
+  module     = {undergraduate},
   title      = {基于深度学习的图像识别研究},
   author     = {张三},
   studentId  = {2020123456},

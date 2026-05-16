@@ -18,7 +18,9 @@
                     "-file-line-error",
                     "%DOC%"
                 ],
-                "env": {}
+                "env": {
+                    "TEXINPUTS": ".:modules//:"
+                }
             },
             {
                 "name": "biber",
@@ -38,7 +40,9 @@
                     "-file-line-error",
                     "%DOC%"
                 ],
-                "env": {}
+                "env": {
+                    "TEXINPUTS": ".:modules//:"
+                }
             }
         ],
         

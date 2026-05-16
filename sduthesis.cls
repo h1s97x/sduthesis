@@ -108,6 +108,9 @@
 \NewHook { sduthesis/mainmatter/begin }
 \NewHook { sduthesis/backmatter/begin }
 
+% 在 \begin{document} 时加载模块，确保 SDUSetup 已被调用
+\AddToHook { begindocument } { \sdu_load_module: \UseHook { sduthesis/after-setup } }
+
 \ExplSyntaxOff
 
 % -------------------- 宏包加载 --------------------
@@ -385,15 +388,6 @@
     \hypertarget{tableofcontent}{}
     \bookmark[dest=tableofcontent,level=0]{目录}
     \tableofcontents
-}
-
-% -------------------- 加载模块 --------------------
-% 在 \begin{document} 时加载模块，确保 SDUSetup 已被调用
-\AtBeginDocument{
-  \ExplSyntaxOn
-  \sdu_load_module:
-  \ExplSyntaxOff
-  \UseHook{sduthesis/after-setup}
 }
 
 \endinput

@@ -7,7 +7,10 @@ name: Quality
 #   1. 路径过滤：仅代码相关改动触发，改文档/说明不跑 CI
 #   2. concurrency：连续 push 自动取消旧运行，不排队
 #   3. 并行 job：lint（精简环境，~1min）与 regression（完整环境）同时跑
-#   4. TeX Live 由 install-texlive 默认自动缓存（~/texlive），跨 workflow 复用
+#   4. TeX Live 由 install-texlive 自动缓存（~/texlive），跨 workflow 复用；
+#      不显式传 repository：显式指定会使缓存 key 按天刷新（每天重装），
+#      自动选择则按镜像 revision 缓存（长期命中），且只从官方镜像列表选
+#      （USA Alive 优先，不会走 mirror.ctan.org 的随机重定向）
 
 on:
   pull_request:
@@ -61,8 +64,6 @@ jobs:
         uses: zauguin/install-texlive@v4
         with:
           package_file: .github/tl_packages_lint
-          texlive_version: 2025
-          repository: https://mirror.ctan.org/systems/texlive/tlnet
 
       # 排除规则由 .chktexrc 的 CmdLine 固化（与本地 chktex 一致）
       # 有 warning 即失败（gate），不再 || true 放行
@@ -81,8 +82,6 @@ jobs:
         uses: zauguin/install-texlive@v4
         with:
           package_file: .github/tl_packages
-          texlive_version: 2025
-          repository: https://mirror.ctan.org/systems/texlive/tlnet
 
       - name: Link fonts for XeTeX
         run: |

@@ -58,6 +58,14 @@ jobs:
         env:
           TEXINPUTS: ".:modules//:"
 
+      - name: l3build regression check
+        if: matrix.texlive-version == '2025'
+        continue-on-error: true
+        run: |
+          l3build check --quiet 2>&1 | tail -40
+        env:
+          TEXINPUTS: ".:modules//:"
+
       - uses: actions/upload-artifact@v7
         if: github.event_name != 'pull_request' && matrix.texlive-version == '2025'
         with:

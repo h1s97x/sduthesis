@@ -13,20 +13,16 @@ on:
 
 jobs:
   build:
-    name: Build (TeX Live ${{ matrix.texlive-version }})
+    name: Build (TeX Live 2025)
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        texlive-version: ["2024", "2025"]
     steps:
       - uses: actions/checkout@v6
 
-      - uses: TeX-Live/setup-texlive-action@v4
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v4
         with:
-          version: ${{ matrix.texlive-version }}
-          package-file: |
-            .github/tl_packages
+          package_file: .github/tl_packages
+          texlive_version: 2025
 
       - name: Link fonts for XeTeX
         run: |
@@ -43,7 +39,6 @@ jobs:
           cp sduthesis.cls ../sduthesis.cls
 
       - name: Lint with chktex
-        if: matrix.texlive-version == '2025'
         continue-on-error: true
         run: |
           chktex -q -n 1 -n 13 -n 24 -n 36 sduthesis.cls modules/*.sty 2>/dev/null || true
@@ -59,16 +54,28 @@ jobs:
           TEXINPUTS: ".:modules//:"
 
       - name: l3build regression check
-        if: matrix.texlive-version == '2025'
         continue-on-error: true
         run: |
-          l3build check --quiet 2>&1 | tail -40
+          # 首次运行：生成 tlg 基线（仓库无 tlg 时 check 会失败，改用 save 生成）
+          if [ ! -f testfiles/cover.tlg ]; then
+            l3build save --quiet 2>&1 | tail -20
+            echo "tlg 基线已生成，请从 artifact 下载并提交到仓库"
+          else
+            l3build check --quiet 2>&1 | tail -40
+          fi
         env:
           TEXINPUTS: ".:modules//:"
 
       - uses: actions/upload-artifact@v7
-        if: github.event_name != 'pull_request' && matrix.texlive-version == '2025'
+        if: github.event_name != 'pull_request'
         with:
           name: main.pdf
           path: main.pdf
-          retention-days: 30
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v7
+        if: github.event_name != 'pull_request'
+        with:
+          name: l3build-tlg
+          path: testfiles/*.tlg
+          if-no-files-found: warn

@@ -30,16 +30,22 @@ concurrency:
 
 jobs:
   build:
-    name: Build PDF package
+    # 双 TeX Live 版本矩阵：发布前验证旧版本兼容性（仅 main 分支低频运行，成本可控）。
+    # PR 阶段的 lint/regression 保持单版本(2025)以提速，兼容性信号由本矩阵兜底。
+    name: Build PDF (TeX Live ${{ matrix.texlive }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        texlive: [2024, 2025]
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install TeX Live
+      - name: Install TeX Live ${{ matrix.texlive }}
         uses: zauguin/install-texlive@v4
         with:
           package_file: .github/tl_packages
-          texlive_version: 2025
+          texlive_version: ${{ matrix.texlive }}
           repository: https://mirror.ctan.org/systems/texlive/tlnet
 
       - name: Link fonts for XeTeX
@@ -68,6 +74,6 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: main.pdf
+          name: main.pdf (TeX Live ${{ matrix.texlive }})
           path: main.pdf
           if-no-files-found: error

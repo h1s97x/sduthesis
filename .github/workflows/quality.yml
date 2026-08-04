@@ -103,7 +103,11 @@ jobs:
         env:
           TEXINPUTS: ".:modules//:"
 
-      # 有 tlg 基线则 check（对比），无基线首次 save 生成并提示提交基线
+      # 回归门禁说明：
+      #   - 已提交 tlg 基线 → l3build check（对比输出，防回归）
+      #   - 基线缺失（首次运行）→ save 生成基线并上传 artifact；
+      #     PR 放行（便于贡献者首次引入基线），push 到 develop 则硬失败，
+      #     强制提醒提交基线，避免 check 长期空转（回归门禁形同虚设）。
       # pipefail 保证 l3build 失败时 job 真正失败（不再被 continue-on-error 掩盖）
       - name: l3build regression check
         run: |
@@ -111,6 +115,10 @@ jobs:
           if [ ! -f testfiles/cover.tlg ]; then
             l3build save --quiet 2>&1 | tail -20
             echo "::warning::tlg 基线不存在，已重新生成。请从 l3build-tlg artifact 下载并提交到仓库，后续将自动执行 check 对比。"
+            if [ "${{ github.event_name }}" = "push" ]; then
+              echo "::error::push 到 develop 必须已提交 tlg 基线（见上方 artifact）。回归门禁在基线提交前不生效。"
+              exit 1
+            fi
           else
             l3build check --quiet 2>&1 | tail -40
           fi

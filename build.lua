@@ -44,8 +44,8 @@ checkengines = {"xetex"}
 stdengine = "xetex"
 
 -- 编译选项
+-- 注：不开 -shell-escape（testfiles 与 doc 均未使用 minted 等外部工具），收窄执行面
 checkopts = "-file-line-error -halt-on-error -interaction=nonstopmode"
-typesetopts = "-shell-escape -file-line-error -halt-on-error -interaction=nonstopmode"
 
 -- 忽略某些测试（当前无）
 excludetests = {}

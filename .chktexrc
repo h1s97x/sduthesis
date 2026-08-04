@@ -3,8 +3,11 @@
 # 通过 CmdLine 固化排除规则，使本地 chktex 与 CI 行为一致。
 # 规则编号说明：
 #   -n 1  命令后跟空格（Command terminated with space）
+#   -n 6  斜体修正缺失（No italic correction）——字体声明宏（\songti\itshape 等）误报
+#   -n 8  连字符长度（Wrong length of dash）——样式名 gb7714-2015、参考文献页码为合法用法
 #   -n 13 句间空格（Intersentence spacing）
 #   -n 24 删除多余空格（Delete space after \left / \right 等）
+#   -n 26 标点前空格——expl3 l3keys 属性列表对齐空格误报
 #   -n 36 其他已知误报
 #
 # 如需调整，请同步修改 CI（.github/workflows/quality.yml）与本地行为。
@@ -12,7 +15,10 @@
 CmdLine
 {
     -n 1
+    -n 6
+    -n 8
     -n 13
     -n 24
+    -n 26
     -n 36
 }

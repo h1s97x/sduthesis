@@ -66,8 +66,10 @@ jobs:
 
       # 排除规则由 .chktexrc 的 CmdLine 固化（与本地 chktex 一致）
       # 有 warning 即失败（gate），不再 || true 放行
+      # 仅检查模板代码本身：不检查 main.tex，避免 chktex 递归 \input 到
+      # data/（用户论文内容）——模板 CI 不对用户内容做 gate
       - name: Lint LaTeX sources
-        run: chktex -q sduthesis.cls modules/*.sty main.tex sdusetup.tex
+        run: chktex -q sduthesis.cls modules/*.sty sdusetup.tex
 
   regression:
     name: Regression (compile + l3build)

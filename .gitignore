@@ -358,3 +358,6 @@ out/
 
 docs/archive/
 assets/act
+
+# Preview files
+.preview

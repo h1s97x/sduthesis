@@ -23,6 +23,7 @@ jobs:
         with:
           package_file: .github/tl_packages
           texlive_version: 2025
+          repository: https://mirror.ctan.org/systems/texlive/tlnet
 
       - name: Link fonts for XeTeX
         run: |

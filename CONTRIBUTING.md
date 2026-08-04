@@ -43,7 +43,9 @@
 4. **编写代码并测试**
    ```bash
    just build    # 确保能正常编译
+   just lint     # chktex 代码规范检查（规则见 .chktexrc，与 CI 一致）
    ```
+   > PR 会触发 GitHub Actions 质量检查（`quality.yml`：lint + 编译回归），未通过会被拦截。
 5. **提交更改**
    ```bash
    git commit -m 'Add: some feature'

@@ -1,0 +1,133 @@
+name: Quality
+
+# 代码质量检查：静态 lint + 编译回归，PR / develop 快速反馈。
+# 构建产物请见 build.yml（仅 main 分支），发布见 release.yml（tag）。
+#
+# 提速设计（参考 BIThesis / thuthesis 等成熟 LaTeX 项目）：
+#   1. 路径过滤：仅代码相关改动触发，改文档/说明不跑 CI
+#   2. concurrency：连续 push 自动取消旧运行，不排队
+#   3. 并行 job：lint（精简环境，~1min）与 regression（完整环境）同时跑
+#   4. TeX Live 由 install-texlive 默认自动缓存（~/texlive），跨 workflow 复用
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - '*.cls'
+      - '*.sty'
+      - '*.dtx'
+      - '*.ins'
+      - '*.tex'
+      - 'testfiles/**'
+      - 'tests/**'
+      - 'justfile'
+      - '.chktexrc'
+      - '.github/tl_packages*'
+      - '.github/workflows/quality.yml'
+  push:
+    branches: [develop]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - '*.cls'
+      - '*.sty'
+      - '*.dtx'
+      - '*.ins'
+      - '*.tex'
+      - 'testfiles/**'
+      - 'tests/**'
+      - 'justfile'
+      - '.chktexrc'
+      - '.github/tl_packages*'
+      - '.github/workflows/quality.yml'
+  # 手动触发：用于合并后首次验证（修改 workflow 文件本身不会自动触发 CI）
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (chktex)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # 精简环境：仅 chktex 所需，无需完整 TeX Live（约 1 分钟）
+      - name: Install TeX Live (minimal)
+        uses: zauguin/install-texlive@v4
+        with:
+          package_file: .github/tl_packages_lint
+          texlive_version: 2025
+          repository: https://mirror.ctan.org/systems/texlive/tlnet
+
+      # 排除规则由 .chktexrc 的 CmdLine 固化（与本地 chktex 一致）
+      # 有 warning 即失败（gate），不再 || true 放行
+      # 仅检查模板代码本身：不检查 main.tex，避免 chktex 递归 \input 到
+      # data/（用户论文内容）——模板 CI 不对用户内容做 gate
+      - name: Lint LaTeX sources
+        run: chktex -q sduthesis.cls modules/*.sty sdusetup.tex
+
+  regression:
+    name: Regression (compile + l3build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v4
+        with:
+          package_file: .github/tl_packages
+          texlive_version: 2025
+          repository: https://mirror.ctan.org/systems/texlive/tlnet
+
+      - name: Link fonts for XeTeX
+        run: |
+          mkdir -p ~/.fonts
+          ln -s $(kpsewhich -var-value=TEXMFDIST)/fonts/ ~/.fonts/texmf-dist-fonts
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
+
+      - name: Generate cls from DTX
+        run: |
+          cd src && xelatex sduthesis.ins
+          cp sduthesis.cls ../sduthesis.cls
+
+      - name: Run compile tests
+        run: python3 tests/test-compile.py
+        env:
+          TEXINPUTS: ".:modules//:"
+
+      # 回归门禁说明：
+      #   - 已提交 tlg 基线 → l3build check（对比输出，防回归）
+      #   - 基线缺失（首次运行）→ save 生成基线并上传 artifact；
+      #     PR 放行（便于贡献者首次引入基线），push 到 develop 则硬失败，
+      #     强制提醒提交基线，避免 check 长期空转（回归门禁形同虚设）。
+      # pipefail 保证 l3build 失败时 job 真正失败（不再被 continue-on-error 掩盖）
+      - name: l3build regression check
+        run: |
+          set -o pipefail
+          if [ ! -f testfiles/cover.tlg ]; then
+            l3build save --quiet 2>&1 | tail -20
+            echo "::warning::tlg 基线不存在，已重新生成。请从 l3build-tlg artifact 下载并提交到仓库，后续将自动执行 check 对比。"
+            if [ "${{ github.event_name }}" = "push" ]; then
+              echo "::error::push 到 develop 必须已提交 tlg 基线（见上方 artifact）。回归门禁在基线提交前不生效。"
+              exit 1
+            fi
+          else
+            l3build check --quiet 2>&1 | tail -40
+          fi
+        env:
+          TEXINPUTS: ".:modules//:"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: l3build-tlg
+          path: testfiles/*.tlg
+          if-no-files-found: warn

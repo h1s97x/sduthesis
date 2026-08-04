@@ -358,4 +358,8 @@ out/
 
 docs/archive/
 assets/act
-.codegraph/
+
+# Preview files
+.preview
+.cozeproj/reduction
+.codegraph

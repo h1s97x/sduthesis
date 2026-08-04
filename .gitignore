@@ -361,3 +361,5 @@ assets/act
 
 # Preview files
 .preview
+.cozeproj/reduction
+.codegraph

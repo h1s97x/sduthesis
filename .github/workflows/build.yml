@@ -1,19 +1,36 @@
 name: Build
 
+# 构建 PDF 包：仅在 main 分支（代码相关改动）或手动触发时运行。
+# 代码质量检查（lint + 编译回归）见 quality.yml，构建不再重复跑测试。
+#
+# 提速设计：
+#   1. 路径过滤：testfiles/tests 等测试改动不触发构建
+#   2. concurrency：取消旧运行，不排队
+#   3. TeX Live 由 install-texlive 默认自动缓存（~/texlive），跨 workflow 复用
+
 on:
   push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - '*.cls'
+      - '*.sty'
+      - '*.dtx'
+      - '*.ins'
+      - '*.tex'
+      - 'justfile'
+      - '.github/tl_packages'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build (TeX Live 2025)
+    name: Build PDF package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -39,44 +56,18 @@ jobs:
           cd src && xelatex sduthesis.ins
           cp sduthesis.cls ../sduthesis.cls
 
-      - name: Lint with chktex
-        continue-on-error: true
-        run: |
-          chktex -q -n 1 -n 13 -n 24 -n 36 sduthesis.cls modules/*.sty 2>/dev/null || true
-
       - name: Build PDF
         run: just build
         env:
           TEXINPUTS: ".:modules//:"
 
-      - name: Run compile tests
-        run: python3 tests/test-compile.py
-        env:
-          TEXINPUTS: ".:modules//:"
-
-      - name: l3build regression check
-        continue-on-error: true
+      - name: Verify PDF
         run: |
-          # 首次运行：生成 tlg 基线（仓库无 tlg 时 check 会失败，改用 save 生成）
-          if [ ! -f testfiles/cover.tlg ]; then
-            l3build save --quiet 2>&1 | tail -20
-            echo "tlg 基线已生成，请从 artifact 下载并提交到仓库"
-          else
-            l3build check --quiet 2>&1 | tail -40
-          fi
-        env:
-          TEXINPUTS: ".:modules//:"
+          test -s main.pdf
+          echo "main.pdf 生成成功 ($(stat -c%s main.pdf) bytes)"
 
       - uses: actions/upload-artifact@v7
-        if: github.event_name != 'pull_request'
         with:
           name: main.pdf
           path: main.pdf
           if-no-files-found: error
-
-      - uses: actions/upload-artifact@v7
-        if: github.event_name != 'pull_request'
-        with:
-          name: l3build-tlg
-          path: testfiles/*.tlg
-          if-no-files-found: warn

@@ -354,3 +354,58 @@ sduthesis/
 | 工程化 | CI/CD 自动编译+回归测试+自动发版 | "搭建完整 CI/CD 流水线，实现 xelatex→biber→xelatex 编译链自动化、PDF diff 回归测试、git-cliff 自动生成 CHANGELOG" |
 | 开源发布 | LPPL 协议、CTAN 发布、TDS 规范 | "遵循 LaTeX 社区规范，按 LPPL-1.3c 协议开源，发布至 CTAN 进入 TeX Live 发行版" |
 | 项目架构 | 模板/示例分离、配置/样式/内容三层解耦 | "将模板架构设计为 config（配置层）→ styles（样式层）→ data（内容层）三层解耦，用户只需修改 data/ 和 `\SDUSetup{}` 即可完成论文写作" |
+
+---
+
+## 八、对标分析与下一步计划（2026-08，Issue #6）
+
+> 调研来源：GitHub 主流高校 LaTeX 学位论文模板库（含 BIThesis、ThuThesis 等），结合 sduthesis v2.0.0 现状给出四 Phase 路线图。
+
+### 8.1 头部标杆
+
+| 项目 | Star | 覆盖范围 | 与 sduthesis 最相关的点 |
+|---|---|---|---|
+| [tuna/thuthesis](https://github.com/tuna/thuthesis) | 5.4k | 本/硕/博/博后 | DTX + **biblatex/bibtex 双方案** + l3build 回归（`.tlg` 基线规范）| CTAN/TeX Live 收录 |
+| [BITNP/BIThesis](https://github.com/BITNP/BIThesis) | 1.2k | 本科/硕博/外文翻译/实验报告/幻灯片 | **架构最像**：内核+模块、`\SetupStyle{}` 集中配置、盲审一键导出、在线 Wiki 文档站 + DeepWiki AI 问答 |
+| [stone-zeng/fduthesis](https://github.com/stone-zeng/fduthesis) | 1.0k | 本/硕/博 | **DTX 包编写最佳实践**典范，l3build 双引擎测试 |
+| [sjtug/SJTUThesis](https://github.com/sjtug/SJTUThesis) | 3.8k | 本/硕/博 | 文档类与示例分离、Overleaf/TeXPage 多入口官方模板 |
+| [TheNetAdmin/zjuthesis](https://github.com/TheNetAdmin/zjuthesis) | 3.7k | 本/硕/博+英文 | 配置项极多（Degree/Type/Period/BlindReview 全放 `\documentclass` 选项） |
+| [hithesis/hithesis](https://github.com/hithesis/hithesis) | 2.4k | 一校三区本/硕/博+博后 | 规范文档全表格化收录、Docker/TinyTeX 容器化 CI |
+| [ustctug/ustcthesis](https://github.com/ustctug/ustcthesis) | 2.1k | 本/硕/博 | 同走 DTX + l3build 路线，双引用方案 |
+| [Liam0205/sduthesis](https://github.com/Liam0205/sduthesis) | 87 | 硕博向 | 同校竞品，说明山大有真实需求，值得持续关注 |
+
+### 8.2 差距分析
+
+sduthesis 已具备（✅ 超越多数同类）：DTX 格式、内核+模块 Hook 架构、`\SDUSetup{}` 集中配置、quality/build/release 三段 CI + l3build 回归门禁 + TeX Live 2025/2026 矩阵、CTAN 打包、LPPL-1.3c。
+
+| 维度 | 头部标杆做法 | sduthesis 现状 |
+|---|---|---|
+| 模块覆盖 | thuthesis/zjuthesis/hithesis 覆盖本+硕+博 | 仅 undergraduate + blindreview |
+| 引用方案 | thuthesis/ustcthesis 维护 biblatex+bibtex 两套 | 仅 biblatex/biber |
+| 回归测试深度 | thuthesis testfiles 按页面/宏包细分（几十个 `.tlg`） | testfiles 尚未提交基线 |
+| 文档/社区 | BIThesis 在线 Wiki + DeepWiki；thuthesis Discussions | 仅 README + doc/*.md |
+| 在线协作 | SJTUThesis 等维护 Overleaf/TeXPage 官方模板 | 仅 snip_uri 跳转 |
+| 规范溯源 | hithesis 官方规范全表格化 | 仅一份《撰写规范》引用 |
+
+### 8.3 四 Phase 路线图
+
+**Phase 0 — 立即（P0，1~2 个月，冲刺 v2.1/2.2）**
+
+1. 补齐 l3build 回归基线：提交 `testfiles/*.tlg`（PR 清单必做项，push develop 目前会硬失败）。先覆盖 封面/摘要/目录/致谢 核心页面，后续按宏包细分。
+2. 新增 master 模块：硕博封面 + 答辩委员会页，把"本科模板"升级为"学位论文模板"的关键一步。
+3. 发布 v2.1.0：用 release.yml 走完整发布流程，验证 CTAN 包产物。
+
+**Phase 1 — 中期（P1，3~6 个月）**
+
+4. Overleaf/TeXPage 官方模板页（参考 SJTUThesis/BIThesis），而非仅 snip_uri。
+5. 提交 CTAN：包名 `sduthesis` 当前无冲突；收录后 TeX Live 自带，用户门槛骤降。
+6. （可选）bibtex 兼容层：biblatex 是趋势，不必跟 thuthesis 双方案；可对齐 `biblatex-gb7714-2015` 配置。
+7. 文档站/社区：GitHub Pages + MkDocs 或 VitePress 托管使用手册；Discussions 做问答沉淀。
+
+**Phase 2 — 长期（P2，1 年）**
+
+8. 多学位矩阵 CI：master/doctor 模块加入 build.yml 编译矩阵。
+9. 英文模块 / 外文翻译模板（对标 BIThesis）。
+10. 开源治理：Issue/PR 模板 + CODE_OF_CONDUCT；等 star 上来后争取官方背书。
+
+> 一句话：工程化架构已可对标 BIThesis/fduthesis，缺的不是架构，是"覆盖面"与"生态"——优先补齐 master 模块 + l3build 基线 + Overleaf 官方模板 + CTAN 提交。

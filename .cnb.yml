@@ -1,0 +1,86 @@
+# CNB 流水线配置
+# 1. Git Sync：每次 push 到 main 后，自动将代码同步到 GitHub（h1s97x/sduthesis）
+#    使用 tencentcom/git-sync 官方插件，HTTPS + Access Token 认证。
+#    敏感信息（GITHUB_USERNAME / GITHUB_TOKEN）存放在密钥仓库 secret-env，通过 imports 引用。
+# 2. Issue / PR 自动分配处理人：创建后自动将处理人设置为仓库维护者 h1s97x（QAQ）。
+main:
+  push:
+    - name: sync-to-github
+      imports:
+        - https://cnb.cool/h1s97x/secret-env/-/blob/main/env.yml
+      stages:
+        - name: sync to github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/h1s97x/sduthesis.git
+            auth_type: https
+            username: ${GITHUB_USERNAME}
+            password: ${GITHUB_TOKEN}
+            branch: main
+            force: true
+
+# issue.* 事件需挂靠在 $ 兜底分支下，使用默认分支的配置执行
+$:
+  # Issue 创建后自动分配处理人
+  issue.open:
+    - name: auto-assign-issue-owner
+      docker:
+        image: python:3.12-slim
+      env:
+        ISSUE_ASSIGNEE: h1s97x
+      stages:
+        - name: assign issue to owner
+          script: |
+            set -e
+            python3 - <<'PYEOF'
+            import json
+            import os
+            import urllib.request
+
+            repo = os.environ["CNB_REPO_SLUG"]
+            number = os.environ["CNB_ISSUE_IID"]
+            owner = os.environ["ISSUE_ASSIGNEE"]
+            token = os.environ["CNB_TOKEN"]
+            api = os.environ.get("CNB_API_ENDPOINT", "https://api.cnb.cool").rstrip("/")
+            base = f"{api}/{repo}/-/issues/{number}/assignees"
+
+            def request(path, method="GET", data=None):
+                headers = {
+                    "Authorization": f"Bearer {token}",
+                    "Accept": "application/json",
+                }
+                body = None
+                if data is not None:
+                    body = json.dumps(data).encode()
+                    headers["Content-Type"] = "application/json"
+                req = urllib.request.Request(path, data=body, method=method, headers=headers)
+                with urllib.request.urlopen(req) as resp:
+                    return resp.status, resp.read().decode()
+
+            # 1. 查询当前处理人，已分配则跳过
+            try:
+                _, raw = request(base)
+                assignees = json.loads(raw) if raw else []
+                names = [a.get("username") for a in assignees] if isinstance(assignees, list) else []
+                if owner in names:
+                    print(f"[skip] issue already assigned to {owner}")
+                    raise SystemExit(0)
+            except SystemExit:
+                raise
+            except Exception as e:
+                print(f"[warn] query assignees failed: {e}")
+
+            # 2. 添加处理人
+            status, _ = request(base, method="POST", data={"assignees": [owner]})
+            print(f"[ok] assigned {owner} to issue #{number}, status={status}")
+            PYEOF
+
+  # PR 创建后自动分配处理人（pull_request.target 不校验触发者权限，对协作者提交更友好）
+  pull_request.target:
+    - name: auto-assign-pr-owner
+      stages:
+        - name: assign pr to owner
+          type: git:reviewer
+          options:
+            type: add-assignee
+            reviewers: h1s97x

@@ -283,6 +283,9 @@
 \newcommand{\makecoverpage}{%
   \PackageWarning{sduthesis}{No~cover~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
+\newcommand{\makestatement}{%
+  \PackageWarning{sduthesis}{No~statement~page~defined.~Please~load~a~module~via~SDUSetup.}%
+}
 \newenvironment{cnabstract}{}{}
 \newenvironment{enabstract}{}{}
 \newcommand{\cnkeywords}[1]{}

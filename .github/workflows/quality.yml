@@ -112,7 +112,14 @@ jobs:
         run: |
           set -o pipefail
           if [ ! -f testfiles/cover.tlg ]; then
-            l3build save --quiet 2>&1 | tail -20
+            # 首次运行：为所有 testfiles/*.tex 生成基线（排除 support/）
+            # l3build save 需要显式传入测试名（无参报 "Arguments are required"）
+            tests=$(ls testfiles/*.tex 2>/dev/null | sed 's|testfiles/||; s|\.tex$||')
+            if [ -n "$tests" ]; then
+              l3build save --quiet $tests 2>&1 | tail -20
+            else
+              echo "::warning::未找到任何测试文件（testfiles/*.tex）"
+            fi
             echo "::warning::tlg 基线不存在，已重新生成。请从 l3build-tlg artifact 下载并提交到仓库，后续将自动执行 check 对比。"
             if [ "${{ github.event_name }}" = "push" ]; then
               echo "::error::push 到 develop 必须已提交 tlg 基线（见上方 artifact）。回归门禁在基线提交前不生效。"

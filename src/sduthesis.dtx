@@ -727,6 +727,15 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\makestatement}
+% 声明页占位（盲审模块可覆盖以跳过声明页）。
+%    \begin{macrocode}
+\newcommand{\makestatement}{%
+  \PackageWarning{sduthesis}{No~statement~page~defined.~Please~load~a~module~via~SDUSetup.}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{environment}{cnabstract}
 % 中文摘要占位。
 %    \begin{macrocode}

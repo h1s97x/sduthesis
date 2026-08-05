@@ -1,0 +1,50 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+File: logos/sdu_logo_2.pdf Graphic file (type pdf)
+<use logos/sdu_logo_2.pdf>
+File: logos/sdu_title.png Graphic file (type bmp)
+<logos/sdu_title.png>
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font 'FandolHei'. Check the typeset output, and if it is okay then ignore this warning. Otherwise a different font should be chosen.
+Package fontspec Info: 
+(fontspec)             Could not resolve font "FandolHei/I" (it probably doesn't exist).
+Package fontspec Info: 
+(fontspec)             Font family 'FandolHei(0)' created for font 'FandolHei' with options [Script={CJK}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"FandolHei/OT:script=hani;language=dflt;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->"FandolHei/B/OT:script=hani;language=dflt;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"FandolHei/BI/OT:script=hani;language=dflt;"
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 12.04628pt on input line ....
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 8.4324pt on input line ....
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 6.02315pt on input line ....
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 12.0437pt on input line ....
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 8.43059pt on input line ....
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.02185pt on input line ....
+LaTeX Font Info:    Trying to load font information for U+msa on input line ....
+LaTeX Font Info:    Trying to load font information for U+msb on input line ....
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font 'FandolKai'. Check the typeset output, and if it is okay then ignore this warning. Otherwise a different font should be chosen.
+Package fontspec Info: 
+(fontspec)             Could not resolve font "FandolKai/BI" (it probably doesn't exist).
+Package fontspec Info: 
+(fontspec)             Could not resolve font "FandolKai/B" (it probably doesn't exist).
+Package fontspec Info: 
+(fontspec)             Could not resolve font "FandolKai/I" (it probably doesn't exist).
+Package fontspec Info: 
+(fontspec)             Font family 'FandolKai(0)' created for font 'FandolKai' with options [Script={CJK}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->"FandolKai/OT:script=hani;language=dflt;"
+LaTeX Font Warning: Font shape `TU/FandolKai(0)/b/n' undefined
+(Font)              using `TU/FandolKai(0)/m/n' instead on input line ....
+[1
+]

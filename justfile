@@ -63,10 +63,12 @@ test: build
     python3 tests/test-compile.py
 
 # LaTeX 代码检查
+# 与 CI（quality.yml）保持一致：规则见 .chktexrc，仅检查模板代码（不检查 main.tex）
+# 有 warning 即失败（gate），不掩盖错误
 lint:
     #!/usr/bin/env bash
-    chktex -eall -n1 -n2 -n8 -n24 -n36 -n44 src/sduthesis.dtx modules/*.sty main.tex sdusetup.tex 2>/dev/null || true
-    @echo "--- lint 完成 ---"
+    chktex -q sduthesis.cls modules/*.sty sdusetup.tex
+    echo "--- lint 完成 ---"
 
 # 从 DTX 生成 cls（开发用）
 gen:

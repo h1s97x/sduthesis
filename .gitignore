@@ -356,8 +356,9 @@ build/
 dist/
 out/
 
-docs/archive/
-assets/act
+# Generated build artifacts
+# main.pdf 由 CI（build.yml）编译并作为 artifact 上传，不入库（本地编译产物同理）
+main.pdf
 
 # Preview files
 .preview

@@ -17,7 +17,7 @@
 
 遇到问题时，请：
 
-1. 先查看 [FAQ](./doc/FAQ.md) 和 [故障排查](./doc/TROUBLESHOOTING.md)
+1. 先查看 [FAQ](./doc/FAQ.md) 和 [故障排查](./doc/CI-TROUBLESHOOTING.md)
 2. 搜索已有的 [Issues](https://github.com/h1s97x/sduthesis/issues) 看是否已解决
 3. 如未解决，新建 Issue 并提供：
    - 你的操作系统和 TeX 发行版版本

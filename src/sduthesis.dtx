@@ -62,6 +62,7 @@
 %   \item \cs{SDUSetup} 集中配置接口，基于 LaTeX3 l3keys 机制
 %   \item Hook 系统：六个文档阶段钩子，模块可注入任意行为
 %   \item 支持盲审模式（\texttt{blindreview} 模块）
+%   \item 支持硕士学位论文（\texttt{master} 模块）
 %   \item 兼容 Overleaf 在线编辑
 % \end{itemize}
 %
@@ -198,6 +199,7 @@
 % \midrule
 % \endhead
 % \texttt{undergraduate} & \texttt{sduthesis-undergraduate.sty} & 本科论文 \\
+% \texttt{master}        & \texttt{sduthesis-master.sty}        & 硕士学位论文 \\
 % \texttt{blindreview}   & \texttt{sduthesis-blindreview.sty}   & 盲审模式 \\
 % \bottomrule
 % \end{longtable}
@@ -305,6 +307,41 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\l__sdu_degree_tl}
+% 学位类型（硕士/博士），master 模块使用。
+%    \begin{macrocode}
+\tl_new:N \l__sdu_degree_tl
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l__sdu_committee_chair_tl}
+% 答辩委员会主席。
+%    \begin{macrocode}
+\tl_new:N \l__sdu_committee_chair_tl
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l__sdu_committee_members_tl}
+% 答辩委员会委员（多个姓名用顿号分隔）。
+%    \begin{macrocode}
+\tl_new:N \l__sdu_committee_members_tl
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l__sdu_defense_date_tl}
+% 答辩日期。
+%    \begin{macrocode}
+\tl_new:N \l__sdu_defense_date_tl
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l__sdu_defense_place_tl}
+% 答辩地点。
+%    \begin{macrocode}
+\tl_new:N \l__sdu_defense_place_tl
+%    \end{macrocode}
+% \end{macro}
+%
 % 样式变量：
 %
 %    \begin{macrocode}
@@ -337,6 +374,14 @@
   supervisor  .tl_set:N = \l__sdu_supervisor_tl,
   year        .tl_set:N = \l__sdu_year_tl,
   month       .tl_set:N = \l__sdu_month_tl,
+
+  % --- 学位信息组（master/doctor 模块使用） ---
+  degree          .tl_set:N = \l__sdu_degree_tl,
+  degree          .initial:n = { 硕士 },
+  committeeChair  .tl_set:N = \l__sdu_committee_chair_tl,
+  committeeMembers .tl_set:N = \l__sdu_committee_members_tl,
+  defenseDate     .tl_set:N = \l__sdu_defense_date_tl,
+  defensePlace    .tl_set:N = \l__sdu_defense_place_tl,
 
   % --- 样式组 ---
   lineSpread  .tl_set:N = \l__sdu_line_spread_dim,
@@ -417,6 +462,36 @@
 % \begin{macro}{\GetMonth}
 %    \begin{macrocode}
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\GetDegree}
+%    \begin{macrocode}
+\NewDocumentCommand \GetDegree { } { \l__sdu_degree_tl }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\GetCommitteeChair}
+%    \begin{macrocode}
+\NewDocumentCommand \GetCommitteeChair { } { \l__sdu_committee_chair_tl }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\GetCommitteeMembers}
+%    \begin{macrocode}
+\NewDocumentCommand \GetCommitteeMembers { } { \l__sdu_committee_members_tl }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\GetDefenseDate}
+%    \begin{macrocode}
+\NewDocumentCommand \GetDefenseDate { } { \l__sdu_defense_date_tl }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\GetDefensePlace}
+%    \begin{macrocode}
+\NewDocumentCommand \GetDefensePlace { } { \l__sdu_defense_place_tl }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -732,6 +807,15 @@
 %    \begin{macrocode}
 \newcommand{\makestatement}{%
   \PackageWarning{sduthesis}{No~statement~page~defined.~Please~load~a~module~via~SDUSetup.}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\makecommittee}
+% 答辩委员会页占位（master/doctor 模块覆盖）。
+%    \begin{macrocode}
+\newcommand{\makecommittee}{%
+  \PackageWarning{sduthesis}{No~committee~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
 %    \end{macrocode}
 % \end{macro}

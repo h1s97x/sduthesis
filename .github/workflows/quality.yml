@@ -104,29 +104,43 @@ jobs:
 
       # 回归门禁说明：
       #   - 已提交 tlg 基线 → l3build check（对比输出，防回归）
-      #   - 基线缺失（首次运行）→ save 生成基线并上传 artifact；
+      #   - 基线缺失（首次新增测试）→ save 生成基线并上传 artifact；
       #     PR 放行（便于贡献者首次引入基线），push 到 develop 则硬失败，
       #     强制提醒提交基线，避免 check 长期空转（回归门禁形同虚设）。
+      # 注意：按测试名逐个区分——新增测试（如 master）只 save 新基线，
+      #       不影响已有基线测试的 check 对比（否则 check 会因缺 tlg 全挂）。
       # pipefail 保证 l3build 失败时 job 真正失败（不再被 continue-on-error 掩盖）
       - name: l3build regression check
         run: |
           set -o pipefail
-          if [ ! -f testfiles/cover.tlg ]; then
-            # 首次运行：为所有 testfiles/*.tex 生成基线（排除 support/）
-            # l3build save 需要显式传入测试名（无参报 "Arguments are required"）
-            tests=$(ls testfiles/*.tex 2>/dev/null | sed 's|testfiles/||; s|\.tex$||')
-            if [ -n "$tests" ]; then
-              l3build save --quiet $tests 2>&1 | tail -20
+          tests=$(ls testfiles/*.tex 2>/dev/null | sed 's|testfiles/||; s|\.tex$||' | sort)
+          if [ -z "$tests" ]; then
+            echo "::warning::未找到任何测试文件（testfiles/*.tex）"
+            exit 0
+          fi
+
+          missing=""
+          check_tests=""
+          for t in $tests; do
+            if [ ! -f "testfiles/$t.tlg" ]; then
+              missing="$missing $t"
             else
-              echo "::warning::未找到任何测试文件（testfiles/*.tex）"
+              check_tests="$check_tests $t"
             fi
-            echo "::warning::tlg 基线不存在，已重新生成。请从 l3build-tlg artifact 下载并提交到仓库，后续将自动执行 check 对比。"
+          done
+
+          if [ -n "$missing" ]; then
+            # 首次新增测试：为缺失基线的测试生成基线
+            l3build save --quiet $missing 2>&1 | tail -20
+            echo "::warning::以下测试缺少 tlg 基线，已重新生成（可从 l3build-tlg artifact 下载并提交）: $missing"
             if [ "${{ github.event_name }}" = "push" ]; then
               echo "::error::push 到 develop 必须已提交 tlg 基线（见上方 artifact）。回归门禁在基线提交前不生效。"
               exit 1
             fi
-          else
-            l3build check --quiet 2>&1 | tail -40
+          fi
+
+          if [ -n "$check_tests" ]; then
+            l3build check --quiet $check_tests 2>&1 | tail -40
           fi
         env:
           TEXINPUTS: ".:modules//:"

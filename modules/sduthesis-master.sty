@@ -1,0 +1,188 @@
+%%
+%% sduthesis-master.sty — 硕士学位论文模块
+%%
+%% Copyright (C) 2025 h1s97x
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either
+%% version 1.3c of this license or (at your option) any later
+%% version. This version of this license is in
+%%    https://www.latex-project.org/lppl/lppl-1-3c.txt
+%% and the latest version of this license is in
+%%    https://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of
+%% LaTeX version 2020/11/27 or later.
+%%
+%% This work has the LPPL maintenance status "maintained".
+%%
+%% The Current Maintainer of this work is h1s97x.
+%%
+\ProvidesPackage{sduthesis-master}[2025/05/16 v0.1.0 SDUThesis master thesis module]
+
+% ============================================================
+% 硕士学位论文模块
+% 通过 \SDUSetup{module=master} 加载
+% 负责硕博封面、答辩委员会页、页眉页脚等学位论文特有格式
+%
+% 新增配置键：
+%   degree          - 学位类型（默认“硕士”，可改为“博士”）
+%   committeeChair  - 答辩委员会主席
+%   committeeMembers- 答辩委员会委员（顿号分隔）
+%   defenseDate     - 答辩日期
+%   defensePlace    - 答辩地点
+% ============================================================
+
+% -------------------- 封面排版 --------------------
+\newcommand{\Lwidth}{2.3cm}
+\newcommand{\Rwidth}{5.5cm}
+\newcommand{\titlewidth}{0.9\textwidth}
+
+\newcommand{\Lcolumn}[1]{\makebox[\Lwidth][c]{{\zihao{3}\bfkai{#1}}}}
+\newcommand{\Rcolumn}[1]{\makebox[\Rwidth][c]{{\zihao{3}\kai{#1}}}}
+
+\renewcommand{\makecoverpage}{
+    \begin{center}
+        \phantomsection
+        \hypertarget{coverpage}{}
+        \bookmark[dest=coverpage,level=0]{封面}
+
+        \vspace*{5mm}
+
+        \includegraphics[width=0.7\textwidth]{logos/sdu_logo_2.pdf}
+
+        \vspace*{10mm}
+
+        \includegraphics[width=0.95\textwidth]{logos/sdu_title.png}
+
+        \vspace*{5mm}
+
+        \begin{flushleft}
+            \zihao{3}\bfsong{论文题目：}
+        \end{flushleft}
+
+        \begin{minipage}{\titlewidth}
+            \centering
+            \zihao{-2}\bfhei{\GetTitle}
+        \end{minipage}
+
+        \vspace*{20mm}
+
+        \begin{tabular}{p{\Lwidth}p{\Rwidth}}
+            \Lcolumn{学位类型}     & \Rcolumn{\GetDegree}      \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{姓\qquad 名} & \Rcolumn{\GetAuthor}     \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{学\qquad 号} & \Rcolumn{\GetStudentId}  \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{学\qquad 院} & \Rcolumn{\GetSchool}     \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{专\qquad 业} & \Rcolumn{\GetMajor}      \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \Lcolumn{指导教师}      & \Rcolumn{\GetSupervisor}  \\[-0.8mm]\cline{2-2}
+        \end{tabular}
+
+        \vspace*{30mm}
+
+        \zihao{3}\bfkai{
+          \GetYear 年 \quad
+          \GetMonth 月
+        }
+    \end{center}
+
+    \clearpage
+}
+
+% -------------------- 答辩委员会页 --------------------
+\renewcommand{\makecommittee}{
+    \begin{center}
+        \phantomsection
+        \hypertarget{committee}{}
+        \bookmark[dest=committee,level=0]{答辩委员会}
+
+        \vspace*{15mm}
+
+        \zihao{2}\bfhei{学位论文答辩委员会}
+
+        \vspace*{15mm}
+
+        \zihao{-3}
+        \begin{tabular}{p{3.5cm}l}
+            \Lcolumn{主席} & \Rcolumn{\GetCommitteeChair}      \\[2mm]
+            \Lcolumn{委员} & \Rcolumn{\GetCommitteeMembers}    \\[2mm]
+            \Lcolumn{答辩日期} & \Rcolumn{\GetDefenseDate}     \\[2mm]
+            \Lcolumn{答辩地点} & \Rcolumn{\GetDefensePlace}    \\
+        \end{tabular}
+    \end{center}
+
+    \clearpage
+}
+
+% -------------------- 摘要环境 --------------------
+\renewenvironment{cnabstract}{
+    \phantomsection
+    \hypertarget{cnabstract}{}
+    \bookmark[dest=cnabstract,level=0]{中文摘要}
+
+    \vspace*{12pt}
+    \centerline{\zihao{-2}\bfhei{摘\quad 要}}
+    \vspace*{12pt}
+
+    \setlength{\parindent}{1.2em}
+    \zihao{-4}
+}{
+    \clearpage
+}
+
+\renewenvironment{enabstract}{
+    \phantomsection
+    \hypertarget{enabstract}{}
+    \bookmark[dest=enabstract,level=0]{英文摘要}
+
+    \vspace*{12pt}
+    \centerline{\zihao{-2}\textbf{ABSTRACT}}
+    \vspace*{12pt}
+
+    \setlength{\parindent}{1.2em}
+    \zihao{-4}
+}{
+    \clearpage
+}
+
+\renewcommand{\cnkeywords}[1]{
+    \vspace{1cm}
+    \noindent{\zihao{-4}\bfhei{关键词}：}
+    {#1}
+}
+
+\renewcommand{\enkeywords}[1]{
+    \vspace{1cm}
+    \noindent{\zihao{-4}\textbf{Keywords}:}
+    {#1}
+}
+
+% -------------------- 页眉页脚 --------------------
+% 前言：空白页眉页脚
+\AddToHook{sduthesis/frontmatter/begin}{
+    \pagestyle{empty}
+}
+
+% 正文：山东大学硕士学位论文
+\AddToHook{sduthesis/mainmatter/begin}{
+    \fancypagestyle{plain}{
+      \fancyhf{}
+      \renewcommand{\headrulewidth}{0.5pt}
+      \fancyhead[C]{\zihao{-5}\songti 山东大学硕士学位论文}
+      \fancyfoot[C]{\zihao{-5}\thepage}
+    }
+    \pagestyle{plain}
+    \linespread{1.3}\selectfont
+}
+
+% 后记：不编号章标题，小二号
+\AddToHook{sduthesis/backmatter/begin}{
+    \ctexset{
+      chapter={
+        format=\centering\zihao{-2}\bfseries,
+        beforeskip=21.6pt,
+        afterskip=18pt,
+        fixskip=true,
+       }
+    }
+}
+
+\endinput

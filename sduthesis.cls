@@ -37,6 +37,11 @@
 \tl_new:N \l__sdu_supervisor_tl
 \tl_new:N \l__sdu_year_tl
 \tl_new:N \l__sdu_month_tl
+\tl_new:N \l__sdu_degree_tl
+\tl_new:N \l__sdu_committee_chair_tl
+\tl_new:N \l__sdu_committee_members_tl
+\tl_new:N \l__sdu_defense_date_tl
+\tl_new:N \l__sdu_defense_place_tl
 \dim_new:N \l__sdu_line_spread_dim
 \tl_new:N \l__sdu_page_left_tl
 \tl_new:N \l__sdu_page_right_tl
@@ -54,6 +59,14 @@
   supervisor  .tl_set:N = \l__sdu_supervisor_tl,
   year        .tl_set:N = \l__sdu_year_tl,
   month       .tl_set:N = \l__sdu_month_tl,
+
+  % --- 学位信息组（master/doctor 模块使用） ---
+  degree          .tl_set:N = \l__sdu_degree_tl,
+  degree          .initial:n = { 硕士 },
+  committeeChair  .tl_set:N = \l__sdu_committee_chair_tl,
+  committeeMembers .tl_set:N = \l__sdu_committee_members_tl,
+  defenseDate     .tl_set:N = \l__sdu_defense_date_tl,
+  defensePlace    .tl_set:N = \l__sdu_defense_place_tl,
 
   % --- 样式组 ---
   lineSpread  .tl_set:N = \l__sdu_line_spread_dim,
@@ -83,6 +96,11 @@
 \NewDocumentCommand \GetSupervisor { } { \l__sdu_supervisor_tl }
 \NewDocumentCommand \GetYear { } { \l__sdu_year_tl }
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
+\NewDocumentCommand \GetDegree { } { \l__sdu_degree_tl }
+\NewDocumentCommand \GetCommitteeChair { } { \l__sdu_committee_chair_tl }
+\NewDocumentCommand \GetCommitteeMembers { } { \l__sdu_committee_members_tl }
+\NewDocumentCommand \GetDefenseDate { } { \l__sdu_defense_date_tl }
+\NewDocumentCommand \GetDefensePlace { } { \l__sdu_defense_place_tl }
 \ExplSyntaxOff
 \makeatletter
 \IfFileExists{modules/sduthesis-undergraduate.sty}{%
@@ -285,6 +303,9 @@
 }
 \newcommand{\makestatement}{%
   \PackageWarning{sduthesis}{No~statement~page~defined.~Please~load~a~module~via~SDUSetup.}%
+}
+\newcommand{\makecommittee}{%
+  \PackageWarning{sduthesis}{No~committee~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
 \newenvironment{cnabstract}{}{}
 \newenvironment{enabstract}{}{}

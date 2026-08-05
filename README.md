@@ -116,13 +116,13 @@ latexmk -xelatex main.tex
 | 模块 | 说明 | 使用方式 |
 |------|------|----------|
 | `undergraduate` | 本科毕业论文 | `\SDUSetup{module=undergraduate}` |
+| `master` | 硕士学位论文 | `\SDUSetup{module=master}` |
 | `blindreview` | 盲审模式（隐藏作者信息） | `\SDUSetup{module=blindreview}` |
 
 开发中的模块：
 
 | 模块 | 说明 | 状态 |
 |------|------|------|
-| `master` | 硕士学位论文 | 计划中 |
 | `doctor` | 博士学位论文 | 计划中 |
 
 ## 环境要求

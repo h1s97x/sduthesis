@@ -1,0 +1,10 @@
+# TeX Live packages for lint (chktex) - 精简环境
+#
+# 仅用于代码质量检查中的静态 lint job，无需完整编译环境。
+# scheme-small 提供基础 LaTeX 格式；collection-binextra 提供 chktex 二进制。
+# 完整编译环境见同目录 tl_packages。
+# 说明：~/texlive 由 install-texlive 默认自动缓存，首次安装后不再重复下载。
+
+scheme-small
+
+collection-binextra

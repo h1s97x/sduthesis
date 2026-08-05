@@ -14,6 +14,8 @@ collection-xetex
 # collection-binextra
 latexmk
 chktex
+# l3build 回归测试工具
+l3build
 
 # ----- 2. 中文支持 -----
 

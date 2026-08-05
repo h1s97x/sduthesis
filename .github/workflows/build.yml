@@ -1,32 +1,60 @@
 name: Build
 
+# 构建 PDF 包：仅在 main 分支（代码相关改动）或手动触发时运行。
+# 代码质量检查（lint + 编译回归）见 quality.yml，构建不再重复跑测试。
+#
+# 提速设计：
+#   1. 路径过滤：testfiles/tests 等测试改动不触发构建
+#   2. concurrency：取消旧运行，不排队
+#   3. TeX Live 由 install-texlive 默认自动缓存（~/texlive），跨 workflow 复用
+
 on:
   push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - '*.cls'
+      - '*.sty'
+      - '*.dtx'
+      - '*.ins'
+      - '*.tex'
+      - 'justfile'
+      - '.github/tl_packages'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build (TeX Live ${{ matrix.texlive-version }})
+    # 双 TeX Live 版本矩阵：发布前验证旧版本兼容性（仅 main 分支低频运行，成本可控）。
+    # PR 阶段的 lint/regression 保持单版本(最新)以提速，兼容性信号由本矩阵兜底。
+    # 注意：显式指定 repository 时，安装版本由该 repository 决定（texlive_version 仅作缓存 key），
+    #       因此每个矩阵项必须显式提供与版本匹配的镜像地址，避免旧 CI「矩阵无效、全装当前版」的问题。
+    name: Build PDF (TeX Live ${{ matrix.texlive_version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        texlive-version: ["2024", "2025"]
+        include:
+          - name: current
+            texlive_version: 2026
+            repository: https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/
+          - name: previous
+            texlive_version: 2025
+            repository: https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2025/tlnet-final/
     steps:
       - uses: actions/checkout@v6
 
-      - uses: TeX-Live/setup-texlive-action@v4
+      - name: Install TeX Live ${{ matrix.texlive_version }}
+        uses: zauguin/install-texlive@v4
         with:
-          version: ${{ matrix.texlive-version }}
-          package-file: |
-            .github/tl_packages
+          package_file: .github/tl_packages
+          texlive_version: ${{ matrix.texlive_version }}
+          repository: ${{ matrix.repository }}
 
       - name: Link fonts for XeTeX
         run: |
@@ -42,25 +70,18 @@ jobs:
           cd src && xelatex sduthesis.ins
           cp sduthesis.cls ../sduthesis.cls
 
-      - name: Lint with chktex
-        if: matrix.texlive-version == '2025'
-        continue-on-error: true
-        run: |
-          chktex -q -n 1 -n 13 -n 24 -n 36 sduthesis.cls modules/*.sty 2>/dev/null || true
-
       - name: Build PDF
         run: just build
         env:
           TEXINPUTS: ".:modules//:"
 
-      - name: Run compile tests
-        run: python3 tests/test-compile.py
-        env:
-          TEXINPUTS: ".:modules//:"
+      - name: Verify PDF
+        run: |
+          test -s main.pdf
+          echo "main.pdf 生成成功 ($(stat -c%s main.pdf) bytes)"
 
       - uses: actions/upload-artifact@v7
-        if: github.event_name != 'pull_request' && matrix.texlive-version == '2025'
         with:
-          name: main.pdf
+          name: main.pdf (TeX Live ${{ matrix.texlive_version }})
           path: main.pdf
-          retention-days: 30
+          if-no-files-found: error

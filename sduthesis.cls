@@ -1,21 +1,34 @@
+%%
+%% This is file `sduthesis.cls',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% sduthesis.dtx  (with options: `cls')
+%% 
+%% Copyright (C) 2025 h1s97x
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either
+%% version 1.3c of this license or (at your option) any later
+%% version. This version of this license is in
+%%    https://www.latex-project.org/lppl/lppl-1-3c.txt
+%% and the latest version of this license is in
+%%    https://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of
+%% LaTeX version 2020/11/27 or later.
+%% 
+%% This work has the LPPL maintenance status "maintained".
+%% 
+%% The Current Maintainer of this work is h1s97x.
+%% 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{sduthesis}[2025/05/16 v1.2.0 Thesis template for Shandong University]
-
-% ============================================================
-% 内核引擎：SDUSetup + Hook 系统 + 基础排版
-% ============================================================
-
-% 基于ctexbook的类
+\ProvidesClass{sduthesis}[2025/05/16 v2.0.0 Thesis template for Shandong University]
 \LoadClass[openany]{ctexbook}
-
-% -------------------- LaTeX3 引擎 --------------------
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
 
 \ExplSyntaxOn
-
-% ==================== 存储层：变量声明 ====================
-% --- 信息键 ---
 \tl_new:N \l__sdu_title_tl
 \tl_new:N \l__sdu_author_tl
 \tl_new:N \l__sdu_studentid_tl
@@ -24,18 +37,12 @@
 \tl_new:N \l__sdu_supervisor_tl
 \tl_new:N \l__sdu_year_tl
 \tl_new:N \l__sdu_month_tl
-
-% --- 样式键 ---
 \dim_new:N \l__sdu_line_spread_dim
 \tl_new:N \l__sdu_page_left_tl
 \tl_new:N \l__sdu_page_right_tl
 \tl_new:N \l__sdu_page_top_tl
 \tl_new:N \l__sdu_page_bottom_tl
-
-% --- 模块键 ---
 \tl_new:N \l__sdu_module_tl
-
-% ==================== 定义层：键注册 ====================
 \keys_define:nn { sdu }
 {
   % --- 信息组 ---
@@ -64,14 +71,10 @@
   module      .tl_set:N = \l__sdu_module_tl,
   module      .initial:n = { undergraduate },
 }
-
-% ==================== 命令层：SDUSetup ====================
 \NewDocumentCommand \SDUSetup { m }
 {
   \keys_set:nn { sdu } { #1 }
 }
-
-% ==================== 导出层：Getter 命令 ====================
 \NewDocumentCommand \GetTitle { } { \l__sdu_title_tl }
 \NewDocumentCommand \GetAuthor { } { \l__sdu_author_tl }
 \NewDocumentCommand \GetStudentId { } { \l__sdu_studentid_tl }
@@ -80,11 +83,6 @@
 \NewDocumentCommand \GetSupervisor { } { \l__sdu_supervisor_tl }
 \NewDocumentCommand \GetYear { } { \l__sdu_year_tl }
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
-
-% ==================== 内部层：模块加载器 ====================
-% 将 modules/ 目录添加到 LaTeX 文件搜索路径
-% 这样 \RequirePackage 可以搜索到 modules/ 下的 .sty 文件
-% 正常环境通过 TEXINPUTS 环境变量搜索，Overleaf 环境需要此路径
 \ExplSyntaxOff
 \makeatletter
 \IfFileExists{modules/sduthesis-undergraduate.sty}{%
@@ -97,35 +95,24 @@
 }{}
 \makeatother
 \ExplSyntaxOn
-
 \msg_new:nnn { sdu } { module-not-found }
 {
   Module~'#1'~not~found.~Please~check~the~module~name~in~\SDUSetup.
 }
-
 \cs_new:Nn \sdu_load_module:
 {
-  % 构建模块包名
   \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
-  % 加载模块（通过 \input@path 或 TEXINPUTS 搜索）
   \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
 }
-
-% ==================== Hook 系统 ====================
-% 内核在文档编译各阶段埋入钩子，模块通过钩子注入行为
 \NewHook { sduthesis/after-setup }
 \NewHook { sduthesis/before-cover }
 \NewHook { sduthesis/cover-style }
 \NewHook { sduthesis/frontmatter/begin }
 \NewHook { sduthesis/mainmatter/begin }
 \NewHook { sduthesis/backmatter/begin }
-
-% 在 \begin{document} 时加载模块，确保 SDUSetup 已被调用
 \AddToHook { begindocument } { \sdu_load_module: \UseHook { sduthesis/after-setup } }
 
 \ExplSyntaxOff
-
-% -------------------- 宏包加载 --------------------
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amsfonts}
@@ -155,11 +142,7 @@
 \usepackage{algorithmicx}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-
-% -------------------- 算法设置 --------------------
 \AtBeginEnvironment{algorithm}{\linespread{0.85}\selectfont}
-
-% -------------------- 字体引擎 --------------------
 \let\songti\relax
 \let\heiti\relax
 \let\kaiti\relax
@@ -191,20 +174,8 @@
 \newcommand{\allbfitsong}{\songti\bfseries\itshape}
 \newcommand{\allbfithei}{\heiti\bfseries\itshape}
 \newcommand{\allbfitkai}{\kaiti\bfseries\itshape}
-
-% 英文字体：不显式指定，使用 LaTeX 默认（Computer Modern / Latin Modern）
-% ctex 的 fandol 字体集已设置中文字体
-% 如需自定义，用户可在 sdusetup.tex 中使用 \setmainfont 等命令
-
-% 数学字体：unicode-math 默认使用 Latin Modern Math，无需显式指定
-
-% 默认小四号宋体
 \AtBeginDocument{\zihao{-4}\songti}
-
-% 行距（使用 SDUSetup 中的配置）
 \setstretch{1.5}
-
-% -------------------- 页面引擎 --------------------
 \geometry{
     a4paper,
     left=3cm,
@@ -213,8 +184,6 @@
     bottom=2.5cm,
 }
 \raggedbottom
-
-% -------------------- 章节引擎 --------------------
 \setcounter{secnumdepth}{3}
 
 \ctexset{
@@ -240,8 +209,6 @@
       fixskip=true,
     }
 }
-
-% -------------------- 交叉引用引擎 --------------------
 \definecolor{linkdarkblue}{rgb}{0,0.08,0.45}
 
 \hypersetup{
@@ -260,8 +227,6 @@
 \newcommand{\subfigref}[1]{{图\ \subref*{#1}\ }}
 \let\citing\supercite
 \let\citex\citep
-
-% -------------------- 图表标题引擎 --------------------
 \graphicspath{{figures/}}
 
 \DeclareCaptionFont{mybfsong}{\allbfsong}
@@ -293,13 +258,9 @@
     textfont=mybfsong,
     subrefformat=mysubref,
 }
-
-% -------------------- 数学快捷命令 --------------------
 \newcommand{\mye}{\ensuremath{\mathrm{e}}}
 \newcommand{\myi}{\ensuremath{\mathrm{i}}}
 \newcommand{\myj}{\ensuremath{\mathrm{j}}}
-
-% -------------------- 代码排版引擎 --------------------
 \lstset{
   belowskip=0pt,
   language=C++,
@@ -319,22 +280,13 @@
   backgroundcolor=\color{gray!5},
   morekeywords={constexpr, nullptr, Ciphertext, Plaintext, vector, load_from_file, save_to_file}
 }
-
-% -------------------- 占位命令（由模块覆盖） --------------------
-% 这些命令在 cls 中提供默认空实现，模块加载后会 \renewcommand 覆盖
 \newcommand{\makecoverpage}{%
   \PackageWarning{sduthesis}{No~cover~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
-
 \newenvironment{cnabstract}{}{}
 \newenvironment{enabstract}{}{}
 \newcommand{\cnkeywords}[1]{}
 \newcommand{\enkeywords}[1]{}
-
-% -------------------- 通用环境定义 --------------------
-% 这些是所有模块共享的基础环境，模块可以覆盖
-
-% 参考文献
 \addbibresource{data/ref/references.bib}
 \renewcommand{\bibfont}{\zihao{5}}
 
@@ -346,8 +298,6 @@
     \chapter*{参考文献}
     \printbibliography[heading=none]
 }
-
-% 致谢
 \newenvironment{myacknowledgement}{
     \newpage
     \setstretch{1.5}
@@ -358,8 +308,6 @@
 }{
     \clearpage
 }
-
-% 附录
 \newenvironment{myappendix}{
     \newpage
     \setstretch{1.5}
@@ -374,8 +322,6 @@
 }{
     \clearpage
 }
-
-% 目录
 \newcommand{\maketable}{
     \renewcommand{\cleardoublepage}{\clearpage}
     \setcounter{page}{1}
@@ -401,5 +347,6 @@
     \bookmark[dest=tableofcontent,level=0]{目录}
     \tableofcontents
 }
-
 \endinput
+%%
+%% End of file `sduthesis.cls'.

@@ -389,11 +389,11 @@ sduthesis 已具备（✅ 超越多数同类）：DTX 格式、内核+模块 Hoo
 
 ### 8.3 四 Phase 路线图
 
-**Phase 0 — 立即（P0，1~2 个月，冲刺 v2.1/2.2）**
+**Phase 0 — 立即（P0，1~2 个月，冲刺 v2.1/2.2）** ✅ 已完成（2026-08-06）
 
-1. 补齐 l3build 回归基线：提交 `testfiles/*.tlg`（PR 清单必做项，push develop 目前会硬失败）。先覆盖 封面/摘要/目录/致谢 核心页面，后续按宏包细分。
-2. 新增 master 模块：硕博封面 + 答辩委员会页，把"本科模板"升级为"学位论文模板"的关键一步。
-3. 发布 v2.1.0：用 release.yml 走完整发布流程，验证 CTAN 包产物。
+1. ✅ 补齐 l3build 回归基线：提交 `testfiles/*.tlg`（cover/abstract/toc/bib/blindreview/master/master-blindreview 共 7 个），并修复 testfiles 无 `\START/\END` 导致基线为空的根因。
+2. ✅ 新增 master 模块：硕博封面 + 答辩委员会页，模板升级为学位论文级；并支持 `module={master, blindreview}` 多模块组合加载。
+3. ✅ 发布 v2.1.0：CNB 平台原生发布（tag_push 流水线：texlive 镜像编译 + `git:release` + 附件上传），产物 main.pdf / sduthesis.zip / sduthesis.tds.zip / sduthesis-doc.pdf 完整，v2.1.0 已设为 latest release；tag 已通过 git-sync（push_tags）同步至 GitHub 并触发 release.yml。
 
 **Phase 1 — 中期（P1，3~6 个月）**
 

@@ -1,15 +1,34 @@
-% 盲审模式回归测试
+% 盲审模式回归测试（叠加在本科模块上）
+% 断言式校验：盲审模式下个人信息必须被隐藏（隐私保护回归守护）。
 \documentclass{sduthesis}
 \input{setup-test}
 \input{regression-test}
 
 \SDUSetup{
-  module = blindreview,
+  module = {undergraduate, blindreview},
   title  = {盲审测试论文},
 }
 
 \begin{document}
 \START
+% --- 隐私断言：个人信息 Getter 必须被掩码为 *** ---
+\ASSERT{\GetAuthor}{***}
+\ASSERT{\GetStudentId}{***}
+\ASSERT{\GetSupervisor}{***}
+
+% --- 隐私断言：封面个人信息行在盲审模式下必须为空 ---
+% 若误删 \IfBlindReviewF 保护，下面的行宽将非零，测试即失败。
+\setbox0=\hbox{\IfBlindReviewF{姓名:张某某 学号:202100100001 导师:李某某}}
+\ifdim\wd0=0pt \TYPE{personal-row-hidden=YES}\else\TYPE{personal-row-hidden=NO}\fi
+
+% --- 对照：非盲审下个人信息行应有内容（防止断言恒真） ---
+\setbox1=\hbox{姓名:张某某 学号:202100100001 导师:李某某}
+\ifdim\wd1=0pt \TYPE{raw-row-nonempty=NO}\else\TYPE{raw-row-nonempty=YES}\fi
+
+% --- 盲审标志命令 ---
+\ASSERT{\IfBlindReviewTF{BLIND-ON}{BLIND-OFF}}{BLIND-ON}
+\TYPE{IfBlindReviewF-empty=[\IfBlindReviewF{SHOULD-NOT-APPEAR}]=}
+
 \makecoverpage
 \END
 \end{document}

@@ -69,11 +69,11 @@
 
         \begin{tabular}{p{\Lwidth}p{\Rwidth}}
             \Lcolumn{学位类型}     & \Rcolumn{\GetDegree}      \\[-0.8mm]\cline{2-2}\\[-4mm]
-            \Lcolumn{姓\qquad 名} & \Rcolumn{\GetAuthor}     \\[-0.8mm]\cline{2-2}\\[-4mm]
-            \Lcolumn{学\qquad 号} & \Rcolumn{\GetStudentId}  \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \IfBlindReviewF{\Lcolumn{姓\qquad 名} & \Rcolumn{\GetAuthor}     \\[-0.8mm]\cline{2-2}\\[-4mm]}
+            \IfBlindReviewF{\Lcolumn{学\qquad 号} & \Rcolumn{\GetStudentId}  \\[-0.8mm]\cline{2-2}\\[-4mm]}
             \Lcolumn{学\qquad 院} & \Rcolumn{\GetSchool}     \\[-0.8mm]\cline{2-2}\\[-4mm]
             \Lcolumn{专\qquad 业} & \Rcolumn{\GetMajor}      \\[-0.8mm]\cline{2-2}\\[-4mm]
-            \Lcolumn{指导教师}      & \Rcolumn{\GetSupervisor}  \\[-0.8mm]\cline{2-2}
+            \IfBlindReviewF{\Lcolumn{指导教师}      & \Rcolumn{\GetSupervisor}  \\[-0.8mm]\cline{2-2}}
         \end{tabular}
 
         \vspace*{30mm}
@@ -88,7 +88,10 @@
 }
 
 % -------------------- 答辩委员会页 --------------------
+% 盲审模式（\IfBlindReviewF）下整页跳过：
+% 答辩委员会页明文输出主席/委员姓名，盲审稿不应包含。
 \renewcommand{\makecommittee}{
+    \IfBlindReviewF{
     \begin{center}
         \phantomsection
         \hypertarget{committee}{}
@@ -110,6 +113,7 @@
     \end{center}
 
     \clearpage
+    }
 }
 
 % -------------------- 摘要环境 --------------------

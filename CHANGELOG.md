@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### 🚀 Features
+
+- 盲审回退由内核加载器统一处理：`module` 列表含 `blindreview` 但缺少基础模块时自动前置加载本科模块，与书写顺序无关（`{blindreview, master}` 不再重复加载两个基础模块）
+- 新增 `\IfBlindReviewF` 命令，封面个人信息行改用非盲审才输出语义，可读性更好
+
+### 🐛 Bug Fixes
+
+- 盲审模式跳过答辩委员会页：避免盲审稿明文输出主席/委员姓名
+- 盲审回归测试补充断言：校验个人信息 Getter 掩码（`***`）与封面个人信息行隐藏（防隐私泄露回归）
+
 ## [1.0.0] - 2026-04-23
 
 ### 🚀 Features

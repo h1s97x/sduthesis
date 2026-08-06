@@ -117,7 +117,16 @@ latexmk -xelatex main.tex
 |------|------|----------|
 | `undergraduate` | 本科毕业论文 | `\SDUSetup{module=undergraduate}` |
 | `master` | 硕士学位论文 | `\SDUSetup{module=master}` |
-| `blindreview` | 盲审模式（隐藏作者信息） | `\SDUSetup{module=blindreview}` |
+| `blindreview` | 盲审模式（隐藏作者信息，叠加层） | `\SDUSetup{module={undergraduate,blindreview}}` |
+
+> **多模块组合**：`module` 键支持逗号分隔的模块列表，按顺序依次加载，实现功能叠加。
+> 盲审模块本身不定义封面版式，需与基础模块（`undergraduate`/`master`）组合使用；
+> 若列表中含 `blindreview` 但未指定基础模块，会自动回退加载本科模块（与书写顺序无关，
+> 例如 `{blindreview, master}` 只会加载 `master` 这一个基础模块）。
+> 例如硕博论文 + 盲审：`\SDUSetup{module={master,blindreview}}`。
+>
+> **盲审范围**：盲审模式下封面隐藏姓名/学号/指导教师行，答辩委员会页（主席/委员姓名）整页跳过，
+> 避免在盲审稿中泄露个人信息。
 
 开发中的模块：
 

@@ -23,7 +23,7 @@
 %% The Current Maintainer of this work is h1s97x.
 %% 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{sduthesis}[2025/05/16 v2.0.0 Thesis template for Shandong University]
+\ProvidesClass{sduthesis}[2025/05/16 v2.1.0 Thesis template for Shandong University]
 \LoadClass[openany]{ctexbook}
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
@@ -48,6 +48,13 @@
 \tl_new:N \l__sdu_page_top_tl
 \tl_new:N \l__sdu_page_bottom_tl
 \tl_new:N \l__sdu_module_tl
+\seq_new:N \l__sdu_module_seq
+\tl_new:N \l__sdu_module_tmp_tl
+\tl_new:N \l__sdu_module_item_tl
+\tl_new:N \l__sdu_module_pkg_tl
+\bool_new:N \l__sdu_blindreview_bool
+\bool_new:N \l__sdu_has_blindreview_bool
+\bool_new:N \l__sdu_has_base_module_bool
 \keys_define:nn { sdu }
 {
   % --- 信息组 ---
@@ -119,8 +126,39 @@
 }
 \cs_new:Nn \sdu_load_module:
 {
-  \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
-  \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
+  \tl_set:Nx \l__sdu_module_tmp_tl { \l__sdu_module_tl }
+  \seq_set_split:NnV \l__sdu_module_seq { , } \l__sdu_module_tmp_tl
+  % 先扫描：判断是否含 blindreview、是否已有基础模块
+  \bool_set_false:N \l__sdu_has_blindreview_bool
+  \bool_set_false:N \l__sdu_has_base_module_bool
+  \seq_map_inline:Nn \l__sdu_module_seq
+  {
+    \tl_set:Nx \l__sdu_module_item_tl { \tl_trim_spaces:n { ##1 } }
+    \tl_if_eq:NnT \l__sdu_module_item_tl { blindreview }
+      { \bool_set_true:N \l__sdu_has_blindreview_bool }
+    \tl_if_eq:NnT \l__sdu_module_item_tl { undergraduate }
+      { \bool_set_true:N \l__sdu_has_base_module_bool }
+    \tl_if_eq:NnT \l__sdu_module_item_tl { master }
+      { \bool_set_true:N \l__sdu_has_base_module_bool }
+  }
+  % 单独使用 blindreview 时前置加载本科模块（与书写顺序无关）
+  \bool_if:NT \l__sdu_has_blindreview_bool
+  {
+    \bool_if:NF \l__sdu_has_base_module_bool
+    {
+      \RequirePackage{sduthesis-undergraduate}
+    }
+  }
+  % 按用户指定顺序正式加载
+  \seq_map_inline:Nn \l__sdu_module_seq
+  {
+    \tl_set:Nx \l__sdu_module_item_tl { \tl_trim_spaces:n { ##1 } }
+    \tl_if_empty:NF \l__sdu_module_item_tl
+    {
+      \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_item_tl }
+      \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
+    }
+  }
 }
 \NewHook { sduthesis/after-setup }
 \NewHook { sduthesis/before-cover }
@@ -129,6 +167,16 @@
 \NewHook { sduthesis/mainmatter/begin }
 \NewHook { sduthesis/backmatter/begin }
 \AddToHook { begindocument } { \sdu_load_module: \UseHook { sduthesis/after-setup } }
+
+\cs_new:Npn \IfBlindReviewTF #1 #2
+{
+  \bool_if:NTF \l__sdu_blindreview_bool { #1 } { #2 }
+}
+\cs_new:Npn \IfBlindReviewF #1
+{
+  \bool_if:NF \l__sdu_blindreview_bool { #1 }
+}
+\NewDocumentCommand \IfBlindReview { m m } { \IfBlindReviewTF { #1 } { #2 } }
 
 \ExplSyntaxOff
 \usepackage{amsmath}

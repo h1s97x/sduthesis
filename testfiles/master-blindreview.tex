@@ -1,0 +1,32 @@
+% 硕士论文 + 盲审组合回归测试
+% 断言式校验：盲审模式下个人信息与答辩委员会信息必须被隐藏。
+\documentclass{sduthesis}
+\input{setup-test}
+\input{regression-test}
+
+\SDUSetup{
+  module           = {master, blindreview},
+  degree           = {硕士},
+  committeeChair   = {王五 教授},
+  committeeMembers = {赵六 教授、孙七 副教授、周八 副教授},
+  defenseDate      = {2025年5月25日},
+  defensePlace     = {山东大学信息科学与工程学院会议室},
+}
+
+\begin{document}
+\START
+% --- 隐私断言：个人信息 Getter 必须被掩码为 *** ---
+\ASSERT{\GetAuthor}{***}
+\ASSERT{\GetStudentId}{***}
+\ASSERT{\GetSupervisor}{***}
+
+% --- 隐私断言：盲审稿不得输出答辩委员会成员姓名 ---
+\ASSERT{\GetCommitteeChair}{***}
+\ASSERT{\GetCommitteeMembers}{***}
+\ASSERT{\IfBlindReviewTF{BLIND-ON}{BLIND-OFF}}{BLIND-ON}
+\TYPE{IfBlindReviewF-empty=[\IfBlindReviewF{SHOULD-NOT-APPEAR}]=}
+
+\makecoverpage
+\makecommittee
+\END
+\end{document}

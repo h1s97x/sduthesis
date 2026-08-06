@@ -5,7 +5,12 @@
 % 使用方法：只需修改下方的 \SDUSetup{...} 中的内容
 %
 % 支持的配置项：
-%   module      - 模板模块（undergraduate / master / blindreview）
+%   module      - 模板模块，支持逗号分隔多模块组合：
+%                undergraduate / master / blindreview
+%                例：{master, blindreview}（硕博论文+盲审）
+%                例：{undergraduate, blindreview}（本科+盲审）
+%                盲审模块需与基础模块组合；单独使用自动回退本科
+%                盲审模式：封面隐藏姓名/学号/导师，答辩委员会页整页跳过
 %   title       - 论文标题
 %   author      - 作者姓名
 %   studentId   - 学号

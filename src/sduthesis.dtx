@@ -38,7 +38,7 @@
 %
 % \title{\textsf{SDUThesis} --- 山东大学学位论文 \LaTeX{} 模板}
 % \author{h1s97x \\ \texttt{yang1297656998@outlook.com}}
-% \date{v2.0.0 \quad 2025/05/16}
+% \date{v2.1.0 \quad 2025/05/16}
 %
 % \maketitle
 %
@@ -63,6 +63,7 @@
 %   \item Hook 系统：六个文档阶段钩子，模块可注入任意行为
 %   \item 支持盲审模式（\texttt{blindreview} 模块）
 %   \item 支持硕士学位论文（\texttt{master} 模块）
+%   \item 支持多模块组合加载（如 \texttt{master + blindreview}）
 %   \item 兼容 Overleaf 在线编辑
 % \end{itemize}
 %
@@ -129,7 +130,7 @@
 % \textbf{键} & \textbf{类型} & \textbf{默认值} \\
 % \midrule
 % \endhead
-% \texttt{module}     & 字符串 & \texttt{undergraduate} \\
+% \texttt{module}     & 字符串/列表 & \texttt{undergraduate} \\
 % \texttt{title}      & 字符串 & （无） \\
 % \texttt{author}     & 字符串 & （无） \\
 % \texttt{studentId}  & 字符串 & （无） \\
@@ -200,9 +201,35 @@
 % \endhead
 % \texttt{undergraduate} & \texttt{sduthesis-undergraduate.sty} & 本科论文 \\
 % \texttt{master}        & \texttt{sduthesis-master.sty}        & 硕士学位论文 \\
-% \texttt{blindreview}   & \texttt{sduthesis-blindreview.sty}   & 盲审模式 \\
+% \texttt{blindreview}   & \texttt{sduthesis-blindreview.sty}   & 盲审模式（叠加层，需与基础模块组合） \\
 % \bottomrule
 % \end{longtable}
+%
+% \subsection{多模块组合}
+%
+% \texttt{module} 键支持逗号分隔的模块列表，按顺序依次加载，
+% 实现功能叠加。例如硕博论文 + 盲审：
+%
+% \begin{lstlisting}[language={[LaTeX]TeX}]
+% \SDUSetup{
+%   module = {master, blindreview},
+%   degree = {硕士},
+%   ...
+% }
+% \end{lstlisting}
+%
+% 盲审模块（\texttt{blindreview}）是叠加层：它本身不定义封面版式，
+% 而是通过盲审标志让基础模块（\texttt{undergraduate}/\texttt{master}）
+% 在封面中隐藏作者、学号、导师等个人信息。
+%
+% \textbf{盲审回退}：若列表中包含 \texttt{blindreview} 但未指定任何基础
+% 模块（\texttt{undergraduate}/\texttt{master}），内核会自动前置加载本科模块。
+% 回退在加载器内完成、与书写顺序无关——例如
+% \texttt{module = {blindreview, master}} 不会重复加载两个基础模块，
+% 只有 \texttt{master} 会被加载。
+%
+% \textbf{盲审范围}：盲审模式下除封面个人信息行（姓名/学号/指导教师）隐藏外，
+% 答辩委员会页（主席/委员姓名）也会整页跳过，避免在盲审稿中泄露委员会成员信息。
 %
 % \subsection{创建新模块}
 %
@@ -230,7 +257,7 @@
 %    \begin{macrocode}
 %<*cls>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{sduthesis}[2025/05/16 v2.0.0 Thesis template for Shandong University]
+\ProvidesClass{sduthesis}[2025/05/16 v2.1.0 Thesis template for Shandong University]
 \LoadClass[openany]{ctexbook}
 %    \end{macrocode}
 %
@@ -356,6 +383,13 @@
 %
 %    \begin{macrocode}
 \tl_new:N \l__sdu_module_tl
+\seq_new:N \l__sdu_module_seq
+\tl_new:N \l__sdu_module_tmp_tl
+\tl_new:N \l__sdu_module_item_tl
+\tl_new:N \l__sdu_module_pkg_tl
+\bool_new:N \l__sdu_blindreview_bool
+\bool_new:N \l__sdu_has_blindreview_bool
+\bool_new:N \l__sdu_has_base_module_bool
 %    \end{macrocode}
 %
 % \subsection{定义层：键注册}
@@ -528,11 +562,52 @@
 %
 % \begin{macro}{\sdu_load_module:}
 % 构建模块包名并加载。
+% 支持逗号分隔的多模块列表（如 \texttt{module = {master, blindreview}}），
+% 按顺序依次加载，实现功能叠加（如硕博论文 + 盲审）。
+% 空白分隔符会被去掉，空项自动跳过。
+%
+% 盲审回退在\textbf{内核}完成而非盲审模块内部：
+% 若列表中包含 \texttt{blindreview} 但缺少基础模块
+% （\texttt{undergraduate}/\texttt{master}），
+% 自动\textbf{前置}加载本科模块。
+% 这样 \texttt{module = {blindreview, master}} 等任意书写顺序
+% 都不会出现"同时加载两个基础模块"的冲突。
 %    \begin{macrocode}
 \cs_new:Nn \sdu_load_module:
 {
-  \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_tl }
-  \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
+  \tl_set:Nx \l__sdu_module_tmp_tl { \l__sdu_module_tl }
+  \seq_set_split:NnV \l__sdu_module_seq { , } \l__sdu_module_tmp_tl
+  % 先扫描：判断是否含 blindreview、是否已有基础模块
+  \bool_set_false:N \l__sdu_has_blindreview_bool
+  \bool_set_false:N \l__sdu_has_base_module_bool
+  \seq_map_inline:Nn \l__sdu_module_seq
+  {
+    \tl_set:Nx \l__sdu_module_item_tl { \tl_trim_spaces:n { ##1 } }
+    \tl_if_eq:NnT \l__sdu_module_item_tl { blindreview }
+      { \bool_set_true:N \l__sdu_has_blindreview_bool }
+    \tl_if_eq:NnT \l__sdu_module_item_tl { undergraduate }
+      { \bool_set_true:N \l__sdu_has_base_module_bool }
+    \tl_if_eq:NnT \l__sdu_module_item_tl { master }
+      { \bool_set_true:N \l__sdu_has_base_module_bool }
+  }
+  % 单独使用 blindreview 时前置加载本科模块（与书写顺序无关）
+  \bool_if:NT \l__sdu_has_blindreview_bool
+  {
+    \bool_if:NF \l__sdu_has_base_module_bool
+    {
+      \RequirePackage{sduthesis-undergraduate}
+    }
+  }
+  % 按用户指定顺序正式加载
+  \seq_map_inline:Nn \l__sdu_module_seq
+  {
+    \tl_set:Nx \l__sdu_module_item_tl { \tl_trim_spaces:n { ##1 } }
+    \tl_if_empty:NF \l__sdu_module_item_tl
+    {
+      \tl_set:Nx \l__sdu_module_pkg_tl { sduthesis-\l__sdu_module_item_tl }
+      \exp_args:NV \RequirePackage \l__sdu_module_pkg_tl
+    }
+  }
 }
 %    \end{macrocode}
 % \end{macro}
@@ -555,6 +630,22 @@
 %
 %    \begin{macrocode}
 \AddToHook { begindocument } { \sdu_load_module: \UseHook { sduthesis/after-setup } }
+
+% 盲审标志：由 blindreview 模块在加载时置为真。
+% 基础模块（undergraduate/master）在排版封面时通过
+% \cs{IfBlindReviewTF} 决定是否隐藏作者、学号、导师等个人信息。
+% \cs{IfBlindReviewF} 是"非盲审才输出"的简写（盲审时真分支为空），
+% 用于封面个人信息行等场景，可读性更好。
+%    \begin{macrocode}
+\cs_new:Npn \IfBlindReviewTF #1 #2
+{
+  \bool_if:NTF \l__sdu_blindreview_bool { #1 } { #2 }
+}
+\cs_new:Npn \IfBlindReviewF #1
+{
+  \bool_if:NF \l__sdu_blindreview_bool { #1 }
+}
+\NewDocumentCommand \IfBlindReview { m m } { \IfBlindReviewTF { #1 } { #2 } }
 
 \ExplSyntaxOff
 %    \end{macrocode}
@@ -812,7 +903,7 @@
 % \end{macro}
 %
 % \begin{macro}{\makecommittee}
-% 答辩委员会页占位（master/doctor 模块覆盖）。
+% 答辩委员会页占位（master/doctor 模块覆盖；盲审模式下整页跳过）。
 %    \begin{macrocode}
 \newcommand{\makecommittee}{%
   \PackageWarning{sduthesis}{No~committee~page~defined.~Please~load~a~module~via~SDUSetup.}%

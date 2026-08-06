@@ -60,11 +60,11 @@
         \vspace*{30mm}
 
         \begin{tabular}{p{\Lwidth}p{\Rwidth}}
-            \Lcolumn{姓\qquad 名} & \Rcolumn{\GetAuthor}     \\[-0.8mm]\cline{2-2}\\[-4mm]
-            \Lcolumn{学\qquad 号} & \Rcolumn{\GetStudentId}  \\[-0.8mm]\cline{2-2}\\[-4mm]
+            \IfBlindReviewF{\Lcolumn{姓\qquad 名} & \Rcolumn{\GetAuthor}     \\[-0.8mm]\cline{2-2}\\[-4mm]}
+            \IfBlindReviewF{\Lcolumn{学\qquad 号} & \Rcolumn{\GetStudentId}  \\[-0.8mm]\cline{2-2}\\[-4mm]}
             \Lcolumn{学\qquad 院} & \Rcolumn{\GetSchool}     \\[-0.8mm]\cline{2-2}\\[-4mm]
             \Lcolumn{专\qquad 业} & \Rcolumn{\GetMajor}      \\[-0.8mm]\cline{2-2}\\[-4mm]
-            \Lcolumn{指导教师}      & \Rcolumn{\GetSupervisor}  \\[-0.8mm]\cline{2-2}
+            \IfBlindReviewF{\Lcolumn{指导教师}      & \Rcolumn{\GetSupervisor}  \\[-0.8mm]\cline{2-2}}
         \end{tabular}
 
         \vspace*{35mm}

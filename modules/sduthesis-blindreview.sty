@@ -1,6 +1,6 @@
 %%
 %% sduthesis-blindreview.sty — 盲审模式模块
-%% 隐藏作者、学号、导师等个人信息
+%% 隐藏作者、学号、导师、答辩委员会成员等个人信息
 %%
 %% Copyright (C) 2025 h1s97x
 %%
@@ -18,58 +18,46 @@
 %%
 %% The Current Maintainer of this work is h1s97x.
 %%
-\ProvidesPackage{sduthesis-blindreview}[2025/05/16 v1.4.0 Blind review module for SDUThesis]
+\ProvidesPackage{sduthesis-blindreview}[2025/05/16 v1.5.0 Blind review module for SDUThesis]
 
-\RequirePackage{sduthesis-undergraduate}
+% ============================================================
+% 盲审模式模块（叠加层）
+% 通过 \SDUSetup{module={master,blindreview}} 等组合加载，
+% 需与基础模块（undergraduate/master）一起使用。
+%
+% 工作原理：
+%   1. 设置盲审标志 \l__sdu_blindreview_bool，基础模块封面据此
+%      隐藏作者、学号、导师等个人信息行；
+%   2. 覆盖个人信息 Getter，摘要/致谢等处的作者名同样隐藏；
+%   3. 跳过声明页；
+%   4. 跳过答辩委员会页（主席/委员姓名不进入盲审稿）。
+% ============================================================
+
+% ===== 向后兼容：单独使用 blindreview 时的本科回退已由内核加载器处理 =====
+% 内核 \sdu_load_module: 检测到列表中含 blindreview 但无基础模块时，
+% 会前置加载本科模块；此处不再重复加载，避免与书写顺序耦合。
+% 参见 src/sduthesis.dtx 的模块加载器说明。
+
+% ===== 设置盲审标志 =====
+\ExplSyntaxOn
+\bool_set_true:N \l__sdu_blindreview_bool
+\ExplSyntaxOff
 
 %% ===== 覆盖 Getter：隐藏个人信息 =====
 \renewcommand{\GetAuthor}{***}
 \renewcommand{\GetStudentId}{***}
 \renewcommand{\GetSupervisor}{***}
-
-%% ===== 覆盖封面：不显示个人信息的行 =====
-\renewcommand{\makecoverpage}{%
-  \begin{titlepage}
-    \centering
-    \vspace*{10mm}
-
-    %% 校名
-    {\zihao{-0}\bfhei{山东大学}}
-
-    \vspace{8mm}
-
-    %% 论文类型
-    {\zihao{2}\ bfsong{本科毕业论文}}
-
-    \vspace{20mm}
-
-    %% 论文标题
-    {\zihao{-2}\bfhei{\GetTitle}}
-
-    \vspace{20mm}
-
-    %% 仅保留学院和专业（无姓名、学号、导师）
-    \begin{tabular}{r@{\hspace{3mm}}l}
-      \Lcolumn{学\qquad 院} & \Rcolumn{\GetSchool}     \\[-0.8mm]\cline{2-2}\\[-4mm]
-      \Lcolumn{专\qquad 业} & \Rcolumn{\GetMajor}
-    \end{tabular}
-
-    \vfill
-
-    %% 日期
-    \begin{center}
-      \GetYear 年 \quad \GetMonth 月
-    \end{center}
-
-  \end{titlepage}
-}
+\renewcommand{\GetCommitteeChair}{***}
+\renewcommand{\GetCommitteeMembers}{***}
 
 %% ===== 跳过声明页 =====
 \renewcommand{\makestatement}{%
   % 盲审模式：跳过声明页
 }
 
-%% ===== 摘要中隐藏作者信息 =====
-%% 摘要页的作者行仍显示 ***（因为 Getter 已覆盖）
+%% ===== 跳过答辩委员会页（盲审稿不输出主席/委员姓名） =====
+\renewcommand{\makecommittee}{%
+  % 盲审模式：跳过答辩委员会页，避免泄露主席/委员信息
+}
 
 \endinput

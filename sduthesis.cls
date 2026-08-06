@@ -344,7 +344,8 @@
   tabsize=4,
   columns=flexible,
   backgroundcolor=\color{gray!5},
-  morekeywords={constexpr, nullptr, Ciphertext, Plaintext, vector, load_from_file, save_to_file}
+  morekeywords={constexpr, nullptr, Ciphertext, Plaintext, vector,
+    load_from_file, save_to_file}
 }
 \newcommand{\makecoverpage}{%
   \PackageWarning{sduthesis}{No~cover~page~defined.~Please~load~a~module~via~SDUSetup.}%

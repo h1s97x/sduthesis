@@ -1,0 +1,72 @@
+% 附录回归测试：固化附录编号（A/B/C）与“无空白页”行为
+%
+% 历史 bug（PR #12）：myappendix 在 \backmatter 之后调用时 \appendix 依赖
+% \@mainmattertrue 才能生成“附录A/B/C”编号，否则附录章节无编号、且
+% \chapter*{附录} 总标题会独占一页产生空白页。
+%
+% 本测试通过 \TYPE 显式输出各计数器的值，固化以下行为：
+%   1. 附录章节编号为 A/B/C（\thechapter = \Alph{chapter}）
+%   2. 附录内表格/图表/公式编号带章节前缀（表 A.1、图 B.1 等）
+%   3. 页标记连续（[1]→附录A、[2]→附录B、[3]→附录C），不存在空白页
+\documentclass{sduthesis}
+\input{setup-test}
+\input{regression-test}
+
+\begin{document}
+\START
+% 正文章节（非附录），用于验证编号切换
+\chapter{引言}
+\TYPE{正文 chapter number: \thechapter}
+
+% 附录必须在 \backmatter 之前调用（与 main.tex 一致）
+\begin{myappendix}
+\chapter{攻读学位期间发表的学术论文}
+
+\TYPE{appendix A chapter number: \thechapter}
+\TYPE{appendix A equation number: \theequation}
+
+\begin{enumerate}
+    \item 张三, 李四. 基于深度学习的图像识别算法研究[J]. 计算机科学与探索, 2024, 18(5): 123-135.
+\end{enumerate}
+
+\chapter{补充实验数据}
+
+\section{网络各层详细参数统计}
+
+\begin{table}[htbp]
+    \centering
+    \caption{网络各层参数统计}
+    \begin{tabular}{cccc}
+        \toprule
+        \textbf{层类型} & \textbf{数量} & \textbf{参数量(M)} & \textbf{占比(\%)} \\
+        \midrule
+        $1\times1$ 卷积 & 12 & 0.82 & 25.6 \\
+        $3\times3$ 深度卷积 & 15 & 0.34 & 10.6 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:layer_params}
+\end{table}
+
+\TYPE{appendix B chapter number: \thechapter}
+\TYPE{appendix B table number: \thetable}
+
+\begin{equation}
+    E = mc^2
+\end{equation}
+
+\chapter{代码实现补充说明}
+
+\TYPE{appendix C chapter number: \thechapter}
+
+\begin{figure}[htbp]
+    \centering
+    \rule{2cm}{1cm}
+    \caption{附录示意图}
+    \label{fig:appendix}
+\end{figure}
+
+\TYPE{appendix C figure number: \thefigure}
+
+\end{myappendix}
+\END
+\end{document}

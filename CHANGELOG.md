@@ -2,17 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.1.0] - 2026-08-06
 
 ### 🚀 Features
 
+- 新增 `master` 模块（硕博封面 + 答辩委员会页），模板从本科升级为学位论文级
+- 支持多模块组合加载：`module` 键支持逗号分隔列表（如 `{master, blindreview}`），按顺序加载实现功能叠加
+- 新增 `\makecommittee` 答辩委员会页命令，及 `degree` / `committeeChair` / `committeeMembers` / `defenseDate` / `defensePlace` 配置键与对应 Getter
 - 盲审回退由内核加载器统一处理：`module` 列表含 `blindreview` 但缺少基础模块时自动前置加载本科模块，与书写顺序无关（`{blindreview, master}` 不再重复加载两个基础模块）
-- 新增 `\IfBlindReviewF` 命令，封面个人信息行改用非盲审才输出语义，可读性更好
+- 新增 `\IfBlindReviewTF` / `\IfBlindReviewF` 盲审标志命令，封面个人信息行改用非盲审才输出语义，可读性更好
+- 引入 l3build 回归测试框架，补齐 7 个 `.tlg` 基线（cover / abstract / toc / bib / blindreview / master / master-blindreview）
+- 新增 CNB 流水线（GitHub 同步 + Issue/PR 自动分配处理人）
 
 ### 🐛 Bug Fixes
 
+- 修复盲审模式 `\makestatement` 未定义导致编译报错
+- 修复 `build.lua` 配置（`checksearchpaths` 无效、`installfiles` 路径、缺 `lvtext`）使 l3build 测试目录可编译
+- 修复 CI 首次 `l3build save` 无参数必失败（改为自动发现测试名显式传入）
+- 修复 LPPL 许可合规——补齐 cls 与模块版权声明
+- 修复 TeX Live 镜像安装失败——移除显式 repository 恢复缓存命中、build 矩阵版本真实生效
 - 盲审模式跳过答辩委员会页：避免盲审稿明文输出主席/委员姓名
 - 盲审回归测试补充断言：校验个人信息 Getter 掩码（`***`）与封面个人信息行隐藏（防隐私泄露回归）
+
+### 📚 Documentation
+
+- 更新 ROADMAP：补充对标调研结论与四 Phase 路线图
+- 同步 DTX / README / sdusetup.tex 多模块组合用法与 master 配置说明
+
+## [2.0.0] - 2026-05-16
+
+### 🚀 Features
+
+- 将 `sduthesis.cls` 重写为 DTX 格式（`src/sduthesis.dtx` + `.ins`），CTAN 发布就绪
+- 构建产物：`sduthesis.zip`（用户包）、`sduthesis.tds.zip`（TDS）、CTAN 发布包
+- CI/CD 三段式：quality（lint + l3build 回归）、build（TeX Live 2025/2026 双版本矩阵）、release（tag 发布）
 
 ## [1.0.0] - 2026-04-23
 

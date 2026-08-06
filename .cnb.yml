@@ -17,6 +17,7 @@ main:
             username: ${GITHUB_USERNAME}
             password: ${GITHUB_TOKEN}
             branch: main
+            push_tags: true
             force: true
 
 # issue.* 事件需挂靠在 $ 兜底分支下，使用默认分支的配置执行
@@ -84,3 +85,96 @@ $:
           options:
             type: add-assignee
             reviewers: h1s97x
+
+  # Tag 发布：编译产物 + 创建 Release + 上传附件（v* tag 触发）
+  tag_push:
+    - name: release-sduthesis
+      docker:
+        image: texlive/texlive:latest
+      stages:
+        - name: generate cls from dtx
+          script: |
+            set -e
+            cd src && xelatex -interaction=nonstopmode sduthesis.ins
+            cp sduthesis.cls ../sduthesis.cls
+        - name: build pdf
+          script: |
+            set -e
+            export TEXINPUTS=".:modules//:"
+            # 等价 just build：xelatex x3 + biber
+            xelatex -synctex=1 -interaction=nonstopmode -halt-on-error main.tex
+            biber main
+            xelatex -synctex=1 -interaction=nonstopmode -halt-on-error main.tex
+            xelatex -synctex=1 -interaction=nonstopmode -halt-on-error main.tex
+            test -s main.pdf
+        - name: build documentation
+          script: |
+            set -e
+            cd src && xelatex -interaction=nonstopmode sduthesis.dtx
+            xelatex -interaction=nonstopmode sduthesis.dtx
+            cp sduthesis.pdf ../sduthesis-doc.pdf
+            test -s ../sduthesis-doc.pdf
+        - name: build tds archive
+          script: |
+            set -e
+            python3 - <<'PYEOF'
+            import shutil, zipfile, os
+            base = "/tmp/sduthesis-tds"
+            for d in ["tex/latex/sduthesis", "doc/latex/sduthesis", "source/latex/sduthesis"]:
+                os.makedirs(os.path.join(base, d), exist_ok=True)
+            def cp(src, dst):
+                shutil.copy(src, os.path.join(base, dst))
+            cp("sduthesis.cls", "tex/latex/sduthesis/sduthesis.cls")
+            import glob
+            for f in glob.glob("modules/*.sty"):
+                cp(f, "tex/latex/sduthesis/" + os.path.basename(f))
+            cp("src/sduthesis.dtx", "source/latex/sduthesis/sduthesis.dtx")
+            cp("src/sduthesis.ins", "source/latex/sduthesis/sduthesis.ins")
+            cp("sduthesis-doc.pdf", "doc/latex/sduthesis/sduthesis-doc.pdf")
+            cp("README.md", "doc/latex/sduthesis/README.md")
+            with zipfile.ZipFile("sduthesis.tds.zip", "w", zipfile.ZIP_DEFLATED) as z:
+                for root, _, files in os.walk(base):
+                    for f in files:
+                        p = os.path.join(root, f)
+                        z.write(p, os.path.relpath(p, base))
+            print("TDS built:", os.path.getsize("sduthesis.tds.zip"), "bytes")
+            PYEOF
+        - name: create zip archive
+          script: |
+            set -e
+            python3 - <<'PYEOF'
+            import os, glob, zipfile, shutil
+            # 用户包：与 release.yml Create ZIP archive 步骤保持一致
+            dst = "sduthesis"
+            shutil.rmtree(dst, ignore_errors=True)
+            os.makedirs(dst, exist_ok=True)
+            for f in ["main.tex", "sdusetup.tex", "sduthesis.cls", "justfile",
+                      "README.md", "LICENSE", "CHANGELOG.md", "CONTRIBUTING.md"]:
+                if os.path.exists(f):
+                    shutil.copy(f, os.path.join(dst, os.path.basename(f)))
+            for d in ["modules", "data", "figures"]:
+                if os.path.isdir(d):
+                    shutil.copytree(d, os.path.join(dst, d))
+            if os.path.exists("sduthesis-doc.pdf"):
+                shutil.copy("sduthesis-doc.pdf", os.path.join(dst, "sduthesis-doc.pdf"))
+            if os.path.exists("sduthesis.tds.zip"):
+                shutil.copy("sduthesis.tds.zip", os.path.join(dst, "sduthesis.tds.zip"))
+            with zipfile.ZipFile("sduthesis.zip", "w", zipfile.ZIP_DEFLATED) as z:
+                for root, _, files in os.walk(dst):
+                    for f in files:
+                        p = os.path.join(root, f)
+                        z.write(p, os.path.relpath(p, dst))
+            print("User zip built:", os.path.getsize("sduthesis.zip"), "bytes")
+            PYEOF
+        - name: create release
+          type: git:release
+          options:
+            descriptionFromFile: RELEASE_NOTES.md
+        - name: upload release assets
+          image: cnbcool/attachments:latest
+          settings:
+            attachments:
+              - "./main.pdf"
+              - "./sduthesis.zip"
+              - "./sduthesis.tds.zip"
+              - "./sduthesis-doc.pdf"

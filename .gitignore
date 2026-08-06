@@ -360,6 +360,15 @@ out/
 # main.pdf 由 CI（build.yml）编译并作为 artifact 上传，不入库（本地编译产物同理）
 main.pdf
 
+# DTX 文档编译产物（src/sduthesis.pdf → 拷到仓库根为 sduthesis-doc.pdf 后入库）
+src/sduthesis.pdf
+sduthesis-doc.pdf
+
+# 打包产物（由 scripts/build-*.sh 生成，不入库）
+sduthesis.tds.zip
+sduthesis-ctan.zip
+sduthesis-overleaf.zip
+
 # Preview files
 .preview
 .cozeproj/reduction

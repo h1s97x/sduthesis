@@ -105,9 +105,25 @@ git clone https://github.com/h1s97x/sduthesis.git
 just build        # 编译 PDF
 just clean        # 清理临时文件
 
-# 方式二：直接使用 latexmk
+# 方式二：直接使用 latexmk（Overleaf 同款流程）
 latexmk -xelatex main.tex
 ```
+
+### 5. 在线编辑（Overleaf / TeXPage）
+
+仓库根目录即为完整的在线编译模板，一键导入即可开始写作：
+
+- **Overleaf**：点击 README 顶部的 “Open in Overleaf” 徽章（git 导入），或手动 New Project → Upload Project → 选择 `sduthesis-overleaf.zip`（由 `scripts/build-overleaf.sh` 生成）。
+- **TeXPage**：新建项目 → 上传仓库 zip 即可。
+
+导入后请在 Overleaf 项目设置中选择：
+
+| 设置项 | 值 |
+|---|---|
+| Compiler | **XeLaTeX** |
+| Main document | `main.tex` |
+
+仓库自带的 `latexmkrc` 会确保 XeLaTeX + biber 参考文献流程自动收敛，无需手动重跑。
 
 ## 模块系统
 
@@ -145,6 +161,8 @@ latexmk -xelatex main.tex
 | 文档 | 说明 |
 |------|------|
 | [FAQ](./doc/FAQ.md) | 常见问题解答 |
+| [Overleaf 使用说明](./doc/OVERLEAF.md) | 在线模板（Overleaf/TeXPage）导入与设置 |
+| [CTAN 提交清单](./doc/CTAN-SUBMISSION.md) | CTAN 提交材料与表单填写 |
 | [技术文档](./doc/INTERNALS.md) | 内部实现文档 |
 | [项目方案](./doc/ROADMAP.md) | 版本路线图 |
 

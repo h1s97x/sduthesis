@@ -67,7 +67,7 @@ jobs:
           cp sduthesis.cls sduthesis/
           cp -r modules/ data/ figures/ sduthesis/
           cp justfile README.md LICENSE CHANGELOG.md CONTRIBUTING.md sduthesis/
-          cp doc/sduthesis-doc.pdf sduthesis/ 2>/dev/null || true
+          cp sduthesis-doc.pdf sduthesis/ 2>/dev/null || true
           zip -r sduthesis.zip sduthesis/
           rm -rf sduthesis/
 
@@ -81,5 +81,5 @@ jobs:
             main.pdf
             sduthesis.zip
             sduthesis.tds.zip
-            doc/sduthesis-doc.pdf
+            sduthesis-doc.pdf
           generate_release_notes: true

@@ -395,10 +395,10 @@ sduthesis 已具备（✅ 超越多数同类）：DTX 格式、内核+模块 Hoo
 2. ✅ 新增 master 模块：硕博封面 + 答辩委员会页，模板升级为学位论文级；并支持 `module={master, blindreview}` 多模块组合加载。
 3. ✅ 发布 v2.1.0：CNB 平台原生发布（tag_push 流水线：texlive 镜像编译 + `git:release` + 附件上传），产物 main.pdf / sduthesis.zip / sduthesis.tds.zip / sduthesis-doc.pdf 完整，v2.1.0 已设为 latest release；tag 已通过 git-sync（push_tags）同步至 GitHub 并触发 release.yml。
 
-**Phase 1 — 中期（P1，3~6 个月）**
+**Phase 1 — 中期（P1，3~6 个月）** 进行中（2026-08-06）
 
-4. Overleaf/TeXPage 官方模板页（参考 SJTUThesis/BIThesis），而非仅 snip_uri。
-5. 提交 CTAN：包名 `sduthesis` 当前无冲突；收录后 TeX Live 自带，用户门槛骤降。
+4. ✅ **Overleaf/TeXPage 官方模板**：仓库根目录即在线模板（main.tex + sdusetup.tex + data/ + modules/ + figures/），新增 `latexmkrc`（XeLaTeX + biber 自动收敛）；`scripts/build-overleaf.sh` 生成 `sduthesis-overleaf.zip`（只含编译所需文件），本地已用 latexmk 完整验证（28 页）。使用说明见 `doc/OVERLEAF.md`。
+5. 🚧 **CTAN 提交**：提交材料已就绪——`README`（纯文本）、`scripts/build-ctan.sh` 生成 `sduthesis-ctan.zip`（dtx + ins + modules + README + LICENSE + doc.pdf + tds.zip），TDS 包已通过 `just ctan` 本地验证；待维护者到 https://ctan.org/upload 提交（清单见 `doc/CTAN-SUBMISSION.md`）。收录后 TeX Live 自带，用户门槛骤降。
 6. （可选）bibtex 兼容层：biblatex 是趋势，不必跟 thuthesis 双方案；可对齐 `biblatex-gb7714-2015` 配置。
 7. 文档站/社区：GitHub Pages + MkDocs 或 VitePress 托管使用手册；Discussions 做问答沉淀。
 

@@ -1,0 +1,119 @@
+======================================================================
+SDUThesis - LaTeX template for Shandong University theses
+山东大学学位论文 LaTeX 模板
+======================================================================
+
+Version: 2.1.0
+License: LaTeX Project Public License 1.3c (LPPL-1.3c)
+Maintainer: h1s97x (Yang1297656998@outlook.com)
+Repository: https://github.com/h1s97x/sduthesis
+
+SDUThesis is a LaTeX document class for bachelor/master/doctoral
+theses at Shandong University, based on the official "Shandong
+University Undergraduate Thesis (Design) Writing Specification".
+It uses a kernel + module plugin architecture with centralized
+configuration through \SDUSetup{}.
+
+山东大学学位论文 LaTeX 模板，采用内核 + 模块的插件化架构，通过
+\SDUSetup{} 集中配置，支持本科/硕士/博士等不同学位类型。
+
+CONTENTS
+--------
+
+  sduthesis.cls                  Document class (generated from DTX)
+  sduthesis.dtx                  Source code + documentation (DTX)
+  sduthesis.ins                  Installer script (docstrip)
+  sduthesis-doc.pdf              Developer/user documentation (PDF)
+  modules/sduthesis-undergraduate.sty   Undergraduate module
+  modules/sduthesis-master.sty          Master/doctoral module
+  modules/sduthesis-blindreview.sty     Blind review module
+  README.md                      This documentation
+  LICENSE                        LPPL-1.3c license text
+  sduthesis.tds.zip              TDS (TeX Directory Structure) package
+
+REQUIREMENTS
+------------
+
+  - TeX Live 2020 or later (XeLaTeX engine)
+  - ctex (xelatex option)  - included in TeX Live
+  - biblatex + biber with biblatex-gb7714-2015
+  - Fandol fonts (bundled with TeX Live)
+  - Recommended: latexmk for one-command compilation
+
+INSTALLATION
+------------
+
+  For a single user (recommended), run:
+
+      mkdir -p ~/texmf/tex/latex/sduthesis
+      cp sduthesis.cls modules/*.sty ~/texmf/tex/latex/sduthesis/
+      mktexlsr ~/texmf
+
+  Or install the TDS package (sduthesis.tds.zip) with:
+
+      tlmgr install sduthesis.tds.zip
+
+USAGE
+-----
+
+  Create your thesis with:
+
+      \documentclass{sduthesis}
+      \input{sdusetup.tex}
+      \begin{document}
+      ...
+      \end{document}
+
+  Configure thesis information in \SDUSetup{}:
+
+      \SDUSetup{
+        module     = {undergraduate},   % or {master, blindreview}, ...
+        title      = {论文标题},
+        author     = {作者姓名},
+        studentId  = {学号},
+        school     = {学院},
+        major      = {专业},
+        supervisor = {指导教师},
+        year       = {2025},
+        month      = {6},
+      }
+
+  Compile with XeLaTeX + biber (the reference backend is biber):
+
+      latexmk -xelatex main.tex
+      # or equivalently:
+      #   xelatex main.tex
+      #   biber main
+      #   xelatex main.tex
+      #   xelatex main.tex
+
+  The template also works on Overleaf / TeXPage: import the
+  repository or upload the zip, set the compiler to XeLaTeX.
+
+MODULES
+-------
+
+  undergraduate  Bachelor thesis (default)
+  master         Master/doctoral thesis (cover + defense committee)
+  blindreview    Blind review overlay (hide personal information)
+
+  Modules can be combined: \SDUSetup{module={master, blindreview}}
+
+DEVELOPMENT
+-----------
+
+  The document class is written in DTX format. To regenerate
+  sduthesis.cls from the source:
+
+      cd src && xelatex sduthesis.ins
+
+  To build the documentation:
+
+      xelatex sduthesis.dtx   (run twice)
+
+======================================================================
+Copyright (C) 2025 h1s97x
+This work may be distributed and/or modified under the conditions
+of the LaTeX Project Public License, either version 1.3c of this
+license or (at your option) any later version.
+======================================================================

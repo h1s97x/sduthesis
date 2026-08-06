@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### 🚀 Features
+
+- 新增 `latexmkrc`：Overleaf/TeXPage 在线模板开箱即用（XeLaTeX + biber 自动收敛）
+- 新增 `scripts/build-overleaf.sh`：生成 `sduthesis-overleaf.zip` 在线模板包（只含编译所需文件，自带编译自检）
+- 新增 `scripts/build-ctan.sh` 与 `README`（纯文本）：生成 CTAN 提交包并附清单
+
+### 🐛 Bug Fixes
+
+- 修复 `justfile` 中 `tds`/`ctan` 打包路径 bug：`cd` 后未回到仓库根目录导致产物拷错位置（TDS 包无法生成、CTAN 包失败）
+- 修复 `just gen` 在 `src/sduthesis.cls` 已存在时 docstrip 交互式询问覆盖导致 CI 挂起
+- 修复 GitHub `release.yml` 中 `sduthesis-doc.pdf` 路径错误：`just doc` 产物在仓库根目录，而非 `doc/` 子目录
+
+### 📚 Documentation
+
+- 新增 `doc/OVERLEAF.md`（在线模板使用说明）与 `doc/CTAN-SUBMISSION.md`（CTAN 提交清单）
+- README：新增“在线编辑（Overleaf/TeXPage）”章节与文档索引
+- FAQ / ROADMAP：同步 Overleaf 模板与 CTAN 提交进度
+
 ## [2.1.0] - 2026-08-06
 
 ### 🚀 Features

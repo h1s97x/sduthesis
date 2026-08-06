@@ -75,6 +75,7 @@ gen:
     #!/usr/bin/env bash
     set -e
     echo "=== 从 DTX 生成 sduthesis.cls ==="
+    rm -f src/sduthesis.cls   # 避免 docstrip 交互式询问覆盖
     cd src && xelatex sduthesis.ins
     cp sduthesis.cls ../sduthesis.cls
     echo "=== 生成完成 ==="
@@ -107,6 +108,7 @@ tds:
     cp sduthesis-doc.pdf /tmp/sduthesis-tds/doc/latex/sduthesis/
     cp README.md /tmp/sduthesis-tds/doc/latex/sduthesis/
     cd /tmp/sduthesis-tds && zip -r /tmp/sduthesis.tds.zip tex doc source
+    cd - >/dev/null
     cp /tmp/sduthesis.tds.zip .
     echo "=== TDS 包生成完成: sduthesis.tds.zip ==="
 
@@ -125,6 +127,7 @@ ctan: tds
     cp sduthesis-doc.pdf /tmp/sduthesis-ctan/
     cp sduthesis.tds.zip /tmp/sduthesis-ctan/
     cd /tmp/sduthesis-ctan && zip -r /tmp/sduthesis-ctan.zip *
+    cd - >/dev/null
     cp /tmp/sduthesis-ctan.zip .
     echo "=== CTAN 发布包生成完成: sduthesis-ctan.zip ==="
 

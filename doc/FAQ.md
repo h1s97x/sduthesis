@@ -90,6 +90,18 @@ just distclean    # 清理辅助文件和 PDF
 2. 编译器选择 `XeLaTeX`
 3. TeX Live 版本选择最新
 
+### Q: 如何在 Overleaf / TeXPage 上使用本模板？
+
+- **git 导入**：Overleaf → New Project → Import from GitHub → `h1s97x/sduthesis`
+- **zip 上传**：本地运行 `scripts/build-overleaf.sh` 生成 `sduthesis-overleaf.zip`，在 Overleaf/TeXPage 中 Upload Project 上传
+- 仓库根目录自带 `latexmkrc`，会自动完成 XeLaTeX + biber 参考文献流程，无需手动重跑
+- 详细说明见 [doc/OVERLEAF.md](./OVERLEAF.md)
+
+### Q: 如何把模板提交到 CTAN？
+
+运行 `scripts/build-ctan.sh` 生成 `sduthesis-ctan.zip`，然后到 https://ctan.org/upload 上传即可。
+提交材料与表单填写见 [doc/CTAN-SUBMISSION.md](./CTAN-SUBMISSION.md)。
+
 ## 获取更多帮助
 
 - [GitHub Issues](https://github.com/h1s97x/sduthesis/issues) — 提问和报告问题

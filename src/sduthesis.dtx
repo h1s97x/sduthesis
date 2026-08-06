@@ -973,19 +973,19 @@
 %    \end{macrocode}
 %
 % 附录环境：
+% 直接 \appendix 切换编号，由数据文件中的 \chapter{} 生成“附录A/B/C”章节标题。
+% 注意：不要在此处再 \chapter*{附录}（会产生独立的“附录”空白标题页）。
 %
 %    \begin{macrocode}
 \newenvironment{myappendix}{
     \newpage
     \setstretch{1.5}
     \phantomsection
-    \addcontentsline{toc}{chapter}{附录}
-    \chapter*{附\quad 录}
-    \zihao{-4}
     \appendix
-    \renewcommand{\theequation}{A.\arabic{equation}}
-    \renewcommand{\thetable}{A.\arabic{table}}
-    \renewcommand{\thefigure}{A.\arabic{figure}}
+    \zihao{-4}
+    \renewcommand{\theequation}{\thechapter.\arabic{equation}}
+    \renewcommand{\thetable}{\thechapter.\arabic{table}}
+    \renewcommand{\thefigure}{\thechapter.\arabic{figure}}
 }{
     \clearpage
 }

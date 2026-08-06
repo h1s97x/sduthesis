@@ -384,13 +384,11 @@
     \newpage
     \setstretch{1.5}
     \phantomsection
-    \addcontentsline{toc}{chapter}{附录}
-    \chapter*{附\quad 录}
-    \zihao{-4}
     \appendix
-    \renewcommand{\theequation}{A.\arabic{equation}}
-    \renewcommand{\thetable}{A.\arabic{table}}
-    \renewcommand{\thefigure}{A.\arabic{figure}}
+    \zihao{-4}
+    \renewcommand{\theequation}{\thechapter.\arabic{equation}}
+    \renewcommand{\thetable}{\thechapter.\arabic{table}}
+    \renewcommand{\thefigure}{\thechapter.\arabic{figure}}
 }{
     \clearpage
 }

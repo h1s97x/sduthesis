@@ -37,10 +37,12 @@ collection-fontsrecommended
 collection-mathscience
 
 # ----- 5. 不在任何 collection 中的包 -----
+# 注意：TeX Live 中 algpseudocode 不是独立包名，algpseudocode.sty 由 algorithmicx 提供
+# （collection-mathscience 已含 algorithmicx，此处显式列出以兼容精简安装）；
+# tabularx.sty 由 tools collection 提供（collection-latex 已含 tools）；
+# float.sty 由 float 包提供（collection-latexrecommended 已含 float）。
 
-algpseudocode
-float
-tabularx
+algorithmicx
 
 # ----- 6. 字体包 -----
 # Latin Modern 由 collection-fontsrecommended 自动包含，无需单独安装

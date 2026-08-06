@@ -21,6 +21,13 @@
 \input{data/chapters/chapter4.tex}
 \input{data/chapters/chapter5.tex}
 
+% ==================== 附录 ====================
+% 附录必须在 \backmatter 之前：\appendix 依赖 \@mainmattertrue 才能为
+% 章节生成“附录A/B/C”编号（\backmatter 会关闭章节编号）。
+\begin{myappendix}
+\input{data/frontmatter/appendix.tex}
+\end{myappendix}
+
 % ==================== 后记 ====================
 \backmatter
 \UseHook{sduthesis/backmatter/begin}
@@ -28,8 +35,5 @@
 \begin{myacknowledgement}
 \input{data/frontmatter/acknowledgement.tex}
 \end{myacknowledgement}
-\begin{myappendix}
-\input{data/frontmatter/appendix.tex}
-\end{myappendix}
 
 \end{document}

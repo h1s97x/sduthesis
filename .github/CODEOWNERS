@@ -1,0 +1,48 @@
+# CODEOWNERS —— 仓库代码所有者
+#
+# 规则：
+#   - 默认所有路径归 h1s97x 负责，PR 创建后 GitHub 会自动指派其作为 code review 审查人。
+#   - 路径按最长前缀匹配，最具体的规则优先生效；后续如需引入协作者，
+#     在对应路径下追加一行即可覆盖默认 owner。
+#
+# 语法参考: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 默认 owner：覆盖全部代码路径，避免 PR 遗漏审查人
+*                               @h1s97x
+
+# 模板核心源码（DTX 驱动生成 sduthesis.cls 及模块）
+/src/                           @h1s97x
+/modules/                       @h1s97x
+*.cls                           @h1s97x
+*.sty                           @h1s97x
+*.dtx                           @h1s97x
+*.ins                           @h1s97x
+
+# 用户模板与配置
+*.tex                           @h1s97x
+main.tex                        @h1s97x
+sdusetup.tex                    @h1s97x
+
+# 测试与回归基线
+/testfiles/                     @h1s97x
+/tests/                         @h1s97x
+
+# 构建与代码质量配置
+/justfile                       @h1s97x
+/build.lua                      @h1s97x
+/latexmkrc                      @h1s97x
+/.chktexrc                      @h1s97x
+/.github/tl_packages            @h1s97x
+/.github/tl_packages_lint       @h1s97x
+
+# CI 流水线
+/.github/workflows/             @h1s97x
+/.cnb.yml                       @h1s97x
+/.cnb/                          @h1s97x
+
+# 文档
+/README                         @h1s97x
+/README.md                      @h1s97x
+/CHANGELOG.md                   @h1s97x
+/CONTRIBUTING.md                @h1s97x
+/AGENTS.md                      @h1s97x

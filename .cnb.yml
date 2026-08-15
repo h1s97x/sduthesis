@@ -45,58 +45,18 @@ $:
             sync_mode: pull
 
   # Issue 创建后自动分配处理人
+  # 使用官方 cnbcool/cnb-cli 插件（CNB OpenAPI 命令行工具），一行命令完成分配：
+  #   - 流水线自动注入 CNB_TOKEN，无需手写鉴权
+  #   - issue.open 事件自动注入 CNB_REPO_SLUG / CNB_ISSUE_IID，cnb 会识别快捷上下文
+  #   参考 https://cnb.cool/cnb/plugins/cnbcool/cnb-cli
   issue.open:
     - name: auto-assign-issue-owner
-      docker:
-        image: python:3.12-slim
-      env:
-        ISSUE_ASSIGNEE: h1s97x
       stages:
         - name: assign issue to owner
+          image: cnbcool/cnb-cli
           script: |
             set -e
-            python3 - <<'PYEOF'
-            import json
-            import os
-            import urllib.request
-
-            repo = os.environ["CNB_REPO_SLUG"]
-            number = os.environ["CNB_ISSUE_IID"]
-            owner = os.environ["ISSUE_ASSIGNEE"]
-            token = os.environ["CNB_TOKEN"]
-            api = os.environ.get("CNB_API_ENDPOINT", "https://api.cnb.cool").rstrip("/")
-            base = f"{api}/{repo}/-/issues/{number}/assignees"
-
-            def request(path, method="GET", data=None):
-                headers = {
-                    "Authorization": f"Bearer {token}",
-                    "Accept": "application/json",
-                }
-                body = None
-                if data is not None:
-                    body = json.dumps(data).encode()
-                    headers["Content-Type"] = "application/json"
-                req = urllib.request.Request(path, data=body, method=method, headers=headers)
-                with urllib.request.urlopen(req) as resp:
-                    return resp.status, resp.read().decode()
-
-            # 1. 查询当前处理人，已分配则跳过
-            try:
-                _, raw = request(base)
-                assignees = json.loads(raw) if raw else []
-                names = [a.get("username") for a in assignees] if isinstance(assignees, list) else []
-                if owner in names:
-                    print(f"[skip] issue already assigned to {owner}")
-                    raise SystemExit(0)
-            except SystemExit:
-                raise
-            except Exception as e:
-                print(f"[warn] query assignees failed: {e}")
-
-            # 2. 添加处理人
-            status, _ = request(base, method="POST", data={"assignees": [owner]})
-            print(f"[ok] assigned {owner} to issue #{number}, status={status}")
-            PYEOF
+            cnb issues add-assignees --assignees h1s97x
 
   # PR 创建后自动分配处理人（pull_request.target 不校验触发者权限，对协作者提交更友好）
   pull_request.target:

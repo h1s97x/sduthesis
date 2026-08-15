@@ -5,11 +5,10 @@
 #    敏感信息（GITHUB_USERNAME / GITHUB_TOKEN）存放在密钥仓库 secret-env，通过 imports 引用。
 # 2. 手动触发（Web Trigger）：从 GitHub 拉取最新提交到 CNB（GitHub → CNB）
 #    使用官方插件 sync_mode: pull，按钮见 .cnb/web_trigger.yml，事件挂靠在 $ 兜底分支下。
-# 3. Issue / PR 自动分配处理人：创建后自动将处理人设置为仓库维护者（见下方 .maintainer）。
-
-# ---- 仓库级常量 ----
-# 仓库维护者 / 默认处理人（QAQ）。Issue 与 PR 的自动分配会复用此值，换维护者只需改这一处。
-.maintainer: &maintainer h1s97x
+# 3. Issue / PR 自动分配处理人 / 审查人：创建后自动将处理人、审查人设置为仓库维护者。
+# 注意：不要用 `.` 开头的 key 存引用源（如 `.maintainer`）——CNB 会把以 `.` 开头的 key
+# 当作 !reference 引用源，Schema 强制其为 array/object，字符串会触发 Schema 校验失败、
+# 导致整个 .cnb.yml 无效。维护者直接内联，换维护者时统一改下方三处（issue / pr assignee / pr reviewer）。
 
 main:
   push:
@@ -30,7 +29,29 @@ main:
             # 同时避免无条件 force 覆盖 GitHub 远端的新提交。
             sync_mode: rebase
 
-# 兜底分支：web_trigger / issue.* / pull_request.target / tag_push 等事件
+  # PR 创建后自动分配处理人和审查人
+  # 使用 git:reviewer 内置任务（无需脚本、自动注入鉴权）。
+  # 事件放目标分支（main）下，pull_request.target 用目标分支代码执行、且不校验触发者权限，
+  # 对跨仓协作者提交更友好。
+  #   处理人：type: add-assignee
+  #   审查人：type: add-reviewer
+  pull_request.target:
+    - name: auto-assign-pr-owner
+      env:
+        PR_REVIEWER: h1s97x
+      stages:
+        - name: assign pr to owner
+          type: git:reviewer
+          options:
+            type: add-assignee
+            reviewers: ${PR_REVIEWER}
+        - name: add pr reviewer
+          type: git:reviewer
+          options:
+            type: add-reviewer
+            reviewers: ${PR_REVIEWER}
+
+# 兜底分支：web_trigger / issue.* / tag_push 等事件
 $:
   # 手动触发：从 GitHub 拉取（GitHub → CNB，新增）
   # 使用官方 tencentcom/git-sync 插件 + sync_mode: pull（Pull 模式），
@@ -57,23 +78,13 @@ $:
   issue.open:
     - name: auto-assign-issue-owner
       env:
-        ISSUE_ASSIGNEE: *maintainer
+        ISSUE_ASSIGNEE: h1s97x
       stages:
         - name: assign issue to owner
           image: cnbcool/cnb-cli
           script: |
             set -e
             cnb issues add-assignees --assignees $ISSUE_ASSIGNEE
-
-  # PR 创建后自动分配处理人（pull_request.target 不校验触发者权限，对协作者提交更友好）
-  pull_request.target:
-    - name: auto-assign-pr-owner
-      stages:
-        - name: assign pr to owner
-          type: git:reviewer
-          options:
-            type: add-assignee
-            reviewers: *maintainer
 
   # Tag 发布：编译产物 + 创建 Release + 上传附件（v* tag 触发）
   tag_push:

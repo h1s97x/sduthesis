@@ -8,4 +8,4 @@ branch:
         description: 从 GitHub 远端拉取最新提交到当前分支（GitHub → CNB）
         event: web_trigger_pull_from_github
         permissions:
-          roles: [master, developer]
+          roles: [owner, master, developer]

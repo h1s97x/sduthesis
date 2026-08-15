@@ -1,5 +1,6 @@
 # 手动触发的 Web Trigger 按钮配置
 # 从 GitHub 拉取：将 GitHub 远端最新提交拉取到 CNB 仓库（GitHub → CNB）
+# 使用官方 tencentcom/git-sync 插件 + sync_mode: pull（Pull 模式），见 .cnb.yml。
 # 按钮在仓库任意分支均可触发，事件名与 .cnb.yml 中 $ 兜底分支下的 web_trigger 流水线对应。
 branch:
   - reg: .*

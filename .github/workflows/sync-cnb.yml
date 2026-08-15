@@ -1,0 +1,51 @@
+name: Sync to CNB
+
+# GitHub → CNB 反向同步：当 GitHub 远端（h1s97x/sduthesis）有代码推送时，将变更同步回 CNB。
+# 与 .cnb.yml（CNB → GitHub）构成双向同步。
+#
+# 使用官方 tencentcom/git-sync 插件（https://cnb.cool/cnb/plugins/tencentcom/git-sync）：
+#   - 默认推送模式（Push），认证走 CNB 凭据：用户名固定为 cnb，
+#     密码取 GitHub 仓库 Secrets 中的 CNB_GIT_TOKEN
+#     （值 = CNB Access Token，可在 CNB「设置 → 访问令牌」生成，需仓库读写权限）。
+#   - 仅在源分支非空时推送（空分支跳过），不删除远端分支。
+#
+# 防同步环：仅同步模板代码路径，排除同步配置自身（.cnb* / .cnb/）与 CI 文件
+#   （.github/），避免 GitHub↔CNB 相互推送造成死循环。
+#
+# 注意：本仓库主分支在 CNB，正常情况下 .cnb.yml 已自动把 CNB 提交推回 GitHub，
+#       本 workflow 主要覆盖「直接改 GitHub 再回灌 CNB」的场景，为兜底方向。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'modules/**'
+      - '*.cls'
+      - '*.sty'
+      - '*.dtx'
+      - '*.ins'
+      - '*.tex'
+      - 'justfile'
+      - 'README.md'
+      - '!*.cnb*'
+      - '!.cnb/**'
+      - '!.github/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.repository == 'h1s97x/sduthesis'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync to CNB Repository
+        uses: docker://tencentcom/git-sync
+        env:
+          PLUGIN_TARGET_URL: "https://cnb.cool/h1s97x/sduthesis.git"
+          PLUGIN_AUTH_TYPE: "https"
+          PLUGIN_USERNAME: "cnb"
+          PLUGIN_PASSWORD: ${{ secrets.CNB_GIT_TOKEN }}
+          PLUGIN_BRANCH: "main"

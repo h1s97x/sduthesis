@@ -1,9 +1,10 @@
 # CNB 流水线配置
 # 1. Git Sync：每次 push 到 main 后，自动将代码同步到 GitHub（h1s97x/sduthesis）
-#    使用 tencentcom/git-sync 官方插件，HTTPS + Access Token 认证。
+#    使用官方 tencentcom/git-sync 插件 + sync_mode: rebase（Rebase 模式），
+#    HTTPS + Access Token 认证。参考 https://cnb.cool/cnb/plugins/tencentcom/git-sync
 #    敏感信息（GITHUB_USERNAME / GITHUB_TOKEN）存放在密钥仓库 secret-env，通过 imports 引用。
 # 2. 手动触发（Web Trigger）：从 GitHub 拉取最新提交到 CNB（GitHub → CNB）
-#    按钮见 .cnb/web_trigger.yml，事件挂靠在 $ 兜底分支下。
+#    使用官方插件 sync_mode: pull，按钮见 .cnb/web_trigger.yml，事件挂靠在 $ 兜底分支下。
 # 3. Issue / PR 自动分配处理人：创建后自动将处理人设置为仓库维护者 h1s97x（QAQ）。
 main:
   push:
@@ -20,42 +21,28 @@ main:
             password: ${GITHUB_TOKEN}
             branch: main
             push_tags: true
-            force: true
+            # Rebase 模式：保留 GitHub 仓库特有的平台文件（如 .github/workflows/*.yml），
+            # 同时避免无条件 force 覆盖 GitHub 远端的新提交。
+            sync_mode: rebase
 
 # 兜底分支：web_trigger / issue.* / pull_request.target / tag_push 等事件
 $:
   # 手动触发：从 GitHub 拉取（GitHub → CNB，新增）
+  # 使用官方 tencentcom/git-sync 插件 + sync_mode: pull（Pull 模式），
+  # 参考 https://cnb.cool/cnb/plugins/tencentcom/git-sync
   web_trigger_pull_from_github:
     - name: web-trigger-pull-from-github
       imports:
         - https://cnb.cool/h1s97x/secret-env/-/blob/main/env.yml
-      docker:
-        image: alpine/git
       stages:
         - name: pull from github
-          script: |
-            set -eu
-            git config --global user.name "Git Sync"
-            git config --global user.email "git-sync@cnb.cool"
-
-            GH_URL="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/h1s97x/sduthesis.git"
-            BRANCH="${CNB_BRANCH:-main}"
-
-            git remote remove github 2>/dev/null || true
-            git remote add github "$GH_URL"
-            git fetch github "$BRANCH" || { echo "::error:: 无法从 GitHub 拉取分支 ${BRANCH}"; exit 1; }
-
-            # 快速前进合并 GitHub 分支到当前分支；分叉则中止，避免产生意外冲突
-            if git merge --ff-only "refs/remotes/github/${BRANCH}" 2>/dev/null; then
-              echo "已从 GitHub 快速前进合并到当前分支。"
-            else
-              echo "::error:: 当前分支与 GitHub 已分叉，无法自动合并。请人工处理（rebase / merge）。"
-              exit 1
-            fi
-
-            # 将合并结果推回 CNB 远端
-            git push origin "HEAD:${BRANCH}"
-            echo "已推送合并结果到 CNB 远端（${BRANCH}）。"
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/h1s97x/sduthesis.git
+            auth_type: https
+            username: ${GITHUB_USERNAME}
+            password: ${GITHUB_TOKEN}
+            sync_mode: pull
 
   # Issue 创建后自动分配处理人
   issue.open:

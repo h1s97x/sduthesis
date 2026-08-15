@@ -5,7 +5,12 @@
 #    敏感信息（GITHUB_USERNAME / GITHUB_TOKEN）存放在密钥仓库 secret-env，通过 imports 引用。
 # 2. 手动触发（Web Trigger）：从 GitHub 拉取最新提交到 CNB（GitHub → CNB）
 #    使用官方插件 sync_mode: pull，按钮见 .cnb/web_trigger.yml，事件挂靠在 $ 兜底分支下。
-# 3. Issue / PR 自动分配处理人：创建后自动将处理人设置为仓库维护者 h1s97x（QAQ）。
+# 3. Issue / PR 自动分配处理人：创建后自动将处理人设置为仓库维护者（见下方 .maintainer）。
+
+# ---- 仓库级常量 ----
+# 仓库维护者 / 默认处理人（QAQ）。Issue 与 PR 的自动分配会复用此值，换维护者只需改这一处。
+.maintainer: &maintainer h1s97x
+
 main:
   push:
     - name: sync-to-github
@@ -51,12 +56,14 @@ $:
   #   参考 https://cnb.cool/cnb/plugins/cnbcool/cnb-cli
   issue.open:
     - name: auto-assign-issue-owner
+      env:
+        ISSUE_ASSIGNEE: *maintainer
       stages:
         - name: assign issue to owner
           image: cnbcool/cnb-cli
           script: |
             set -e
-            cnb issues add-assignees --assignees h1s97x
+            cnb issues add-assignees --assignees $ISSUE_ASSIGNEE
 
   # PR 创建后自动分配处理人（pull_request.target 不校验触发者权限，对协作者提交更友好）
   pull_request.target:
@@ -66,7 +73,7 @@ $:
           type: git:reviewer
           options:
             type: add-assignee
-            reviewers: h1s97x
+            reviewers: *maintainer
 
   # Tag 发布：编译产物 + 创建 Release + 上传附件（v* tag 触发）
   tag_push:

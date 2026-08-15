@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'h1s97x/sduthesis'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 

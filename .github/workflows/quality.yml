@@ -52,6 +52,9 @@ concurrency:
   group: quality-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint (chktex)

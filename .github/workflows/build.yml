@@ -28,6 +28,9 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
     # 双 TeX Live 版本矩阵：发布前验证旧版本兼容性（仅 main 分支低频运行，成本可控）。
@@ -40,11 +43,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: current
-            texlive_version: 2026
+          - texlive_version: 2026
             repository: https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/
-          - name: previous
-            texlive_version: 2025
+          - texlive_version: 2025
             repository: https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2025/tlnet-final/
     steps:
       - uses: actions/checkout@v6

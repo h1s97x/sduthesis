@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Logo](./assets/sduthesis_icon.svg)
+<img src="./assets/sduthesis_icon.svg" alt="Logo" width="200">
 
 **山东大学毕业论文 LaTeX 模板**
 

@@ -34,7 +34,7 @@ main:
   # 事件放目标分支（main）下，pull_request.target 用目标分支代码执行、且不校验触发者权限，
   # 对跨仓协作者提交更友好。
   #   处理人：type: add-assignee
-  #   审查人：type: add-reviewer
+  #   审查人：type: add-reviewer-from-repo-members（从仓库成员中随机选一名评审人）
   pull_request.target:
     - name: auto-assign-pr-owner
       env:
@@ -48,8 +48,7 @@ main:
         - name: add pr reviewer
           type: git:reviewer
           options:
-            type: add-reviewer
-            reviewers: ${PR_REVIEWER}
+            type: add-reviewer-from-repo-members
 
 # 兜底分支：web_trigger / issue.* / tag_push 等事件
 $:

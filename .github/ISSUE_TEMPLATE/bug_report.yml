@@ -19,6 +19,20 @@ body:
       required: true
 
   - type: dropdown
+    id: os
+    attributes:
+      label: 操作系统
+      description: 你运行编译的系统环境
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Overleaf（在线）
+        - 其他
+    validations:
+      required: true
+
+  - type: dropdown
     id: texlive
     attributes:
       label: TeX 发行版

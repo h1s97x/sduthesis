@@ -15,6 +15,10 @@ name: Quality
 on:
   pull_request:
     branches: [main, develop]
+    # ⚠️ 本文件 paths 与 build/sync-cnb 各自维护（GitHub Actions 不支持跨文件复用路径清单）。
+    # 此处是**最全**的一份：含 testfiles/**、tests/**、.chktexrc（lint+回归必需）。
+    # build.yml 有意不含测试路径（不影响构建产物），sync-cnb.yml 现已对齐本清单。
+    # 改 paths 时请同步核对三个 workflow。
     paths:
       - 'src/**'
       - 'modules/**'
@@ -105,46 +109,12 @@ jobs:
         env:
           TEXINPUTS: ".:modules//:"
 
-      # 回归门禁说明：
-      #   - 已提交 tlg 基线 → l3build check（对比输出，防回归）
-      #   - 基线缺失（首次新增测试）→ save 生成基线并上传 artifact；
-      #     PR 放行（便于贡献者首次引入基线），push 到 develop 则硬失败，
-      #     强制提醒提交基线，避免 check 长期空转（回归门禁形同虚设）。
-      # 注意：按测试名逐个区分——新增测试（如 master）只 save 新基线，
-      #       不影响已有基线测试的 check 对比（否则 check 会因缺 tlg 全挂）。
-      # pipefail 保证 l3build 失败时 job 真正失败（不再被 continue-on-error 掩盖）
+      # 回归门禁（逻辑抽到 scripts/l3build-check.sh，与本地可复用）：
+      #   - 已提交 tlg 基线 → check；缺失基线（首次新增测试）→ save 生成并上传 artifact，
+      #     PR 放行，push 到 develop 硬失败强制提交基线。
+      #   - 触发事件通过入参传入（${{ github.event_name }}）区分 push/pr 行为。
       - name: l3build regression check
-        run: |
-          set -o pipefail
-          tests=$(ls testfiles/*.tex 2>/dev/null | sed 's|testfiles/||; s|\.tex$||' | sort)
-          if [ -z "$tests" ]; then
-            echo "::warning::未找到任何测试文件（testfiles/*.tex）"
-            exit 0
-          fi
-
-          missing=""
-          check_tests=""
-          for t in $tests; do
-            if [ ! -f "testfiles/$t.tlg" ]; then
-              missing="$missing $t"
-            else
-              check_tests="$check_tests $t"
-            fi
-          done
-
-          if [ -n "$missing" ]; then
-            # 首次新增测试：为缺失基线的测试生成基线
-            l3build save --quiet $missing 2>&1 | tail -20
-            echo "::warning::以下测试缺少 tlg 基线，已重新生成（可从 l3build-tlg artifact 下载并提交）: $missing"
-            if [ "${{ github.event_name }}" = "push" ]; then
-              echo "::error::push 到 develop 必须已提交 tlg 基线（见上方 artifact）。回归门禁在基线提交前不生效。"
-              exit 1
-            fi
-          fi
-
-          if [ -n "$check_tests" ]; then
-            l3build check --quiet $check_tests 2>&1 | tail -40
-          fi
+        run: bash scripts/l3build-check.sh ${{ github.event_name }}
         env:
           TEXINPUTS: ".:modules//:"
 

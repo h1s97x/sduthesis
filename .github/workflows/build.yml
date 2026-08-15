@@ -4,13 +4,17 @@ name: Build
 # 代码质量检查（lint + 编译回归）见 quality.yml，构建不再重复跑测试。
 #
 # 提速设计：
-#   1. 路径过滤：testfiles/tests 等测试改动不触发构建
+#   1. 路径过滤：仅代码改动触发（见下方 paths 注释，各 workflow 差异已说明）
 #   2. concurrency：取消旧运行，不排队
 #   3. TeX Live 由 install-texlive 默认自动缓存（~/texlive），跨 workflow 复用
 
 on:
   push:
     branches: [main]
+    # ⚠️ 本文件 paths 与 quality/sync-cnb 各自维护（GitHub Actions 不支持跨文件复用路径清单）。
+    # 有意区别于 quality.yml：此处**不含** testfiles/**、tests/**、.chktexrc——
+    # 这些是测试与 lint 配置，不影响 PDF 构建产物，改它们不应触发构建（由 quality.yml 覆盖）。
+    # 与 sync-cnb.yml 的差异见该文件注释。改 paths 时请同步核对三个 workflow。
     paths:
       - 'src/**'
       - 'modules/**'

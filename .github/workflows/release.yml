@@ -1,5 +1,12 @@
 name: Release
 
+# 发布流水线：打 tag（v*）或手动触发时运行。
+#
+# ⚠️ 本 workflow 会在 release 时回写 CHANGELOG.md 并 push。
+# 请勿把 CHANGELOG.md 加入 build.yml / quality.yml / sync-cnb.yml 的触发 paths
+# （它不在其中即不会连锁触发 CI）。若后续为 build/sync 新增 paths 时，务必仍保持
+# CHANGELOG.md 不被触发，否则 release 的 CHANGELOG push 会再次拉起构建，形成连锁。
+
 on:
   push:
     tags:
@@ -51,6 +58,9 @@ jobs:
         run: git-cliff --config cliff.toml --output CHANGELOG.md
 
       - name: Update changelog
+        # ⚠️ 此步会 push CHANGELOG.md（[skip ci]）。
+        # 必须确保 CHANGELOG.md 不在 build.yml / quality.yml / sync-cnb.yml 的触发 paths 中
+        # （当前各 workflow 均不含它，故不连锁触发 CI）；新增 paths 时勿把 CHANGELOG.md 加进去。
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

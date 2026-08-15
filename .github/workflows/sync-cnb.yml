@@ -18,6 +18,11 @@ name: Sync to CNB
 on:
   push:
     branches: [main]
+    # ⚠️ 本文件 paths 与 build/quality 各自维护（GitHub Actions 不支持跨文件复用路径清单）。
+    # 与 quality.yml 对齐：含 testfiles/**、tests/**、.chktexrc——测试与 lint 配置也属于模板代码，
+    # 改 GitHub 后应回灌 CNB，避免 CNB 与 GitHub 测试不同步。
+    # 因 .github/** 整体排除（防同步环），.github/tl_packages* 与本文件自身不在同步范围（有意为之）。
+    # 改 paths 时请同步核对三个 workflow；build.yml 有意不含测试路径，见其注释。
     paths:
       - 'src/**'
       - 'modules/**'
@@ -26,6 +31,9 @@ on:
       - '*.dtx'
       - '*.ins'
       - '*.tex'
+      - 'testfiles/**'
+      - 'tests/**'
+      - '.chktexrc'
       - 'justfile'
       - 'README.md'
       - '!*.cnb*'

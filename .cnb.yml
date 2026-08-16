@@ -31,11 +31,11 @@ main:
 
   # PR 创建后自动分配处理人和审查人
   # 使用 git:reviewer 内置任务（无需脚本、自动注入鉴权）。
-  # 事件放目标分支（main）下，pull_request.target 用目标分支代码执行、且不校验触发者权限，
-  # 对跨仓协作者提交更友好。
+  # 使用 pull_request 事件：会 checkout 预合并后的代码（含 PR 分支修改），
+  # 而不是 pull_request.target（只 checkout 目标分支 main 的代码）。
   #   处理人：type: add-assignee
   #   审查人：type: add-reviewer-from-repo-members（从仓库成员中随机选一名评审人）
-  pull_request.target:
+  pull_request:
     - name: auto-assign-pr-owner
       env:
         PR_REVIEWER: h1s97x

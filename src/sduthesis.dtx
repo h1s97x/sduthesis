@@ -60,7 +60,21 @@
 %
 % \section{简介}
 %
-% SDUThesis 是为山东大学学位论文设计的 \LaTeX{} 模板类，具有以下特点：
+% SDUThesis 是为山东大学学位论文设计的 \LaTeX{} 模板类，致力于让
+% 论文排版从繁琐的格式细节中解放出来，让作者把精力集中在内容本身。
+% 模板在 \textsf{ctexbook} 文档类的基础上构建，原生支持中文排版，
+% 无需手工调整字号、行距、页边距等格式参数即可达到学校规范要求。
+% 通过单一的 \cs{SDUSetup} 配置命令，即可集中完成论文标题、作者、
+% 学院、专业、指导教师等全部信息的录入。
+%
+% 除了开箱即用的基本功能，模板还提供了一套插件化架构。整个系统分为
+% 内核（\texttt{sduthesis.cls}）与若干可选的 \emph{模块}
+% （\texttt{modules/} 目录下的 \texttt{.sty} 文件）。内核负责提供
+% 基础排版能力与统一的配置/扩展接口，模块则针对具体场景（本科、硕士、
+% 盲审等）定制封面版式与页面内容。这种设计类似 VS Code 的扩展模式，
+% 用户可以根据自己的论文类型按需组合模块，而不必修改内核代码。
+%
+% 模板的主要特点可归纳为：
 %
 % \begin{itemize}
 %   \item 基于 \textsf{ctexbook} 文档类，完美支持中文排版
@@ -75,6 +89,9 @@
 %
 % \section{系统要求}
 %
+% 模板基于现代 \TeX{} 工具链构建，为保证最佳兼容性与排版效果，请使用
+% 较新版本的 \TeX{} 发行版。以下环境均为推荐配置，满足后即可直接编译：
+%
 % \begin{itemize}
 %   \item \TeX{} Live 2024 或更高版本
 %   \item XeLaTeX 编译器
@@ -84,7 +101,23 @@
 %
 % \section{快速开始}
 %
+% 下面通过一个最小的可编译示例，展示使用模板完成一篇论文骨架所需的全部
+% 步骤。完整步骤分为三步：
+%
+% \begin{enumerate}
+%   \item 在项目根目录放置 \texttt{main.tex}，在\emph{导言区}加载模板类并
+%         通过 \cs{SDUSetup} 录入论文基本信息；
+%   \item 在文档环境中调用封面、目录等前置命令，并撰写正文；
+%   \item 用 XeLaTeX 配合 Biber 编译，得到最终的 PDF。
+% \end{enumerate}
+%
 % \subsection{最小示例}
+%
+% 首先创建一个主文件（如 \texttt{main.tex}），文档类声明为
+% \texttt{sduthesis}，随后用 \cs{SDUSetup} 集中配置论文信息。
+% 需注意：\texttt{module} 键用于指定论文类型（此处为本科），
+% \texttt{title}/\texttt{author} 等键填写论文的标题与作者信息，
+% 缺省键（如 \texttt{year}、\texttt{month}）按需填写即可：
 %
 % \begin{lstlisting}[language={[LaTeX]TeX}]
 % \documentclass{sduthesis}
@@ -108,7 +141,10 @@
 %
 % \subsection{编译命令}
 %
-% 需要 XeLaTeX + Biber 四次编译：
+% \LaTeX{} 文档的引用、目录与参考文献需要多次编译才能稳定。模板使用
+% XeLaTeX 配合 Biber 处理中文与参考文献，共需要四次编译。其中第一次
+% \texttt{xelatex} 生成辅助文件，\texttt{biber} 处理参考文献数据，
+% 后两次 \texttt{xelatex} 分别用于嵌入引用与解析交叉引用：
 %
 % \begin{enumerate}
 %   \item \texttt{xelatex main} --- 生成辅助文件
@@ -120,6 +156,12 @@
 % 或使用 \texttt{just build} 一键编译。
 %
 % \section{配置参考}
+%
+% 模板的所有可配置项均通过 \cs{SDUSetup} 以\emph{键值对}的形式集中传入。
+% 配置键大致分为四组：\textbf{信息组}（论文的标题与作者等基本信息）、
+% \textbf{学位信息组}（硕士/博士论文的答辩信息）、\textbf{样式组}
+% （页面版式与行距等排版参数）以及\textbf{模块组}（指定加载哪些模块）。
+% 下面分别说明各键的用途。
 %
 % \subsection{\cs{SDUSetup} 键值列表}
 %
@@ -148,9 +190,52 @@
 % \bottomrule
 % \end{longtable}
 %
+% \subsubsection{信息组}
+%
+% \texttt{title} 是论文的完整题目，将出现在封面与页眉等位置；
+% \texttt{author} 为作者姓名，\texttt{studentId} 为学号，
+% \texttt{school} 为所属学院，\texttt{major} 为专业名称，
+% \texttt{supervisor} 为指导教师姓名。\texttt{year} 与 \texttt{month}
+% 表示毕业年份与月份（用阿拉伯数字填写，如 \texttt{2025} 与 \texttt{6}）。
+% 这些信息大多在封面上展示，建议在文档开头一次性填写完整。
+%
+% \subsubsection{样式组}
+%
+% \texttt{lineSpread} 控制正文的行距倍数，默认 \texttt{1.5} 倍，
+% 可根据学校要求适当调整。\texttt{pageLeft}/\texttt{pageRight}/\texttt{pageTop}/
+% \texttt{pageBottom} 分别控制页面左、右、上、下的页边距，
+% 默认分别为 \texttt{3cm}/\texttt{3cm}/\texttt{2.5cm}/\texttt{2.5cm}。
+% 当学校对页边距有特殊要求时，可在 \cs{SDUSetup} 中直接覆盖。
+%
+% \subsubsection{学位信息组（master/doctor 模块）}
+%
+% 以下键仅在加载 \texttt{master} 或 \texttt{doctor} 模块时生效，
+% 用于描述学位论文的答辩相关信息：
+%
+% \begin{longtable}{ll}
+% \toprule
+% \textbf{键} & \textbf{用途} \\
+% \midrule
+% \endhead
+% \texttt{degree}            & 学位类型（默认 \texttt{硕士}，可填 \texttt{博士}） \\
+% \texttt{committeeChair}    & 答辩委员会主席姓名 \\
+% \texttt{committeeMembers}  & 答辩委员会委员姓名（多个用顿号分隔） \\
+% \texttt{defenseDate}       & 答辩日期 \\
+% \texttt{defensePlace}      & 答辩地点 \\
+% \bottomrule
+% \end{longtable}
+%
+% \texttt{degree} 声明学位层次；\texttt{committeeChair} 与
+% \texttt{committeeMembers} 分别填写答辩委员会的主席与委员名单；
+% \texttt{defenseDate} 与 \texttt{defensePlace} 记录答辩的时间与地点。
+% 这些信息会显示在答辩委员会页上。
+%
 % \subsection{Getter 命令}
 %
-% 每个信息键对应一个 Getter 命令，可在文档中任意位置使用：
+% 为了方便在正文中引用配置信息（如摘要、声明页等），模板为每个信息键
+% 提供对应的 Getter 命令。Getter 命令可直接在文档任意位置使用，
+% 展开后返回对应的键值。例如 \cs{GetTitle} 返回论文题目。
+% 下表列出基本信息键对应的 Getter：
 %
 % \begin{longtable}{ll}
 % \toprule
@@ -170,7 +255,14 @@
 %
 % \section{Hook 系统}
 %
-% 内核提供六个文档阶段钩子，模块通过 \cs{AddToHook} 注入行为：
+% Hook（钩子）是模板实现模块扩展的核心机制。内核在文档的六个关键阶段
+% 各预设一个钩子，模块通过 \cs{AddToHook} 把自己的行为"钩"到对应时机。
+% 这样，内核本身保持精简稳定，而各模块可在不修改内核代码的前提下，
+% 在合适的时机注入封面、声明页、摘要等自定义内容。
+%
+% \subsection{Hook 列表}
+%
+% 下表列出内核提供的六个文档阶段钩子及其触发时机：
 %
 % \begin{longtable}{ll}
 % \toprule
@@ -186,9 +278,44 @@
 % \bottomrule
 % \end{longtable}
 %
+% \subsection{触发时机示例}
+%
+% 下面以盲审模块为例说明 Hook 的典型用法。盲审模块在加载时（\cs{RequirePackage}
+% 阶段）通过 \cs{AddToHook} 把行为挂到相应的钩子上：
+%
+% \begin{lstlisting}[language={[LaTeX]TeX}]
+% \AddToHook{sduthesis/after-setup}{% 配置完成后执行初始化
+%   \bool_set_true:N \l__sdu_blindreview_bool
+% }
+% \AddToHook{sduthesis/before-cover}{% 封面前置处理
+%   ...
+% }
+% \end{lstlisting}
+%
+% 各钩子的实际触发点说明如下：
+%
+% \begin{itemize}
+%   \item \texttt{sduthesis/after-setup}：在 \cs{SDUSetup} 全部键值处理完成后
+%         触发，适合做依赖配置值的初始化，如根据 \texttt{module} 判定启用
+%         盲审标志。
+%   \item \texttt{sduthesis/before-cover}：在封面排版之前触发，可在此隐藏
+%         作者、学号等个人信息（盲审场景）。
+%   \item \texttt{sduthesis/cover-style}：封面样式钩子，用于注入封面版式。
+%   \item \texttt{sduthesis/frontmatter/begin}：前言（目录、摘要等）开始时触发。
+%   \item \texttt{sduthesis/mainmatter/begin}：正文开始时触发，常用于设置正文字体、
+%         行距等。
+%   \item \texttt{sduthesis/backmatter/begin}：后记（致谢、参考文献等）开始时触发。
+% \end{itemize}
+%
 % \section{模块系统}
 %
+% 模块系统是模板插件化架构的载体。除了内核自带的基础能力，不同论文类型
+% （本科、硕士、盲审等）的差异化排版由各自的模块实现。每个模块都是一个
+% 独立文件，可在 \texttt{module} 键中按需加载，互不影响。
+%
 % \subsection{可用模块}
+%
+% 模板目前提供以下三个模块：
 %
 % \begin{longtable}{lll}
 % \toprule
@@ -229,9 +356,10 @@
 %
 % \subsection{创建新模块}
 %
-% 模块是一个 \texttt{.sty} 文件，放在 \texttt{modules/} 目录下，
-% 文件名格式为 \texttt{sduthesis-<模块名>.sty}。
-% 模块可以：
+% 模板的模块机制对扩展者友好。要创建一个新模块，只需在 \texttt{modules/}
+% 目录下新建一个 \texttt{.sty} 文件，文件名遵循
+% \texttt{sduthesis-<模块名>.sty} 的格式，之后即可在 \texttt{module} 键中
+% 通过模块名引用。模块内部可以使用 \LaTeX3 的全部能力，主要包括以下三种方式：
 %
 % \begin{itemize}
 %   \item 通过 \cs{renewcommand} 覆盖占位命令
@@ -239,9 +367,15 @@
 %   \item 通过 \cs{keys_define:nn} 注册新的配置键
 % \end{itemize}
 %
+% 其中，占位命令覆盖用于替换内核提供的默认空实现（如 \cs{makecoverpage}），
+% Hook 注入用于在合适的时机排版页面，而 \cs{keys_define:nn} 允许模块扩展
+% 自己的配置键，并通过 \cs{SDUSetup} 统一传入。
+%
 % \section{实现细节}
 %
-% 以下为源码实现，每个部分都有详细注释。
+% 本章给出模板内核的源码实现。每个代码块前均有对应的用途说明，
+% 便于理解各部分的设计意图。以下内容按模块化思路组织，
+% 从文档类声明、变量存储、键注册到各排版引擎逐步展开。
 %
 % \subsection{文档类声明与加载}
 %

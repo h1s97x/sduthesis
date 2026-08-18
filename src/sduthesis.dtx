@@ -1,10 +1,8 @@
 % \iffalse meta-comment
-% ====================================================
 % SDUThesis — 山东大学学位论文 LaTeX 模板
 % Copyright (c) 2025 h1s97x
 % Released under the LaTeX Project Public License v1.3c or later
 % See https://www.latex-project.org/lppl.txt
-% ====================================================
 %
 %<*driver>
 \documentclass[a4paper]{l3doc}
@@ -60,9 +58,7 @@
 %
 % \tableofcontents
 %
-% ====================================================
 % \section{简介}
-% ====================================================
 %
 % SDUThesis 是为山东大学学位论文设计的 \LaTeX{} 模板类，具有以下特点：
 %
@@ -77,9 +73,7 @@
 %   \item 兼容 Overleaf 在线编辑
 % \end{itemize}
 %
-% ====================================================
 % \section{系统要求}
-% ====================================================
 %
 % \begin{itemize}
 %   \item \TeX{} Live 2024 或更高版本
@@ -88,9 +82,7 @@
 %   \item Fandol 字体集（\TeX{} Live 自带）
 % \end{itemize}
 %
-% ====================================================
 % \section{快速开始}
-% ====================================================
 %
 % \subsection{最小示例}
 %
@@ -127,9 +119,7 @@
 %
 % 或使用 \texttt{just build} 一键编译。
 %
-% ====================================================
 % \section{配置参考}
-% ====================================================
 %
 % \subsection{\cs{SDUSetup} 键值列表}
 %
@@ -178,9 +168,7 @@
 % \bottomrule
 % \end{longtable}
 %
-% ====================================================
 % \section{Hook 系统}
-% ====================================================
 %
 % 内核提供六个文档阶段钩子，模块通过 \cs{AddToHook} 注入行为：
 %
@@ -198,9 +186,7 @@
 % \bottomrule
 % \end{longtable}
 %
-% ====================================================
 % \section{模块系统}
-% ====================================================
 %
 % \subsection{可用模块}
 %
@@ -253,9 +239,7 @@
 %   \item 通过 \cs{keys_define:nn} 注册新的配置键
 % \end{itemize}
 %
-% ====================================================
 % \section{实现细节}
-% ====================================================
 %
 % 以下为源码实现，每个部分都有详细注释。
 %
@@ -287,96 +271,41 @@
 % 命名规范：\texttt{\textbackslash l\_\_sdu\_<名称>\_tl}，
 % \texttt{l} 表示局部变量，\texttt{\_\_sdu} 是模块前缀。
 %
-% \begin{macro}{\l__sdu_title_tl}
-% 论文标题。
+% 论文信息变量：
+%
 %    \begin{macrocode}
+% 论文标题
 \tl_new:N \l__sdu_title_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_author_tl}
-% 作者姓名。
-%    \begin{macrocode}
+% 作者姓名
 \tl_new:N \l__sdu_author_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_studentid_tl}
-% 学号。
-%    \begin{macrocode}
+% 学号
 \tl_new:N \l__sdu_studentid_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_school_tl}
-% 学院名称。
-%    \begin{macrocode}
+% 学院名称
 \tl_new:N \l__sdu_school_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_major_tl}
-% 专业名称。
-%    \begin{macrocode}
+% 专业名称
 \tl_new:N \l__sdu_major_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_supervisor_tl}
-% 指导教师。
-%    \begin{macrocode}
+% 指导教师
 \tl_new:N \l__sdu_supervisor_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_year_tl}
-% 毕业年份。
-%    \begin{macrocode}
+% 毕业年份
 \tl_new:N \l__sdu_year_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_month_tl}
-% 毕业月份。
-%    \begin{macrocode}
+% 毕业月份
 \tl_new:N \l__sdu_month_tl
 %    \end{macrocode}
-% \end{macro}
 %
-% \begin{macro}{\l__sdu_degree_tl}
-% 学位类型（硕士/博士），master 模块使用。
+% 学位信息变量（master/doctor 模块使用）：
+%
 %    \begin{macrocode}
+% 学位类型（硕士/博士）
 \tl_new:N \l__sdu_degree_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_committee_chair_tl}
-% 答辩委员会主席。
-%    \begin{macrocode}
+% 答辩委员会主席
 \tl_new:N \l__sdu_committee_chair_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_committee_members_tl}
-% 答辩委员会委员（多个姓名用顿号分隔）。
-%    \begin{macrocode}
+% 答辩委员会委员（多个姓名用顿号分隔）
 \tl_new:N \l__sdu_committee_members_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_defense_date_tl}
-% 答辩日期。
-%    \begin{macrocode}
+% 答辩日期
 \tl_new:N \l__sdu_defense_date_tl
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\l__sdu_defense_place_tl}
-% 答辩地点。
-%    \begin{macrocode}
+% 答辩地点
 \tl_new:N \l__sdu_defense_place_tl
 %    \end{macrocode}
-% \end{macro}
 %
 % 样式变量：
 %
@@ -460,80 +389,31 @@
 %
 % 每个 Getter 命令读取对应的 token list 变量并展开。
 %
-% \begin{macro}{\GetTitle}
+% \begin{macro}{\GetTitle, \GetAuthor, \GetStudentId, \GetSchool,
+%   \GetMajor, \GetSupervisor, \GetYear, \GetMonth}
+% 基本信息 Getter：
+%
 %    \begin{macrocode}
 \NewDocumentCommand \GetTitle { } { \l__sdu_title_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetAuthor}
-%    \begin{macrocode}
 \NewDocumentCommand \GetAuthor { } { \l__sdu_author_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetStudentId}
-%    \begin{macrocode}
 \NewDocumentCommand \GetStudentId { } { \l__sdu_studentid_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetSchool}
-%    \begin{macrocode}
 \NewDocumentCommand \GetSchool { } { \l__sdu_school_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetMajor}
-%    \begin{macrocode}
 \NewDocumentCommand \GetMajor { } { \l__sdu_major_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetSupervisor}
-%    \begin{macrocode}
 \NewDocumentCommand \GetSupervisor { } { \l__sdu_supervisor_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetYear}
-%    \begin{macrocode}
 \NewDocumentCommand \GetYear { } { \l__sdu_year_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetMonth}
-%    \begin{macrocode}
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\GetDegree}
+% \begin{macro}{\GetDegree, \GetCommitteeChair, \GetCommitteeMembers,
+%   \GetDefenseDate, \GetDefensePlace}
+% 学位信息 Getter（master/doctor 模块使用）：
+%
 %    \begin{macrocode}
 \NewDocumentCommand \GetDegree { } { \l__sdu_degree_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetCommitteeChair}
-%    \begin{macrocode}
 \NewDocumentCommand \GetCommitteeChair { } { \l__sdu_committee_chair_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetCommitteeMembers}
-%    \begin{macrocode}
 \NewDocumentCommand \GetCommitteeMembers { } { \l__sdu_committee_members_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetDefenseDate}
-%    \begin{macrocode}
 \NewDocumentCommand \GetDefenseDate { } { \l__sdu_defense_date_tl }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\GetDefensePlace}
-%    \begin{macrocode}
 \NewDocumentCommand \GetDefensePlace { } { \l__sdu_defense_place_tl }
 %    \end{macrocode}
 % \end{macro}
@@ -1036,9 +916,7 @@
 %    \end{macrocode}
 %</cls>
 %
-% ====================================================
 % \section{许可证}
-% ====================================================
 %
 % 本模板使用 LPPL-1.3c 协议发布。
 % 详见项目根目录的 LICENSE 文件。

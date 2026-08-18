@@ -23,16 +23,11 @@
 \sloppy
 \emergencystretch=3em
 
-% 文档排版开关：printdoc 控制链接颜色。
-% 默认 true —— 所有链接均为黑色，适配学术论文打印（黑白全黑）。
-% 改为 false —— 链接用蓝色，屏幕阅读时更醒目。
-\newif\ifprintdoc
-\printdoctrue   % 打印模式（全黑）
-
+% 文档排版：链接统一用黑色，适配学术论文打印（黑白全黑）。
 \hypersetup{
   colorlinks=true,
-  linkcolor=\ifprintdoc black\else blue\fi,
-  urlcolor=\ifprintdoc black\else blue\fi,
+  linkcolor=black,
+  urlcolor=black,
 }
 
 \lstset{

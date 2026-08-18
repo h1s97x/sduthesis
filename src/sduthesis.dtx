@@ -23,10 +23,16 @@
 \sloppy
 \emergencystretch=3em
 
+% 文档排版开关：printdoc 控制链接颜色。
+% 默认 true —— 所有链接均为黑色，适配学术论文打印（黑白全黑）。
+% 改为 false —— 链接用蓝色，屏幕阅读时更醒目。
+\newif\ifprintdoc
+\printdoctrue   % 打印模式（全黑）
+
 \hypersetup{
   colorlinks=true,
-  linkcolor=black,
-  urlcolor=black,
+  linkcolor=\ifprintdoc black\else blue\fi,
+  urlcolor=\ifprintdoc black\else blue\fi,
 }
 
 \lstset{
@@ -165,28 +171,26 @@
 %
 % \subsection{\cs{SDUSetup} 键值列表}
 %
-% 以下表格列出了所有可用的配置键：
-%
 % \begin{longtable}{lll}
 % \toprule
-% \textbf{键} & \textbf{类型} & \textbf{默认值} \\
+% \textbf{键} & \textbf{默认值} & \textbf{说明} \\
 % \midrule
 % \endhead
-% \texttt{module}     & 字符串/列表 & \texttt{undergraduate} \\
-% \texttt{title}      & 字符串 & （无） \\
-% \texttt{author}     & 字符串 & （无） \\
-% \texttt{studentId}  & 字符串 & （无） \\
-% \texttt{school}     & 字符串 & （无） \\
-% \texttt{major}      & 字符串 & （无） \\
-% \texttt{supervisor} & 字符串 & （无） \\
-% \texttt{year}       & 字符串 & （无） \\
-% \texttt{month}      & 字符串 & （无） \\
+% \texttt{module}     & \texttt{undergraduate} & 加载的模块（逗号分隔，可多模块） \\
+% \texttt{title}      & （无） & 论文题目 \\
+% \texttt{author}     & （无） & 作者姓名 \\
+% \texttt{studentId}  & （无） & 学号 \\
+% \texttt{school}     & （无） & 学院 \\
+% \texttt{major}      & （无） & 专业 \\
+% \texttt{supervisor} & （无） & 指导教师 \\
+% \texttt{year}       & （无） & 年份 \\
+% \texttt{month}      & （无） & 月份 \\
 % \midrule
-% \texttt{lineSpread} & 字符串 & \texttt{1.5} \\
-% \texttt{pageLeft}   & 字符串 & \texttt{3cm} \\
-% \texttt{pageRight}  & 字符串 & \texttt{3cm} \\
-% \texttt{pageTop}    & 字符串 & \texttt{2.5cm} \\
-% \texttt{pageBottom} & 字符串 & \texttt{2.5cm} \\
+% \texttt{lineSpread} & \texttt{1.5} & 行距 \\
+% \texttt{pageLeft}   & \texttt{3cm} & 左边距 \\
+% \texttt{pageRight}  & \texttt{3cm} & 右边距 \\
+% \texttt{pageTop}    & \texttt{2.5cm} & 上边距 \\
+% \texttt{pageBottom} & \texttt{2.5cm} & 下边距 \\
 % \bottomrule
 % \end{longtable}
 %
@@ -371,11 +375,11 @@
 % Hook 注入用于在合适的时机排版页面，而 \cs{keys_define:nn} 允许模块扩展
 % 自己的配置键，并通过 \cs{SDUSetup} 统一传入。
 %
-% \section{实现细节}
+% \section*{附录 代码实现}
 %
-% 本章给出模板内核的源码实现。每个代码块前均有对应的用途说明，
-% 便于理解各部分的设计意图。以下内容按模块化思路组织，
-% 从文档类声明、变量存储、键注册到各排版引擎逐步展开。
+% 以下为模板的完整源码实现，供开发者阅读；普通用户只需关注上文正文内容。
+% 附录按功能模块组织，每部分开头有一段说明，随后是紧凑的宏代码；
+% 内容从文档类声明、变量存储、键注册到各排版引擎逐步展开。
 %
 % \subsection{文档类声明与加载}
 %
@@ -402,10 +406,9 @@
 % \subsection{存储层：变量声明}
 %
 % 所有配置值通过 \texttt{tl}（token list）变量存储。
-% 命名规范：\texttt{\textbackslash l\_\_sdu\_<名称>\_tl}，
-% \texttt{l} 表示局部变量，\texttt{\_\_sdu} 是模块前缀。
-%
-% 论文信息变量：
+% 命名规范为 \texttt{\textbackslash l\_\_sdu\_<名称>\_tl}：\texttt{l} 表示局部变量，
+% \texttt{\_\_sdu} 是模块前缀。声明按四组排列——论文信息、学位信息
+% （master/doctor 模块使用）、样式、模块——同一组内紧挨排列、零注释零空行。
 %
 %    \begin{macrocode}
 \tl_new:N \l__sdu_title_tl
@@ -416,31 +419,16 @@
 \tl_new:N \l__sdu_supervisor_tl
 \tl_new:N \l__sdu_year_tl
 \tl_new:N \l__sdu_month_tl
-%    \end{macrocode}
-%
-% 学位信息变量（master/doctor 模块使用）：
-%
-%    \begin{macrocode}
 \tl_new:N \l__sdu_degree_tl
 \tl_new:N \l__sdu_committee_chair_tl
 \tl_new:N \l__sdu_committee_members_tl
 \tl_new:N \l__sdu_defense_date_tl
 \tl_new:N \l__sdu_defense_place_tl
-%    \end{macrocode}
-%
-% 样式变量：
-%
-%    \begin{macrocode}
 \dim_new:N \l__sdu_line_spread_dim
 \tl_new:N \l__sdu_page_left_tl
 \tl_new:N \l__sdu_page_right_tl
 \tl_new:N \l__sdu_page_top_tl
 \tl_new:N \l__sdu_page_bottom_tl
-%    \end{macrocode}
-%
-% 模块变量：
-%
-%    \begin{macrocode}
 \tl_new:N \l__sdu_module_tl
 \seq_new:N \l__sdu_module_seq
 \tl_new:N \l__sdu_module_tmp_tl
@@ -821,6 +809,20 @@
 \let\citex\citep
 %    \end{macrocode}
 %
+% 引用命令的效果与说明：
+%
+% \begin{longtable}{lll}
+% \toprule
+% \textbf{命令} & \textbf{效果} & \textbf{说明} \\
+% \midrule
+% \endhead
+% \cs{equref}    & 式~\ref{eq:demo} & 引用公式（自动加"式"前缀） \\
+% \cs{tabref}    & 表~\ref{tab:demo} & 引用表格 \\
+% \cs{figref}    & 图~\ref{fig:demo} & 引用图片 \\
+% \cs{subfigref} & 图~\subref*{fig:demo} & 引用子图 \\
+% \bottomrule
+% \end{longtable}
+%
 % \subsection{图表标题引擎}
 %
 %    \begin{macrocode}
@@ -859,11 +861,26 @@
 %
 % \subsection{数学快捷命令}
 %
+% 提供三个常用的数学常数/虚数单位命令，自动进入数学模式。
+%
 %    \begin{macrocode}
 \newcommand{\mye}{\ensuremath{\mathrm{e}}}
 \newcommand{\myi}{\ensuremath{\mathrm{i}}}
 \newcommand{\myj}{\ensuremath{\mathrm{j}}}
 %    \end{macrocode}
+%
+% 各命令的效果与说明：
+%
+% \begin{longtable}{lll}
+% \toprule
+% \textbf{命令} & \textbf{效果} & \textbf{说明} \\
+% \midrule
+% \endhead
+% \cs{mye} & $\mathrm{e}$ & 自然底数 \\
+% \cs{myi} & $\mathrm{i}$ & 虚数单位 \\
+% \cs{myj} & $\mathrm{j}$ & 复数单位（工程习惯） \\
+% \bottomrule
+% \end{longtable}
 %
 % \subsection{代码排版引擎}
 %

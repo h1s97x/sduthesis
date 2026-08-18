@@ -574,22 +574,19 @@
 %
 % \subsection{命令层：SDUSetup}
 %
-% \begin{macro}{\SDUSetup}
 % 用户配置命令。内部调用 \texttt{\textbackslash keys\_set:nn} 设置键值。
+%
 %    \begin{macrocode}
 \NewDocumentCommand \SDUSetup { m }
 {
   \keys_set:nn { sdu } { #1 }
 }
 %    \end{macrocode}
-% \end{macro}
 %
 % \subsection{导出层：Getter 命令}
 %
 % 每个 Getter 命令读取对应的 token list 变量并展开。
 %
-% \begin{macro}{\GetTitle, \GetAuthor, \GetStudentId, \GetSchool,
-%   \GetMajor, \GetSupervisor, \GetYear, \GetMonth}
 % 基本信息 Getter：
 %
 %    \begin{macrocode}
@@ -602,10 +599,7 @@
 \NewDocumentCommand \GetYear { } { \l__sdu_year_tl }
 \NewDocumentCommand \GetMonth { } { \l__sdu_month_tl }
 %    \end{macrocode}
-% \end{macro}
 %
-% \begin{macro}{\GetDegree, \GetCommitteeChair, \GetCommitteeMembers,
-%   \GetDefenseDate, \GetDefensePlace}
 % 学位信息 Getter（master/doctor 模块使用）：
 %
 %    \begin{macrocode}
@@ -615,7 +609,6 @@
 \NewDocumentCommand \GetDefenseDate { } { \l__sdu_defense_date_tl }
 \NewDocumentCommand \GetDefensePlace { } { \l__sdu_defense_place_tl }
 %    \end{macrocode}
-% \end{macro}
 %
 % \subsection{模块加载器}
 %
@@ -648,7 +641,6 @@
 }
 %    \end{macrocode}
 %
-% \begin{macro}{\sdu_load_module:}
 % 构建模块包名并加载。
 % 支持逗号分隔的多模块列表（如 \texttt{module = {master, blindreview}}），
 % 按顺序依次加载，实现功能叠加（如硕博论文 + 盲审）。
@@ -698,7 +690,6 @@
   }
 }
 %    \end{macrocode}
-% \end{macro}
 %
 % \subsection{Hook 系统}
 %
@@ -1002,60 +993,53 @@
 % 这些命令在 cls 中提供默认空实现，模块加载后通过
 % \cs{renewcommand} 覆盖。
 %
-% \begin{macro}{\makecoverpage}
 % 封面页占位。
+%
 %    \begin{macrocode}
 \newcommand{\makecoverpage}{%
   \PackageWarning{sduthesis}{No~cover~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
 %    \end{macrocode}
-% \end{macro}
 %
-% \begin{macro}{\makestatement}
 % 声明页占位（盲审模块可覆盖以跳过声明页）。
+%
 %    \begin{macrocode}
 \newcommand{\makestatement}{%
   \PackageWarning{sduthesis}{No~statement~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
 %    \end{macrocode}
-% \end{macro}
 %
-% \begin{macro}{\makecommittee}
 % 答辩委员会页占位（master/doctor 模块覆盖；盲审模式下整页跳过）。
+%
 %    \begin{macrocode}
 \newcommand{\makecommittee}{%
   \PackageWarning{sduthesis}{No~committee~page~defined.~Please~load~a~module~via~SDUSetup.}%
 }
 %    \end{macrocode}
-% \end{macro}
 %
-% \begin{environment}{cnabstract}
 % 中文摘要占位。
+%
 %    \begin{macrocode}
 \newenvironment{cnabstract}{}{}
 %    \end{macrocode}
-% \end{environment}
 %
-% \begin{environment}{enabstract}
 % 英文摘要占位。
+%
 %    \begin{macrocode}
 \newenvironment{enabstract}{}{}
 %    \end{macrocode}
-% \end{environment}
 %
-% \begin{macro}{\cnkeywords}
 % 中文关键词占位。
+%
 %    \begin{macrocode}
 \newcommand{\cnkeywords}[1]{}
 %    \end{macrocode}
-% \end{macro}
 %
-% \begin{macro}{\enkeywords}
 % 英文关键词占位。
+%
 %    \begin{macrocode}
 \newcommand{\enkeywords}[1]{}
 %    \end{macrocode}
-% \end{macro}
 %
 % \subsection{通用环境定义}
 %

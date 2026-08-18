@@ -187,7 +187,10 @@ $:
             # 版本号从 git-cliff 标题行 ## [x.y.z] 提取，与 changelog 实际内容天然一致、
             # 少依赖 CNB_BRANCH 环境变量（更健壮）；找不到时回退 CNB_BRANCH。
             m = re.search(r"^## \[([^\]]+)\]", content, re.M)
-            ver = (m.group(1) if m else os.environ.get("CNB_BRANCH", "")).removeprefix("v")
+            # 回退 CNB_BRANCH 时用 os.path.basename 去掉 refs/tags/ 前缀，避免版本号被污染
+            # 为 refs/tags/v2.1.2（否则标题会变成 # sduthesis vrefs/tags/v2.1.2）。
+            _ver = m.group(1) if m else os.path.basename(os.environ.get("CNB_BRANCH", ""))
+            ver = _ver.removeprefix("v")
             # 去掉 git-cliff 的 header（# Changelog 及后续空行）
             content = re.sub(r"^# .*\n\n+", "", content, count=1)
             out = [f"# sduthesis v{ver}", "", f"山东大学学位论文 LaTeX 模板 v{ver} 版本发布说明。", ""]

@@ -121,22 +121,23 @@
 %
 % 首先创建一个主文件（如 \texttt{main.tex}），文档类声明为
 % \texttt{sduthesis}，随后用 \cs{SDUSetup} 集中配置论文信息。
-% 需注意：\texttt{module} 键用于指定论文类型（此处为本科），
-% \texttt{title}/\texttt{author} 等键填写论文的标题与作者信息，
-% 缺省键（如 \texttt{year}、\texttt{month}）按需填写即可：
+% 推荐用 \texttt{info=\{...\}} 分组收纳论文信息，\texttt{module} 键
+% 指定论文类型（此处为本科），\texttt{year}/\texttt{month} 等缺省键按需填写：
 %
 % \begin{lstlisting}[language={[LaTeX]TeX}]
 % \documentclass{sduthesis}
 % \SDUSetup{
-%   module     = undergraduate,
-%   title      = {论文题目},
-%   author     = {作者姓名},
-%   studentId  = {学号},
-%   school     = {学院},
-%   major      = {专业},
-%   supervisor = {指导教师},
-%   year       = {2025},
-%   month      = {6},
+%   module  = undergraduate,
+%   info    = {
+%     title      = {论文题目},
+%     author     = {作者姓名},
+%     studentId  = {学号},
+%     school     = {学院},
+%     major      = {专业},
+%     supervisor = {指导教师},
+%     year       = {2025},
+%     month      = {6},
+%   },
 % }
 % \begin{document}
 % \makecoverpage
@@ -144,6 +145,8 @@
 % % 正文...
 % \end{document}
 % \end{lstlisting}
+%
+% 若你沿用旧版本写法，也可以把所有键平铺在 \cs{SDUSetup} 顶层，效果相同。
 %
 % \subsection{编译命令}
 %
@@ -164,12 +167,68 @@
 % \section{配置参考}
 %
 % 模板的所有可配置项均通过 \cs{SDUSetup} 以\emph{键值对}的形式集中传入。
-% 配置键大致分为四组：\textbf{信息组}（论文的标题与作者等基本信息）、
-% \textbf{学位信息组}（硕士/博士论文的答辩信息）、\textbf{样式组}
-% （页面版式与行距等排版参数）以及\textbf{模块组}（指定加载哪些模块）。
-% 下面分别说明各键的用途。
+% 配置键分为三组：\textbf{info}（论文元数据：信息 + 学位信息）、
+% \textbf{option}（排版参数）以及顶层的 \textbf{module}（指定加载哪些模块）。
+% 推荐用嵌套分组写法，语义更清晰；同时保留平铺写法，新旧代码均可用。
+%
+% \subsection{两种写法}
+%
+% \textbf{嵌套分组（推荐）}：用 \texttt{info=\{...\}} 收纳论文信息，
+% \texttt{option=\{...\}} 收纳样式参数，\texttt{module} 直接写在顶层：
+%
+% \begin{lstlisting}[language={[LaTeX]TeX}]
+% \SDUSetup{
+%   module  = undergraduate,
+%   info    = {
+%     title      = {论文题目},
+%     author     = {作者姓名},
+%     studentId  = {学号},
+%     school     = {学院},
+%     major      = {专业},
+%     supervisor = {指导教师},
+%     year       = {2025},
+%     month      = {6},
+%   },
+%   option  = { lineSpread = 1.5 },
+% }
+% \end{lstlisting}
+%
+% \textbf{平铺写法（兼容旧版）}：所有键直接平铺在顶层，行为与旧版本一致：
+%
+% \begin{lstlisting}[language={[LaTeX]TeX}]
+% \SDUSetup{
+%   module     = undergraduate,
+%   title      = {论文题目},
+%   author     = {作者姓名},
+%   lineSpread = 1.5,
+% }
+% \end{lstlisting}
+%
+% 两种写法可混用，键名不冲突：嵌套的 \texttt{info}/\texttt{option} 与
+% 顶层平铺的键都会设置到同一组内部变量上。
+%
+% \subsection{迁移对照表}
+%
+% 旧版平铺写法升级到新版嵌套写法的对照如下（未列出的键同理）：
+%
+% \begin{longtable}{ll}
+% \toprule
+% \textbf{旧写法（平铺）} & \textbf{新写法（嵌套）} \\
+% \midrule
+% \endhead
+% \texttt{title = \{...\}} & \texttt{info = \{ title = \{...\} \}} \\
+% \texttt{author = \{...\}} & \texttt{info = \{ author = \{...\} \}} \\
+% \texttt{degree = \{...\}} & \texttt{info = \{ degree = \{...\} \}} \\
+% \texttt{lineSpread = \{...\}} & \texttt{option = \{ lineSpread = \{...\} \}} \\
+% \texttt{pageLeft = \{...\}} & \texttt{option = \{ pageLeft = \{...\} \}} \\
+% \texttt{module = \{...\}} & \texttt{module = \{...\}}（位置不变） \\
+% \bottomrule
+% \end{longtable}
 %
 % \subsection{\cs{SDUSetup} 键值列表}
+%
+% 以下表格列出了所有可用的配置键（\texttt{info} 与 \texttt{option} 为
+% 分组名，键名分别位于对应子组内；顶层同时保留同名平铺键）：
 %
 % \begin{longtable}{lll}
 % \toprule
@@ -177,6 +236,7 @@
 % \midrule
 % \endhead
 % \texttt{module}     & \texttt{undergraduate} & 加载的模块（逗号分隔，可多模块） \\
+% \midrule
 % \texttt{title}      & （无） & 论文题目 \\
 % \texttt{author}     & （无） & 作者姓名 \\
 % \texttt{studentId}  & （无） & 学号 \\
@@ -441,30 +501,35 @@
 %
 % \subsection{定义层：键注册}
 %
-% 使用 l3keys 注册所有配置键。键分为三组：信息、样式、模块。
+% 使用 l3keys 注册所有配置键，按组分包为 \texttt{info} 与 \texttt{option}
+% 两个嵌套子组，配合顶层的 \texttt{module} 键。
+%
+% 子组 \texttt{sdu/info} 收纳论文元数据：信息组 + 学位信息组
+% （master/doctor 模块使用）；子组 \texttt{sdu/option} 收纳排版参数。
+% 键值统一通过 \cs{SDUSetup} 传入，既支持 \verb|info={...}| 的嵌套分组写法，
+% 也保留平铺写法的向后兼容（旧写法的键仍可直接写在顶层）。
 %
 %    \begin{macrocode}
-\keys_define:nn { sdu }
+\keys_define:nn { sdu / info }
 {
-  % --- 信息组 ---
-  title       .tl_set:N = \l__sdu_title_tl,
-  author      .tl_set:N = \l__sdu_author_tl,
-  studentId   .tl_set:N = \l__sdu_studentid_tl,
-  school      .tl_set:N = \l__sdu_school_tl,
-  major       .tl_set:N = \l__sdu_major_tl,
-  supervisor  .tl_set:N = \l__sdu_supervisor_tl,
-  year        .tl_set:N = \l__sdu_year_tl,
-  month       .tl_set:N = \l__sdu_month_tl,
-
-  % --- 学位信息组（master/doctor 模块使用） ---
-  degree          .tl_set:N = \l__sdu_degree_tl,
-  degree          .initial:n = { 硕士 },
-  committeeChair  .tl_set:N = \l__sdu_committee_chair_tl,
+  title          .tl_set:N = \l__sdu_title_tl,
+  author         .tl_set:N = \l__sdu_author_tl,
+  studentId      .tl_set:N = \l__sdu_studentid_tl,
+  school         .tl_set:N = \l__sdu_school_tl,
+  major          .tl_set:N = \l__sdu_major_tl,
+  supervisor     .tl_set:N = \l__sdu_supervisor_tl,
+  year           .tl_set:N = \l__sdu_year_tl,
+  month          .tl_set:N = \l__sdu_month_tl,
+  degree         .tl_set:N = \l__sdu_degree_tl,
+  degree         .initial:n = { 硕士 },
+  committeeChair .tl_set:N = \l__sdu_committee_chair_tl,
   committeeMembers .tl_set:N = \l__sdu_committee_members_tl,
-  defenseDate     .tl_set:N = \l__sdu_defense_date_tl,
-  defensePlace    .tl_set:N = \l__sdu_defense_place_tl,
+  defenseDate    .tl_set:N = \l__sdu_defense_date_tl,
+  defensePlace   .tl_set:N = \l__sdu_defense_place_tl,
+}
 
-  % --- 样式组 ---
+\keys_define:nn { sdu / option }
+{
   lineSpread  .tl_set:N = \l__sdu_line_spread_dim,
   lineSpread  .initial:n = { 1.5 },
   pageLeft    .tl_set:N = \l__sdu_page_left_tl,
@@ -475,10 +540,35 @@
   pageTop     .initial:n = { 2.5cm },
   pageBottom  .tl_set:N = \l__sdu_page_bottom_tl,
   pageBottom  .initial:n = { 2.5cm },
+}
 
-  % --- 模块组 ---
-  module      .tl_set:N = \l__sdu_module_tl,
-  module      .initial:n = { undergraduate },
+\keys_define:nn { sdu }
+{
+  % 顶层：模块键 + info/option 嵌套代理键
+  module   .tl_set:N = \l__sdu_module_tl,
+  module   .initial:n = { undergraduate },
+  info     .code:n = { \keys_set:nn { sdu / info } { #1 } },
+  option   .code:n = { \keys_set:nn { sdu / option } { #1 } },
+
+  % 平铺兼容别名：保持旧写法的键仍可在顶层直接使用
+  title          .tl_set:N = \l__sdu_title_tl,
+  author         .tl_set:N = \l__sdu_author_tl,
+  studentId      .tl_set:N = \l__sdu_studentid_tl,
+  school         .tl_set:N = \l__sdu_school_tl,
+  major          .tl_set:N = \l__sdu_major_tl,
+  supervisor     .tl_set:N = \l__sdu_supervisor_tl,
+  year           .tl_set:N = \l__sdu_year_tl,
+  month          .tl_set:N = \l__sdu_month_tl,
+  degree         .tl_set:N = \l__sdu_degree_tl,
+  committeeChair .tl_set:N = \l__sdu_committee_chair_tl,
+  committeeMembers .tl_set:N = \l__sdu_committee_members_tl,
+  defenseDate    .tl_set:N = \l__sdu_defense_date_tl,
+  defensePlace   .tl_set:N = \l__sdu_defense_place_tl,
+  lineSpread     .tl_set:N = \l__sdu_line_spread_dim,
+  pageLeft       .tl_set:N = \l__sdu_page_left_tl,
+  pageRight      .tl_set:N = \l__sdu_page_right_tl,
+  pageTop        .tl_set:N = \l__sdu_page_top_tl,
+  pageBottom     .tl_set:N = \l__sdu_page_bottom_tl,
 }
 %    \end{macrocode}
 %

@@ -78,17 +78,23 @@ git clone https://github.com/h1s97x/sduthesis.git
 
 ```latex
 \SDUSetup{
-  module     = {undergraduate},    % 模块选择
-  title      = {你的论文标题},
-  author     = {你的姓名},
-  studentId  = {你的学号},
-  school     = {你的学院},
-  major      = {你的专业},
-  supervisor = {指导教师},
-  year       = {2025},
-  month      = {6},
+  module = {undergraduate},    % 模块选择
+  info   = {
+    title      = {你的论文标题},
+    author     = {你的姓名},
+    studentId  = {你的学号},
+    school     = {你的学院},
+    major      = {你的专业},
+    supervisor = {指导教师},
+    year       = {2025},
+    month      = {6},
+  },
 }
 ```
+
+> **写法说明**：模板支持 `info={...}` 分组收纳论文信息、`option={...}`
+> 收纳样式参数（推荐写法）；旧版本把所有键平铺在 `\SDUSetup` 顶层的写法
+> 也仍然兼容，可直接沿用。
 
 ### 3. 编写论文内容
 

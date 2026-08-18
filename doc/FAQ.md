@@ -36,14 +36,16 @@ just distclean    # 清理辅助文件和 PDF
 
 ```latex
 \SDUSetup{
-  title      = {你的论文标题},
-  author     = {你的姓名},
-  studentId  = {你的学号},
-  school     = {你的学院},
-  major      = {你的专业},
-  supervisor = {指导教师},
-  year       = {2025},
-  month      = {6},
+  info = {
+    title      = {你的论文标题},
+    author     = {你的姓名},
+    studentId  = {你的学号},
+    school     = {你的学院},
+    major      = {你的专业},
+    supervisor = {指导教师},
+    year       = {2025},
+    month      = {6},
+  },
 }
 ```
 
@@ -57,11 +59,13 @@ just distclean    # 清理辅助文件和 PDF
 
 ```latex
 \SDUSetup{
-  lineSpread  = {1.5},     % 行距倍数
-  pageLeft    = {3cm},     % 左边距
-  pageRight   = {3cm},     % 右边距
-  pageTop     = {2.5cm},   % 上边距
-  pageBottom  = {2.5cm},   % 下边距
+  option = {
+    lineSpread  = {1.5},     % 行距倍数
+    pageLeft    = {3cm},     % 左边距
+    pageRight   = {3cm},     % 右边距
+    pageTop     = {2.5cm},   % 上边距
+    pageBottom  = {2.5cm},   % 下边距
+  },
 }
 ```
 

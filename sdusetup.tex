@@ -4,46 +4,46 @@
 %
 % 使用方法：只需修改下方的 \SDUSetup{...} 中的内容
 %
-% 支持的配置项：
-%   module      - 模板模块，支持逗号分隔多模块组合：
-%                undergraduate / master / blindreview
-%                例：{master, blindreview}（硕博论文+盲审）
-%                例：{undergraduate, blindreview}（本科+盲审）
-%                盲审模块需与基础模块组合；单独使用自动回退本科
-%                盲审模式：封面隐藏姓名/学号/导师，答辩委员会页整页跳过
-%   title       - 论文标题
-%   author      - 作者姓名
-%   studentId   - 学号
-%   school      - 学院
-%   major       - 专业
-%   supervisor  - 指导教师
-%   year        - 年份（如 2025）
-%   month       - 月份（如 6）
-%
-% master 模块额外配置项：
-%   degree           - 学位类型（硕士/博士，默认硕士）
-%   committeeChair   - 答辩委员会主席
-%   committeeMembers - 答辩委员会委员（顿号分隔）
-%   defenseDate      - 答辩日期
-%   defensePlace     - 答辩地点
-%
-% 样式配置项（可选）：
-%   lineSpread  - 行距倍数（默认 1.5）
-%   pageLeft    - 左边距（默认 3cm）
-%   pageRight   - 右边距（默认 3cm）
-%   pageTop     - 上边距（默认 2.5cm）
-%   pageBottom  - 下边距（默认 2.5cm）
+% 支持的配置项（推荐用 info/option 分组；也可全部平铺在顶层）：
+%   module  - 模板模块，支持逗号分隔多模块组合：
+%             undergraduate / master / blindreview
+%             例：{master, blindreview}（硕博论文+盲审）
+%             例：{undergraduate, blindreview}（本科+盲审）
+%             盲审模块需与基础模块组合；单独使用自动回退本科
+%             盲审模式：封面隐藏姓名/学号/导师，答辩委员会页整页跳过
+%   info    - 论文信息组，包含：
+%     title       - 论文标题
+%     author      - 作者姓名
+%     studentId   - 学号
+%     school      - 学院
+%     major       - 专业
+%     supervisor  - 指导教师
+%     year        - 年份（如 2025）
+%     month       - 月份（如 6）
+%     degree           - 学位类型（硕士/博士，默认硕士）[master 模块]
+%     committeeChair   - 答辩委员会主席 [master 模块]
+%     committeeMembers - 答辩委员会委员（顿号分隔）[master 模块]
+%     defenseDate      - 答辩日期 [master 模块]
+%     defensePlace     - 答辩地点 [master 模块]
+%   option  - 样式配置组，包含：
+%     lineSpread  - 行距倍数（默认 1.5）
+%     pageLeft    - 左边距（默认 3cm）
+%     pageRight   - 右边距（默认 3cm）
+%     pageTop     - 上边距（默认 2.5cm）
+%     pageBottom  - 下边距（默认 2.5cm）
 %
 % ============================================================
 
 \SDUSetup{
-  module     = {undergraduate},
-  title      = {基于深度学习的图像识别研究},
-  author     = {张三},
-  studentId  = {2020123456},
-  school     = {计算机科学与技术学院},
-  major      = {计算机科学与技术},
-  supervisor = {李四 教授},
-  year       = {2025},
-  month      = {6},
+  module = {undergraduate},
+  info = {
+    title      = {基于深度学习的图像识别研究},
+    author     = {张三},
+    studentId  = {2020123456},
+    school     = {计算机科学与技术学院},
+    major      = {计算机科学与技术},
+    supervisor = {李四 教授},
+    year       = {2025},
+    month      = {6},
+  },
 }

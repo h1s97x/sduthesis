@@ -37,16 +37,23 @@ sduthesis/
 
 ### 第 2 步：注册键（定义层）
 
-在"定义层"的 `\keys_define:nn { sdu }` 中添加：
+在"定义层"，键按语义分到对应子组：论文元数据进
+`\keys_define:nn { sdu / info }`，样式参数进
+`\keys_define:nn { sdu / option }`。以论文信息键为例：
 
 ```latex
-\keys_define:nn { sdu }
+\keys_define:nn { sdu / info }
 {
   % ...已有键...
   abstractCn   .tl_set:N = \l__sdu_abstract_cn_tl,    % 新增
   abstractCn   .initial:n = { },                       % 可选：默认值
 }
 ```
+
+> **兼容说明**：顶层 `\keys_define:nn { sdu }` 保留同名平铺键作为向后兼容
+> 别名，因此新增的子组键既能用 `\SDUSetup{ info = { abstractCn = ... } }`
+> 的嵌套写法，也能直接平铺写。新增键后建议同步在顶层补一个平铺别名
+> （仅 `.tl_set:N`，不需要重复 `.initial:n`），保证两种写法都对用户可用。
 
 ### 第 3 步：导出 Getter（导出层）
 
@@ -71,7 +78,9 @@ sduthesis/
 
 ```latex
 \SDUSetup{
-  abstractCn = {本文研究了……},
+  info = {
+    abstractCn = {本文研究了……},
+  },
 }
 ```
 

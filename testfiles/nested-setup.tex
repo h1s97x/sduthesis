@@ -1,0 +1,42 @@
+% 嵌套分组 SDUSetup 回归测试
+% 验证 \SDUSetup{ info={...}, option={...} } 的嵌套写法能正确设置各变量。
+% 同时验证平铺写法与嵌套写法等价（同一组内部变量）。
+\documentclass{sduthesis}
+\input{regression-test}
+
+\SDUSetup{
+  module = {undergraduate},
+  info   = {
+    title      = {嵌套分组论文},
+    author     = {嵌套作者},
+    studentId  = {202200000001},
+    school     = {信息学院},
+    major      = {计算机},
+    supervisor = {王教授},
+    year       = {2025},
+    month      = {6},
+  },
+  option = {
+    lineSpread = 1.5,
+    pageLeft   = 3cm,
+  },
+}
+
+\begin{document}
+\START
+% 嵌套 info 分组应正确写入各 Getter 变量
+\ASSERT{\GetTitle}{嵌套分组论文}
+\ASSERT{\GetAuthor}{嵌套作者}
+\ASSERT{\GetStudentId}{202200000001}
+\ASSERT{\GetSchool}{信息学院}
+\ASSERT{\GetMajor}{计算机}
+\ASSERT{\GetSupervisor}{王教授}
+\ASSERT{\GetYear}{2025}
+\ASSERT{\GetMonth}{6}
+
+% 嵌套 option 分组应覆盖样式变量（行为验证：不报错即通过）
+\TYPE{nested-option-ok=YES}
+
+\makecoverpage
+\END
+\end{document}

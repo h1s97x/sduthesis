@@ -23,7 +23,7 @@
 %% The Current Maintainer of this work is h1s97x.
 %% 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{sduthesis}[2025/05/16 v2.1.0 Thesis template for Shandong University]
+\ProvidesClass{sduthesis}[2026/08/18 v2.1.1 Thesis template for Shandong University]
 \LoadClass[openany]{ctexbook}
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}

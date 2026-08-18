@@ -23,7 +23,7 @@
 | 字段 | 值 |
 |---|---|
 | Package name | `sduthesis` |
-| Version | `2.1.0` |
+| Version | `2.1.1` |
 | License | `lppl1.3c` |
 | Author | h1s97x <Yang1297656998@outlook.com> |
 | Summary | LaTeX template for Shandong University theses (bachelor/master/doctoral), kernel + module architecture |

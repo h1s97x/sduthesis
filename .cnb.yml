@@ -165,6 +165,60 @@ $:
                         z.write(p, os.path.relpath(p, dst))
             print("User zip built:", os.path.getsize("sduthesis.zip"), "bytes")
             PYEOF
+        - name: generate release notes
+          # 用 git-cliff 自动生成 RELEASE_NOTES.md（发布说明），发布前无需再手写。
+          # 与 GitHub release.yml 的 Generate changelog 同一份 git-cliff 配置，保证两端一致。
+          # “自动生成 + 亮点摘要”：正文顶部拼接 RELEASE_HIGHLIGHTS.md 中的人工亮点摘要，
+          # 再跟自动生成的 git-cliff 分类条目，比纯自动更接近成熟项目观感。
+          script: |
+            set -e
+            # 安装 git-cliff 预编译二进制（texlive 镜像不含 git-cliff）
+            GIT_CLIFF_VERSION="2.13.1"
+            curl -sL "https://github.com/orhun/git-cliff/releases/download/v${GIT_CLIFF_VERSION}/git-cliff-${GIT_CLIFF_VERSION}-x86_64-unknown-linux-gnu.tar.gz" -o /tmp/git-cliff.tar.gz
+            tar -xzf /tmp/git-cliff.tar.gz -C /tmp
+            install -m755 /tmp/git-cliff-${GIT_CLIFF_VERSION}/git-cliff /usr/local/bin/git-cliff
+            # --current 只输出当前 HEAD（即当前 tag）所在版本的 changelog
+            git-cliff --config cliff.toml --current --output /tmp/release-changelog.md
+            # 转成 RELEASE_NOTES.md 格式（标题 + 简介 + 亮点摘要 + 分类降一级）
+            python3 - <<'PYEOF'
+            import re, os
+            with open("/tmp/release-changelog.md") as f:
+                content = f.read()
+            # 版本号从 git-cliff 标题行 ## [x.y.z] 提取，与 changelog 实际内容天然一致、
+            # 少依赖 CNB_BRANCH 环境变量（更健壮）；找不到时回退 CNB_BRANCH。
+            m = re.search(r"^## \[([^\]]+)\]", content, re.M)
+            ver = (m.group(1) if m else os.environ.get("CNB_BRANCH", "")).removeprefix("v")
+            # 去掉 git-cliff 的 header（# Changelog 及后续空行）
+            content = re.sub(r"^# .*\n\n+", "", content, count=1)
+            out = [f"# sduthesis v{ver}", "", f"山东大学学位论文 LaTeX 模板 v{ver} 版本发布说明。", ""]
+            # 亮点摘要：发布前人工更新 RELEASE_HIGHLIGHTS.md，拼接在正文顶部
+            hl_path = "RELEASE_HIGHLIGHTS.md"
+            hl = ""
+            if os.path.exists(hl_path):
+                with open(hl_path) as f:
+                    hl = re.sub(r"<!--.*?-->", "", f.read(), flags=re.S).strip()
+            if hl:
+                out += ["## ✨ 亮点摘要", "", hl, ""]
+            # 自动生成条目：跳过版本标题行（已重写），分类降一级 ### → ##
+            for ln in content.splitlines():
+                if re.match(r"^## \[", ln):
+                    continue
+                if ln.startswith("### "):
+                    out.append("## " + ln[4:])
+                else:
+                    out.append(ln)
+            # 折叠连续空行，保证小节之间只保留一个空行，输出干净
+            lines, prev_blank = [], False
+            for ln in out:
+                blank = (ln.strip() == "")
+                if blank and prev_blank:
+                    continue
+                lines.append(ln)
+                prev_blank = blank
+            with open("RELEASE_NOTES.md", "w") as f:
+                f.write("\n".join(lines).strip() + "\n")
+            print("RELEASE_NOTES.md generated for", ver)
+            PYEOF
         - name: create release
           type: git:release
           options:

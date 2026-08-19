@@ -23,7 +23,7 @@
 %% The Current Maintainer of this work is h1s97x.
 %% 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{sduthesis}[2026/08/18 v2.1.1 Thesis template for Shandong University]
+\ProvidesClass{sduthesis}[2026/08/18 v2.2.0 Thesis template for Shandong University]
 \LoadClass[openany]{ctexbook}
 \RequirePackage{expl3}
 \RequirePackage{l3keys2e}
@@ -55,27 +55,26 @@
 \bool_new:N \l__sdu_blindreview_bool
 \bool_new:N \l__sdu_has_blindreview_bool
 \bool_new:N \l__sdu_has_base_module_bool
-\keys_define:nn { sdu }
+\keys_define:nn { sdu / info }
 {
-  % --- 信息组 ---
-  title       .tl_set:N = \l__sdu_title_tl,
-  author      .tl_set:N = \l__sdu_author_tl,
-  studentId   .tl_set:N = \l__sdu_studentid_tl,
-  school      .tl_set:N = \l__sdu_school_tl,
-  major       .tl_set:N = \l__sdu_major_tl,
-  supervisor  .tl_set:N = \l__sdu_supervisor_tl,
-  year        .tl_set:N = \l__sdu_year_tl,
-  month       .tl_set:N = \l__sdu_month_tl,
-
-  % --- 学位信息组（master/doctor 模块使用） ---
-  degree          .tl_set:N = \l__sdu_degree_tl,
-  degree          .initial:n = { 硕士 },
-  committeeChair  .tl_set:N = \l__sdu_committee_chair_tl,
+  title          .tl_set:N = \l__sdu_title_tl,
+  author         .tl_set:N = \l__sdu_author_tl,
+  studentId      .tl_set:N = \l__sdu_studentid_tl,
+  school         .tl_set:N = \l__sdu_school_tl,
+  major          .tl_set:N = \l__sdu_major_tl,
+  supervisor     .tl_set:N = \l__sdu_supervisor_tl,
+  year           .tl_set:N = \l__sdu_year_tl,
+  month          .tl_set:N = \l__sdu_month_tl,
+  degree         .tl_set:N = \l__sdu_degree_tl,
+  degree         .initial:n = { 硕士 },
+  committeeChair .tl_set:N = \l__sdu_committee_chair_tl,
   committeeMembers .tl_set:N = \l__sdu_committee_members_tl,
-  defenseDate     .tl_set:N = \l__sdu_defense_date_tl,
-  defensePlace    .tl_set:N = \l__sdu_defense_place_tl,
+  defenseDate    .tl_set:N = \l__sdu_defense_date_tl,
+  defensePlace   .tl_set:N = \l__sdu_defense_place_tl,
+}
 
-  % --- 样式组 ---
+\keys_define:nn { sdu / option }
+{
   lineSpread  .tl_set:N = \l__sdu_line_spread_dim,
   lineSpread  .initial:n = { 1.5 },
   pageLeft    .tl_set:N = \l__sdu_page_left_tl,
@@ -86,10 +85,35 @@
   pageTop     .initial:n = { 2.5cm },
   pageBottom  .tl_set:N = \l__sdu_page_bottom_tl,
   pageBottom  .initial:n = { 2.5cm },
+}
 
-  % --- 模块组 ---
-  module      .tl_set:N = \l__sdu_module_tl,
-  module      .initial:n = { undergraduate },
+\keys_define:nn { sdu }
+{
+  % 顶层：模块键 + info/option 嵌套代理键
+  module   .tl_set:N = \l__sdu_module_tl,
+  module   .initial:n = { undergraduate },
+  info     .code:n = { \keys_set:nn { sdu / info } { #1 } },
+  option   .code:n = { \keys_set:nn { sdu / option } { #1 } },
+
+  % 平铺兼容别名：保持旧写法的键仍可在顶层直接使用
+  title          .tl_set:N = \l__sdu_title_tl,
+  author         .tl_set:N = \l__sdu_author_tl,
+  studentId      .tl_set:N = \l__sdu_studentid_tl,
+  school         .tl_set:N = \l__sdu_school_tl,
+  major          .tl_set:N = \l__sdu_major_tl,
+  supervisor     .tl_set:N = \l__sdu_supervisor_tl,
+  year           .tl_set:N = \l__sdu_year_tl,
+  month          .tl_set:N = \l__sdu_month_tl,
+  degree         .tl_set:N = \l__sdu_degree_tl,
+  committeeChair .tl_set:N = \l__sdu_committee_chair_tl,
+  committeeMembers .tl_set:N = \l__sdu_committee_members_tl,
+  defenseDate    .tl_set:N = \l__sdu_defense_date_tl,
+  defensePlace   .tl_set:N = \l__sdu_defense_place_tl,
+  lineSpread     .tl_set:N = \l__sdu_line_spread_dim,
+  pageLeft       .tl_set:N = \l__sdu_page_left_tl,
+  pageRight      .tl_set:N = \l__sdu_page_right_tl,
+  pageTop        .tl_set:N = \l__sdu_page_top_tl,
+  pageBottom     .tl_set:N = \l__sdu_page_bottom_tl,
 }
 \NewDocumentCommand \SDUSetup { m }
 {

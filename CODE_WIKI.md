@@ -1,7 +1,7 @@
 # SDUThesis Code Wiki
 
 > 山东大学毕业论文 LaTeX 模板的结构化代码文档
-> 版本：v2.1.0 | 协议：LPPL-1.3c | 维护者：h1s97x
+> 版本：v2.2.0 | 协议：LPPL-1.3c | 维护者：h1s97x
 > 仓库：https://github.com/h1s97x/sduthesis
 
 ---
@@ -46,7 +46,7 @@
 ### 1.3 核心特性
 
 - **插件化架构**：内核提供基础排版引擎和 Hook 系统，模块负责特定论文类型的格式和内容
-- **集中配置**：通过 `\SDUSetup{}` 统一管理论文信息与样式，内容与样式分离
+- **集中配置**：通过 `\SDUSetup{}` 统一管理论文信息与样式，内容与样式分离；支持 `info={...}` / `option={...}` 嵌套分组与平铺两种写法（v2.2.0+）
 - **多模块组合**：`module` 键支持逗号分隔的模块列表（如 `{master, blindreview}`），按顺序加载实现功能叠加
 - **盲审模式**：隐藏作者、学号、导师、答辩委员会成员等个人信息
 - **跨平台**：支持 Windows / macOS / Linux / Overleaf / TeXPage
@@ -313,6 +313,8 @@ sduthesis/
 | `\l__sdu_year_tl` | tl | `year` | 毕业年份 |
 | `\l__sdu_month_tl` | tl | `month` | 毕业月份 |
 
+> 上述键在 `sdu/info` 组注册（v2.2.0+ 经 `info={...}` 传入，或平铺写在顶层）。
+
 #### 学位信息组变量（master/doctor 使用）
 
 | 变量 | 类型 | 对应键 | 默认值 |
@@ -332,6 +334,8 @@ sduthesis/
 | `\l__sdu_page_right_tl` | tl | `pageRight` | `3cm` |
 | `\l__sdu_page_top_tl` | tl | `pageTop` | `2.5cm` |
 | `\l__sdu_page_bottom_tl` | tl | `pageBottom` | `2.5cm` |
+
+> 上述键在 `sdu/option` 组注册（v2.2.0+ 经 `option={...}` 传入，或平铺写在顶层）。
 
 #### 模块组变量
 
@@ -357,6 +361,13 @@ sduthesis/
 - **入参**：键值对（如 `module = undergraduate, title = {xxx}`）
 - **机制**：调用 l3keys 的 `\keys_set:nn` 将键值写入对应变量
 - **调用时机**：用户在 `sdusetup.tex` 中调用，可在 `\GetTitle` 等之前定义（LaTeX 延迟展开）
+
+**键的组织方式**（v2.2.0+ 支持两种写法，可混用，共享同一组内部变量）：
+
+- **嵌套分组（推荐）**：`info = { title = {...}, author = {...}, ... }` 收纳论文元数据，`option = { lineSpread = 1.5, pageLeft = 3cm, ... }` 收纳样式参数，`module` 留在顶层。`info` 与 `option` 是 `.code:n` 代理键，内部转发到 `sdu/info`、`sdu/option` 子组。
+- **平铺写法（兼容旧版）**：所有键（含 `title`、`degree`、`lineSpread` 等）直接写在顶层，由 `sdu` 组的同名平铺别名键接收。
+
+内核通过三个键组实现：`sdu/info`（论文信息 + 学位信息）、`sdu/option`（排版参数）、`sdu`（`module` + `info`/`option` 代理 + 平铺别名）。
 
 #### `\sdu_load_module:` —— 模块加载器
 
@@ -624,19 +635,24 @@ xelatex -synctex=1 -interaction=nonstopmode -halt-on-error main.tex  # 4. 解析
 
 ### 7.3 用户配置流程
 
-1. 修改 [sdusetup.tex](file:///workspace/sdusetup.tex) 中的 `\SDUSetup{}`：
+1. 修改 [sdusetup.tex](file:///workspace/sdusetup.tex) 中的 `\SDUSetup{}`（推荐使用 `info`/`option` 嵌套分组写法；也可按旧版把所有键平铺在顶层）：
 
 ```latex
 \SDUSetup{
-  module     = {undergraduate},    % 模块选择，支持逗号分隔多模块
-  title      = {你的论文标题},
-  author     = {你的姓名},
-  studentId  = {你的学号},
-  school     = {你的学院},
-  major      = {你的专业},
-  supervisor = {指导教师},
-  year       = {2025},
-  month      = {6},
+  module = {undergraduate},            % 模块选择，支持逗号分隔多模块
+  info = {                             % 论文信息组
+    title      = {你的论文标题},
+    author     = {你的姓名},
+    studentId  = {你的学号},
+    school     = {你的学院},
+    major      = {你的专业},
+    supervisor = {指导教师},
+    year       = {2025},
+    month      = {6},
+    % master/doctor 模块额外支持：
+    % degree, committeeChair, committeeMembers, defenseDate, defensePlace
+  },
+  option = { lineSpread = 1.5 },       % 样式参数组（行距、页边距）
 }
 ```
 
@@ -749,6 +765,7 @@ Python 脚本，运行 `just test` 触发，覆盖四项检查：
 | `master.tex` | 硕士封面 + 答辩委员会页 |
 | `blindreview.tex` | 本科 + 盲审组合（隐私断言） |
 | `master-blindreview.tex` | 硕士 + 盲审组合（隐私断言） |
+| `nested-setup.tex` | 嵌套 `info`/`option` 分组写法与平铺写法等价性断言（v2.2.0） |
 
 #### 测试机制
 
@@ -1012,10 +1029,10 @@ CNB（cnb.cool）平台的原生流水线，与 GitHub 形成双向同步：
 \tl_new:N \l__sdu_abstract_cn_tl    % 命名规范：\l__sdu_<键名>_tl
 ```
 
-**第 2 步：注册键（定义层）** —— 在 `\keys_define:nn { sdu }` 中：
+**第 2 步：注册键（定义层）** —— 论文信息类键注册到 `sdu/info` 组，样式类键注册到 `sdu/option` 组；如需平铺兼容，再在 `sdu` 组加同名别名：
 
 ```latex
-\keys_define:nn { sdu } {
+\keys_define:nn { sdu / info } {
   abstractCn   .tl_set:N = \l__sdu_abstract_cn_tl,
   abstractCn   .initial:n = { },    % 可选：默认值
 }
@@ -1102,6 +1119,7 @@ CNB（cnb.cool）平台的原生流水线，与 GitHub 形成双向同步：
 | 决策 | 选择 | 原因 |
 |------|------|------|
 | 配置机制 | l3keys | LaTeX3 标准，支持分组、默认值、类型检查 |
+| 配置键组织（v2.2.0） | `info`/`option` 嵌套分组 + 平铺兼容 | 语义清晰，同时兼容旧写法 |
 | 架构 | 内核 + 模块 | 解耦论文类型，方便扩展 |
 | 扩展机制 | `\NewHook` / `\AddToHook` | LaTeX3 标准钩子，比 `\AtBeginDocument` 更精确 |
 | 字体 | Fandol | TeX Live 自带，CI 和最小安装环境都能用 |
@@ -1143,4 +1161,4 @@ CNB（cnb.cool）平台的原生流水线，与 GitHub 形成双向同步：
 
 ---
 
-*本文档由代码分析自动生成，基于仓库 v2.1.0 版本。如需了解最新实现，请直接阅读源码与 [doc/INTERNALS.md](file:///workspace/doc/INTERNALS.md)。*
+*本文档由代码分析自动生成，基于仓库 v2.2.0 版本。如需了解最新实现，请直接阅读源码与 [doc/INTERNALS.md](file:///workspace/doc/INTERNALS.md)。*
